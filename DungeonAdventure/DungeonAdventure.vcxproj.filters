@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="BMPLoader %28James Kelly%29 probably removing">
+      <UniqueIdentifier>{731ee4b5-ce97-473d-82c2-fca20a0d343a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FBO %28Frame Buffer Object%29">
+      <UniqueIdentifier>{e6b3a844-ba4d-4f15-b159-f69900775035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Finite State Machine">
+      <UniqueIdentifier>{90ad33b0-83bf-44f0-bd81-83c2f195aaa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Global">
+      <UniqueIdentifier>{15bc539b-46b5-4d7a-bc16-2d6b53b00441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Finite State Machine\States">
+      <UniqueIdentifier>{19981df7-71b0-4a68-91bd-8a585db56f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graph Node Search">
+      <UniqueIdentifier>{d723d3c0-fea3-47cb-bfa7-7d00e037aa67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{b49a9ebb-a483-43e9-8712-78e5613be25e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light Manager">
+      <UniqueIdentifier>{e62b7f85-0ecd-44be-8337-b993b8c6be55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mediator">
+      <UniqueIdentifier>{a383ef74-2211-4ada-ac01-5357d3afa852}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meshes">
+      <UniqueIdentifier>{61fee14a-4e49-4569-a301-bc6afb911eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meshes\VAOManager">
+      <UniqueIdentifier>{0ef784c3-1665-487f-971d-5616b09dc238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderManager">
+      <UniqueIdentifier>{51f53793-8d6a-423b-859f-7f890c3d2678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderManager\Shaders">
+      <UniqueIdentifier>{3b184609-9cd9-400c-b613-1b69d83269a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture Manager">
+      <UniqueIdentifier>{4af694ac-3a0c-4726-910e-f39353a9e7bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BMPImage.cpp">
+      <Filter>BMPLoader %28James Kelly%29 probably removing</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>BMPLoader %28James Kelly%29 probably removing</Filter>
+    </ClCompile>
+    <ClCompile Include="cFBO\cFBO.cpp">
+      <Filter>FBO %28Frame Buffer Object%29</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMState.cpp">
+      <Filter>Finite State Machine\States</Filter>
+    </ClCompile>
+    <ClCompile Include="GatherState.cpp">
+      <Filter>Finite State Machine\States</Filter>
+    </ClCompile>
+    <ClCompile Include="IdleState.cpp">
+      <Filter>Finite State Machine\States</Filter>
+    </ClCompile>
+    <ClCompile Include="ReturnState.cpp">
+      <Filter>Finite State Machine\States</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchState.cpp">
+      <Filter>Finite State Machine\States</Filter>
+    </ClCompile>
+    <ClCompile Include="cFSMEntity.cpp">
+      <Filter>Finite State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="FSMSystem.cpp">
+      <Filter>Finite State Machine</Filter>
+    </ClCompile>
+    <ClCompile Include="globalThings.cpp">
+      <Filter>Global</Filter>
+    </ClCompile>
+    <ClCompile Include="Shutdown.cpp">
+      <Filter>Global</Filter>
+    </ClCompile>
+    <ClCompile Include="StartUp.cpp">
+      <Filter>Global</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Graph Node Search</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphSearches.cpp">
+      <Filter>Graph Node Search</Filter>
+    </ClCompile>
+    <ClCompile Include="cGLFWKeyboadModifiers.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFW_error_callback.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFW_key_callback.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandling.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightHelper.cpp">
+      <Filter>Light Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightManager.cpp">
+      <Filter>Light Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="cMediator.cpp">
+      <Filter>Mediator</Filter>
+    </ClCompile>
+    <ClCompile Include="cMediator_Imp.cpp">
+      <Filter>Mediator</Filter>
+    </ClCompile>
+    <ClCompile Include="cMesh.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="cVAOManager.cpp">
+      <Filter>Meshes\VAOManager</Filter>
+    </ClCompile>
+    <ClCompile Include="cShader.cpp">
+      <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="cShaderManager.cpp">
+      <Filter>ShaderManager</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawObject_function.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMapping\C24BitBMPpixel.cpp">
+      <Filter>Texture Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMapping\cBasicTextureManager.cpp">
+      <Filter>Texture Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureMapping\CTextureFromBMP.cpp">
+      <Filter>Texture Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BMPImage.h">
+      <Filter>BMPLoader %28James Kelly%29 probably removing</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>BMPLoader %28James Kelly%29 probably removing</Filter>
+    </ClInclude>
+    <ClInclude Include="cFBO\cFBO.h">
+      <Filter>FBO %28Frame Buffer Object%29</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMState.h">
+      <Filter>Finite State Machine\States</Filter>
+    </ClInclude>
+    <ClInclude Include="GatherState.h">
+      <Filter>Finite State Machine\States</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleState.h">
+      <Filter>Finite State Machine\States</Filter>
+    </ClInclude>
+    <ClInclude Include="ReturnState.h">
+      <Filter>Finite State Machine\States</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchState.h">
+      <Filter>Finite State Machine\States</Filter>
+    </ClInclude>
+    <ClInclude Include="cFSMEntity.h">
+      <Filter>Finite State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="FSMSystem.h">
+      <Filter>Finite State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="MapInfo.h">
+      <Filter>Finite State Machine</Filter>
+    </ClInclude>
+    <ClInclude Include="globalThings.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>Graph Node Search</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Graph Node Search</Filter>
+    </ClInclude>
+    <ClInclude Include="GLCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLMCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightHelper.h">
+      <Filter>Light Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightManager.h">
+      <Filter>Light Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="cMediator.h">
+      <Filter>Mediator</Filter>
+    </ClInclude>
+    <ClInclude Include="cMediator_Imp.h">
+      <Filter>Mediator</Filter>
+    </ClInclude>
+    <ClInclude Include="iMediator.h">
+      <Filter>Mediator</Filter>
+    </ClInclude>
+    <ClInclude Include="iMessage.h">
+      <Filter>Mediator</Filter>
+    </ClInclude>
+    <ClInclude Include="cMesh.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager.h">
+      <Filter>Meshes\VAOManager</Filter>
+    </ClInclude>
+    <ClInclude Include="cShaderManager.h">
+      <Filter>ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="sVertex_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMapping\C24BitBMPpixel.h">
+      <Filter>Texture Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMapping\cBasicTextureManager.h">
+      <Filter>Texture Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureMapping\CTextureFromBMP.h">
+      <Filter>Texture Manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\common\assets\lights.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="..\common\assets\worldFile.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\common\assets\shaders\fragShader_01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="..\common\assets\shaders\geomShader.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="..\common\assets\shaders\vertShader_01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

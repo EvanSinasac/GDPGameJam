@@ -1,0 +1,14 @@
+ModelFileName(extension) Position(x,y,z) Orientation(x,y,z) Scale(x,y,z) Colour(r,g,b,a) UseColour Light TextureOp TextureName1 Ratio1 TextureName2 Ratio2 TextureName3 Ratio3 DiscardTexture
+Camera(x,y,z) 0 2 25
+
+0
+
+
+Quad_1_sided_aligned_on_XY_plane.ply 0 0 0 0 0 0 1 1 1 255 0 0 1 1 0 0 null 0 null 0 null 0 null
+Quad_1_sided_aligned_on_XY_plane.ply 0 1 0 0 0 0 1 1 1 255 0 0 1 0 0 0 null 0 null 0 null 0 null
+
+dfk_bed_single_01_XYZ_N_RGBA_UV_tranformed.ply 0 0.1 5 0 180 0 1 1 1 244 0 0 1 0 1 4 dfk_bed_single_01_basecolor.bmp 1 dfk_bed_single_01_normal.bmp 1 dfk_bed_single_01_SmMetAO.bmp 0.3 null
+
+Isosphere_Smooth_Normals.ply 1000 1000 1000 0 0 0 1 1 1 255 0 0 1 1 0 0 null 0 null 0 null 0 null
+
+end
