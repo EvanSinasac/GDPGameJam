@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="..\common\glad.c" />
     <ClCompile Include="BMPImage.cpp" />
+    <ClCompile Include="cDungeonMeshBuilder.cpp" />
     <ClCompile Include="cFBO\cFBO.cpp" />
     <ClCompile Include="cFSMEntity.cpp" />
     <ClCompile Include="cGLFWKeyboadModifiers.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="cMesh.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
+    <ClCompile Include="cTorchObject.cpp" />
     <ClCompile Include="cVAOManager.cpp" />
     <ClCompile Include="DrawObject_function.cpp" />
     <ClCompile Include="FSMState.cpp" />
@@ -181,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h" />
+    <ClInclude Include="cDungeonMeshBuilder.h" />
     <ClInclude Include="cFBO\cFBO.h" />
     <ClInclude Include="cFSMEntity.h" />
     <ClInclude Include="cLightHelper.h" />
@@ -189,6 +192,7 @@
     <ClInclude Include="cMediator_Imp.h" />
     <ClInclude Include="cMesh.h" />
     <ClInclude Include="cShaderManager.h" />
+    <ClInclude Include="cTorchObject.h" />
     <ClInclude Include="cVAOManager.h" />
     <ClInclude Include="FSMState.h" />
     <ClInclude Include="FSMSystem.h" />
@@ -218,6 +222,7 @@
     <None Include="..\common\assets\shaders\fragShader_01.glsl" />
     <None Include="..\common\assets\shaders\geomShader.glsl" />
     <None Include="..\common\assets\shaders\vertShader_01.glsl" />
+    <None Include="..\common\assets\The Catacombs of Horrendous Devastation 01 - Converted.tsv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

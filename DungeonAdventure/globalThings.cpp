@@ -13,6 +13,8 @@ Graph* g_Graph = new Graph();
 std::vector<cFSMEntity*> vec_pFSMEntities;
 float entitySpeedModifier = 1.0f;
 
+std::vector<cTorchObject*> vec_pTorches;
+
 //cFlyCamera* g_pFlyCamera = NULL;
 
 //glm::vec3 g_cameraEye = glm::vec3(0.0f, 0.0f, +4.0f);
@@ -26,6 +28,7 @@ cShaderManager* g_pShaderManager = NULL;
 cBasicTextureManager* g_pTextureManager = NULL;
 
 cLightManager* g_pTheLights = NULL;
+unsigned int g_currentLightIndex = 0;
 // This got moved into the light manager class
 //extern cLightHelper* g_pTheLightHelper;
 

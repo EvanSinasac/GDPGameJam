@@ -16,6 +16,7 @@
 #include "ResourceManager.h"
 #include "Graph.h"
 #include "cFSMEntity.h"
+#include "cTorchObject.h"
 // 
 
 extern bool g_updateFBOResolution;
@@ -41,6 +42,8 @@ extern Graph* g_Graph;
 
 extern std::vector<cFSMEntity*> vec_pFSMEntities;
 extern float entitySpeedModifier;
+
+extern std::vector<cTorchObject*> vec_pTorches;
 // ************************************************
 //     ___                         
 //    / __|__ _ _ __  ___ _ _ __ _ 
@@ -64,6 +67,7 @@ extern cShaderManager* g_pShaderManager;
 extern cBasicTextureManager* g_pTextureManager;
 
 extern cLightManager* g_pTheLights;
+extern unsigned int g_currentLightIndex;
 // This got moved into the light manager class
 //extern cLightHelper* g_pTheLightHelper;
 

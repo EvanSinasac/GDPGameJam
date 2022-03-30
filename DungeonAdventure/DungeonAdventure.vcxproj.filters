@@ -55,6 +55,12 @@
     <Filter Include="Texture Manager">
       <UniqueIdentifier>{4af694ac-3a0c-4726-910e-f39353a9e7bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Builders">
+      <UniqueIdentifier>{a2a6b8fa-4c6c-42cc-9abd-5e7c9680ee40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities %28Objects%29">
+      <UniqueIdentifier>{c9fd2cb3-84ea-4dce-b7dd-ee19d22997c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BMPImage.cpp">
@@ -156,6 +162,12 @@
     <ClCompile Include="..\common\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cDungeonMeshBuilder.cpp">
+      <Filter>Builders</Filter>
+    </ClCompile>
+    <ClCompile Include="cTorchObject.cpp">
+      <Filter>Entities %28Objects%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -245,6 +257,12 @@
     <ClInclude Include="TextureMapping\CTextureFromBMP.h">
       <Filter>Texture Manager</Filter>
     </ClInclude>
+    <ClInclude Include="cDungeonMeshBuilder.h">
+      <Filter>Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="cTorchObject.h">
+      <Filter>Entities %28Objects%29</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\common\assets\lights.txt">
@@ -263,6 +281,9 @@
     </None>
     <None Include="..\common\assets\shaders\vertShader_01.glsl">
       <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="..\common\assets\The Catacombs of Horrendous Devastation 01 - Converted.tsv">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

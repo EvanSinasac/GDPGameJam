@@ -49,6 +49,14 @@
             it != ::g_vec_pMeshes.end(); it++)
         {
             (*it)->bIsWireframe = !(*it)->bIsWireframe;
+            for (std::vector<cMesh*>::iterator iT = (*it)->vec_pChildMeshes.begin(); iT != (*it)->vec_pChildMeshes.end(); iT++)
+            {
+                (*iT)->bIsWireframe = !(*iT)->bIsWireframe;
+                for (std::vector<cMesh*>::iterator It = (*iT)->vec_pChildMeshes.begin(); It != (*iT)->vec_pChildMeshes.end(); It++)
+                {
+                    (*It)->bIsWireframe = !(*It)->bIsWireframe;
+                }
+            }
         }
         for (unsigned int index = 0; index != ::vec_pFSMEntities.size(); index++)
         {
