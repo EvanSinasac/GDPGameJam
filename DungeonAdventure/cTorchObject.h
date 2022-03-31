@@ -18,4 +18,5 @@ private:
 
 	float baseLightAtten;
 	float baseMeshAtten;
+	float timer;
 };

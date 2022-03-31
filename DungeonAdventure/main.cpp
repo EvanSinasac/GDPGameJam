@@ -740,9 +740,9 @@ int main(int argv, char** argc)
 
 
 		//testEntity->Update(deltaTime);
-		for (unsigned int index = 0; index != vec_pFSMEntities.size(); index++)
+		for (unsigned int index = 0; index != ::vec_pFSMEntities.size(); index++)
 		{
-			vec_pFSMEntities[index]->Update(deltaTime);
+			::vec_pFSMEntities[index]->Update(deltaTime);
 		}
 
 		// this was where I made the other FBO objects, deleted for AI
@@ -2539,7 +2539,6 @@ bool loadTSVGrid()
 				newMesh->positionXYZ.y = 0.0f;
 				newMesh->positionXYZ.z = 0.0f + (2.5f * y);
 
-
 				cMesh* door = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::DOOR, glm::vec3(scale));
 				newMesh->vec_pChildMeshes.push_back(door);
 
@@ -2579,6 +2578,58 @@ bool loadTSVGrid()
 					// so we need ot rotate the door frame ONLY
 					newMesh->vec_pChildMeshes[0]->orientationXYZ += glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
 				}	// otherwise up/down is floor and we don't need to rotate
+
+				//std::cout << "First Door " << newMesh->meshName << " " << newMesh->positionXYZ.x << " " << newMesh->positionXYZ.y << " " << newMesh->positionXYZ.z << std::endl;
+				//std::cout << "First Child " << newMesh->vec_pChildMeshes[0]->meshName << std::endl;
+				//std::cout << "Second Child First " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;
+				//std::cout << "Second Child Second " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[1]->meshName << std::endl;
+				//std::cout << "Second Child Third " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->meshName << std::endl;
+				//std::cout << "Second Child Third First Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->meshName << std::endl;
+				//std::cout << "Second Child Third First Child Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;		// Engine Exhaust
+				//std::cout << "Second Child Fourth First Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->meshName << std::endl;
+				//std::cout << "Second Child Fourth First Child Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;	// Engine Exhaust
+				////std::cout << "Third Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;
+
+				// This is good theoretically, but I can't make enough lights for the number of doors I have like this (shader limit)
+				// AND it doesn't look as good as I thought it would.  There's something a little strange, not sure if it's our shader or something else
+				// that lets the light go through meshes to light things on the other side, so when there's two lights so close it's a little weird looking 
+				// and even one light just makes it a little awkward.  I'll end up going through the entire maze and choosing places to have the lights
+				// and then using the world file and lights file to load them in
+				//::vec_pTorches.push_back(new cTorchObject(newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]
+				//	, ::g_currentLightIndex));
+
+				//if (::g_currentLightIndex < ::g_pTheLights->NUMBER_OF_LIGHTS)
+				//{
+				//	glm::vec3 pos = newMesh->positionXYZ +
+				//		newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->positionXYZ;
+
+				//	::g_pTheLights->theLights[::g_currentLightIndex].position = glm::vec4(pos, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].diffuse = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].specular = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].atten = glm::vec4(0.1f, 0.01f, 0.001f, 10.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].direction = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].param1 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].param2.x = 1.0f;
+				//}
+				//::g_currentLightIndex++;
+				
+				//::vec_pTorches.push_back(new cTorchObject(newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->vec_pChildMeshes[0]
+				//	, ::g_currentLightIndex));
+
+				//if (::g_currentLightIndex < ::g_pTheLights->NUMBER_OF_LIGHTS)
+				//{
+				//	glm::vec3 pos = newMesh->positionXYZ +
+				//		newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->positionXYZ;
+
+				//	::g_pTheLights->theLights[::g_currentLightIndex].position = glm::vec4(pos, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].diffuse = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].specular = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].atten = glm::vec4(0.1f, 0.01f, 0.001f, 10.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].direction = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].param1 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				//	::g_pTheLights->theLights[::g_currentLightIndex].param2.x = 1.0f;
+				//}
+				//::g_currentLightIndex++;
 
 				::g_vec_pMeshes.push_back(newMesh);
 			}	// end of Door logic
