@@ -223,11 +223,11 @@ void DrawObject(cMesh* pCurrentMesh, glm::mat4 matModel,
     // Set up textures for this object
     SetUpTextures(pCurrentMesh, program);
 
-    if (pCurrentMesh->friendlyName == "Torch Light 1" || pCurrentMesh->friendlyName == "Torch Light 2")
-    {
-        float randomAddedAtten = (rand() % 100) / 100.0f;
-        pCurrentMesh->scale.z = 0.1f + randomAddedAtten * gGetRandBetween<float>(1.0f, 2.0f);
-    }
+    //if (pCurrentMesh->friendlyName == "Torch Light 1" || pCurrentMesh->friendlyName == "Torch Light 2")
+    //{
+    //    float randomAddedAtten = (rand() % 100) / 100.0f;
+    //    pCurrentMesh->scale.z = 0.1f + randomAddedAtten * gGetRandBetween<float>(1.0f, 2.0f);
+    //}
 
 
     // Is this thing transparent, or an impostor object?

@@ -14,6 +14,7 @@ public:
 		SECRETDOOR = 3,
 		PORTCULLIS = 4,
 		STAIRS = 5,
+		LIGHT_FIXTURE = 6,
 	};
 
 	cDungeonMeshBuilder();

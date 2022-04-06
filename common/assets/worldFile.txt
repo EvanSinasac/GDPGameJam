@@ -9,7 +9,10 @@ Quad_1_sided_aligned_on_XY_plane.ply 0 1 0 0 0 0 1 1 1 255 0 0 1 0 0 0 null 0 nu
 
 dfk_stairs_wood_XYZ_N_RGBA_UV_transformed.ply -5 0 5 0 0 0 1 1 1 255 255 255 1 0 1 4 dfk_stairs_01_basecolor.bmp 1 dfk_stairs_01_normal.bmp 1 dfk_stairs_01_SmMetAO.bmp 0.3 null
 
-dfk_bed_single_01_XYZ_N_RGBA_UV_transformed.ply 0 0.1 5 0 180 0 1 1 1 244 0 0 1 0 1 4 dfk_bed_single_01_basecolor.bmp 1 dfk_bed_single_01_normal.bmp 1 dfk_bed_single_01_SmMetAO.bmp 0.3 null
+dfk_bed_single_01_XYZ_N_RGBA_UV_transformed.ply 5 0.1 5 0 180 0 1 1 1 244 0 0 1 0 1 4 dfk_bed_single_01_basecolor.bmp 1 dfk_bed_single_01_normal.bmp 1 dfk_bed_single_01_SmMetAO.bmp 0.3 null
+dfk_bed_single_01_XYZ_N_RGBA_UV_transformed.ply 7.5 0.1 5 0 180 0 1 1 1 244 0 0 1 0 1 0 dfk_bed_single_01_basecolor.bmp 1 dfk_bed_single_01_normal.bmp 0 dfk_bed_single_01_SmMetAO.bmp 0 null
+
+Pokemon.ply 0 0 10 0 0 0 0.01 0.01 0.01 244 0 0 1 0 1 4 Final_Pokemon_Diffuse.bmp 1 Final_Pokemon_Normal.bmp 1 Final_Pokemon_Ambient_Occlusion.bmp 0.3 null
 
 Isosphere_Smooth_Normals.ply 1000 1000 1000 0 0 0 1 1 1 255 0 0 1 1 0 0 null 0 null 0 null 0 null
 

@@ -365,9 +365,26 @@ bool cVAOManager::LoadPLYModelFromFile(sModelDrawInfo& drawInfo)
         drawInfo.pVertices[index].v1 = 0.0f;
 
 //        float tx, ty, tz, tw;   //in vec4 vTangent;				// For bump mapping X,Y,Z (W ignored)
-//        float bx, by, bz, bw;   //in vec4 vBiNormal;				// For bump mapping X,Y,Z (W ignored)
+        // idk, tangents are made by triangles, but stored in drawInfo per vertex
+        // just gotta try something else rn
 
-       }
+        // this might work but there's a chance that u0 is 0, 
+        //glm::vec3 tangent = glm::vec3(0.0f);
+        //if (drawInfo.pVertices[index].u0 > 0.0001f)
+        //{
+        //    tangent = glm::vec3 (drawInfo.pVertices[index].x / drawInfo.pVertices[index].u0
+        //    , drawInfo.pVertices[index].y / drawInfo.pVertices[index].u0
+        //    , drawInfo.pVertices[index].z / drawInfo.pVertices[index].u0);
+        //    tangent = glm::normalize(tangent);
+        //}
+        //drawInfo.pVertices[index].tx = tangent.x;
+        //drawInfo.pVertices[index].ty = tangent.y;
+        //drawInfo.pVertices[index].tz = tangent.z;
+        drawInfo.pVertices[index].tw = 0.0f;
+
+
+//        float bx, by, bz, bw;   //in vec4 vBiNormal;				// For bump mapping X,Y,Z (W ignored)
+    }
 
     // Copy the triangle ("index") values to the index (element) array
     unsigned int elementIndex = 0;
@@ -377,7 +394,93 @@ bool cVAOManager::LoadPLYModelFromFile(sModelDrawInfo& drawInfo)
         drawInfo.pIndices[elementIndex + 0] = vecTriagleArray[triIndex].vertIndex[0];
         drawInfo.pIndices[elementIndex + 1] = vecTriagleArray[triIndex].vertIndex[1];
         drawInfo.pIndices[elementIndex + 2] = vecTriagleArray[triIndex].vertIndex[2];
+
+        unsigned int vert1Index = vecTriagleArray[triIndex].vertIndex[0];
+        unsigned int vert2Index = vecTriagleArray[triIndex].vertIndex[1];
+        unsigned int vert3Index = vecTriagleArray[triIndex].vertIndex[2];
+
+        // positions of vertex
+        glm::vec3 pos1 = glm::vec3(drawInfo.pVertices[vert1Index].x
+            , drawInfo.pVertices[vert1Index].y
+            , drawInfo.pVertices[vert1Index].z);
+            
+        glm::vec3 pos2 = glm::vec3(drawInfo.pVertices[vert2Index].x
+            , drawInfo.pVertices[vert2Index].y
+            , drawInfo.pVertices[vert2Index].z);
+
+        glm::vec3 pos3 = glm::vec3(drawInfo.pVertices[vert3Index].x
+            , drawInfo.pVertices[vert3Index].y
+            , drawInfo.pVertices[vert3Index].z);
+
+        // texture coordinates
+        glm::vec2 uv1 = glm::vec2(drawInfo.pVertices[vert1Index].u0, drawInfo.pVertices[vert1Index].v0);
+        glm::vec2 uv2 = glm::vec2(drawInfo.pVertices[vert2Index].u0, drawInfo.pVertices[vert2Index].v0);
+        glm::vec2 uv3 = glm::vec2(drawInfo.pVertices[vert3Index].u0, drawInfo.pVertices[vert3Index].v0);
+
+        // edges
+        glm::vec3 edge1 = pos2 - pos1;
+        glm::vec3 edge2 = pos3 - pos1;
+        glm::vec2 deltaUV1 = uv2 - uv1;
+        glm::vec2 deltaUV2 = uv3 - uv1;
+
+        // tangent & bitangent
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        glm::vec3 tangent1, bitangent1;
+
+        tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+        bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+        bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+        bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+        if (drawInfo.pVertices[vert1Index].tw == 0.0f)
+        {
+            drawInfo.pVertices[vert1Index].tx = tangent1.x;
+            drawInfo.pVertices[vert1Index].ty = tangent1.y;
+            drawInfo.pVertices[vert1Index].tz = tangent1.z;
+            drawInfo.pVertices[vert1Index].tw = 1.0f;
+
+            drawInfo.pVertices[vert1Index].bx = bitangent1.x;
+            drawInfo.pVertices[vert1Index].by = bitangent1.x;
+            drawInfo.pVertices[vert1Index].bz = bitangent1.x;
+            drawInfo.pVertices[vert1Index].bw = 1.0f;
+        }
+
+        if (drawInfo.pVertices[vert2Index].tw == 0.0f)
+        {
+            drawInfo.pVertices[vert2Index].tx = tangent1.x;
+            drawInfo.pVertices[vert2Index].ty = tangent1.y;
+            drawInfo.pVertices[vert2Index].tz = tangent1.z;
+            drawInfo.pVertices[vert2Index].tw = 1.0f;
+
+            drawInfo.pVertices[vert2Index].bx = bitangent1.x;
+            drawInfo.pVertices[vert2Index].by = bitangent1.x;
+            drawInfo.pVertices[vert2Index].bz = bitangent1.x;
+            drawInfo.pVertices[vert2Index].bw = 1.0f;
+        }
+
+        if (drawInfo.pVertices[vert3Index].tw == 0.0f)
+        {
+            drawInfo.pVertices[vert3Index].tx = tangent1.x;
+            drawInfo.pVertices[vert3Index].ty = tangent1.y;
+            drawInfo.pVertices[vert3Index].tz = tangent1.z;
+            drawInfo.pVertices[vert3Index].tw = 1.0f;
+
+            drawInfo.pVertices[vert3Index].bx = bitangent1.x;
+            drawInfo.pVertices[vert3Index].by = bitangent1.x;
+            drawInfo.pVertices[vert3Index].bz = bitangent1.x;
+            drawInfo.pVertices[vert3Index].bw = 1.0f;
+        }
+
     }
+
+    // https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+    // https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/4.normal_mapping/normal_mapping.cpp
+    
+
 
 
     return true;

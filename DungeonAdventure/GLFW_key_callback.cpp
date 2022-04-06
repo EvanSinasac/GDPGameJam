@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 
+bool bShowAllLights = false;
 
 // Turns off the: warning C4005: 'APIENTRY': macro redefinition
 #pragma warning( disable: 4005)
@@ -67,6 +68,17 @@
     if (key == GLFW_KEY_B && action == GLFW_PRESS)
     {
         ::g_bShowDebugObjects = !::g_bShowDebugObjects;
+    }
+
+    if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+    {
+        ::drawLightBalls = !::drawLightBalls;
+    }
+
+    if (key == GLFW_KEY_X && action == GLFW_PRESS)
+    {
+        bShowAllLights = !bShowAllLights;
+        glUniform1f(::pShaderProc->mapUniformName_to_UniformLocation["bUseAllLights"], (float)bShowAllLights);
     }
 
     /*if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS)

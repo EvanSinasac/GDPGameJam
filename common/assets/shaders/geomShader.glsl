@@ -30,6 +30,17 @@ uniform mat4 matView;
 uniform mat4 matProjection;
 uniform mat4 matModelInverseTranspose;
 
+
+in vec3 gTangentViewPos[];
+in vec3 gTangentFragPos[];
+in vec3 gTangentLightPos[];
+out vec3 fTangentViewPos;
+out vec3 fTangentFragPos;
+out vec3 fTangentLightPos;
+
+in mat3 gTBN[];
+out mat3 fTBN;
+
 void main ()
 {
 	// This 1st one has the wrong winding, pointing the normals in the wrong way...
@@ -110,8 +121,10 @@ void main ()
 					       gVertWorldLocation[2] ) / 3.0f;
 		
 		// Vertex 1 is a little to the -ve of the centre:
-		vec4 vert0Position = triCentre + vec4( -1.0f, 0.0f, 0.0f, 0.0f );
-		vec4 vert1Position = triCentre + vec4( +1.0f, 0.0f, 0.0f, 0.0f );
+		//vec4 vert0Position = triCentre + vec4( -1.0f, 0.0f, 0.0f, 0.0f );
+		vec4 vert0Position = triCentre + vec4( -0.05f, 0.0f, 0.0f, 0.0f );
+		//vec4 vert1Position = triCentre + vec4( +1.0f, 0.0f, 0.0f, 0.0f );
+		vec4 vert1Position = triCentre + vec4( +0.05f, 0.0f, 0.0f, 0.0f );
 //		const float NORMAL_LENGTH = 10.0f;
 		vec4 vert2Position = vec4( triCentre.xyz + (triangleNormal.xyz * debugNormalLength), 1.0f );
 		
@@ -172,6 +185,11 @@ void main ()
 	
 		EndPrimitive();
 	} //if ( bDrawNormals )
+
+	fTangentFragPos = gTangentFragPos[0];
+	fTangentViewPos = gTangentViewPos[0];
+
+	fTBN = gTBN[0];
 }
 
 

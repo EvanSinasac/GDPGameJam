@@ -23,6 +23,8 @@
 
 #include "cDungeonMeshBuilder.h"
 
+cDungeonMeshBuilder main_DungeonBuilder;
+
 
 float lastX = 600.0f;
 float lastY = 320.0f;
@@ -294,7 +296,9 @@ int main(int argv, char** argc)
 	pShaderProc->mapUniformName_to_UniformLocation["bUseWholeObjectDiffuseColour"] = glGetUniformLocation(program, "bUseWholeObjectDiffuseColour");
 	pShaderProc->mapUniformName_to_UniformLocation["wholeObjectSpecularColour"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
 	
-
+	// ...
+	pShaderProc->mapUniformName_to_UniformLocation["eyeLocation"] = glGetUniformLocation(program, "eyeLocation");
+	pShaderProc->mapUniformName_to_UniformLocation["bUseAllLights"] = glGetUniformLocation(program, "bUseAllLights");
 
 	//pShaderProc->mapUniformName_to_UniformLocation["wholeObjectSpecularColour"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
 	// .. and so on...
@@ -502,6 +506,10 @@ int main(int argv, char** argc)
 	{
 		std::cout << "DIDN'T load long blue jet flame texture" << std::endl;
 	}
+
+	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Diffuse.bmp", true);
+	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Normal.bmp", true);
+	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
 
 	ss << "DFK Textures\\";
 	::g_pTextureManager->SetBasePath(ss.str());
@@ -836,6 +844,10 @@ int main(int argv, char** argc)
 				::cameraEye + ::cameraTarget,
 				upVector);
 		}
+
+		// ...
+		glUniform4f(pShaderProc->getUniformID_From_Name("eyeLocation"),
+			::cameraEye.x, ::cameraEye.y, ::cameraEye.z, 1.0f);
 		
 
 		// this might be why we're getting flickering, pShaderProc is made twice
@@ -862,7 +874,8 @@ int main(int argv, char** argc)
 			//GLint debugNormalLength_LocID = glGetUniformLocation(program, "debugNormalLength");
 			//glUniform1f(debugNormalLength_LocID, 10.0f);
 			//glUniform1f(debugNormalLength_LocID, 0.1f);
-			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["debugNormalLength"], 0.1f);
+			//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["debugNormalLength"], 0.1f);
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["debugNormalLength"], 0.05f);
 		}
 		else
 		{
@@ -976,6 +989,21 @@ int main(int argv, char** argc)
 				::g_pVAOManager);
 		}
 
+
+		if (::drawLightBalls)
+		{
+			for (unsigned int index = 0; index != ::g_vec_pPointLights.size(); index++)
+			{
+				matModel = glm::mat4(1.0f);
+				DrawObject(::g_vec_pPointLights[index],
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+		}
+		
 		// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
 		// so, there's an extra model without the model itself being loaded on the list of meshes that gets drawn last
 		// viola, no more jittery black squares or missing vertices, cause it's not loaded to be drawn anyways lol
@@ -1033,12 +1061,19 @@ int main(int argv, char** argc)
 				//	program,
 				//	::g_pVAOManager);
 
-				DrawObject(pCurrentMesh,
-					matModel,
-					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-					program,
-					::g_pVAOManager);
+				// temp
+				if (glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 50.0f)
+				{
+					// this is a pretty huge speed up, by not drawing objects that are outside of the vision anyways, but it's not really LOD
+					// so I gotta find some real low poly models and make entities that can switch between the models instead of just doing the current mesh
+					DrawObject(pCurrentMesh,
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+				}
+				
 			}
 
 
@@ -1577,6 +1612,7 @@ bool loadLightsFile()
 	std::stringstream ss;
 	std::stringstream sFile;
 
+	//std::vector<float> rotations;
 
 	ss << SOLUTION_DIR << "common\\assets\\lights.txt";
 
@@ -1600,9 +1636,11 @@ bool loadLightsFile()
 	theFile >> nextToken;		// param1(x,y,z)
 	theFile >> nextToken;		// param2(x)
 
+	theFile >> nextToken;		// rotation (for the torch objects)
+
 	::g_pTheLights->TurnOffLight(0);
 
-	unsigned int index = 1;	// can't start at 0 because for some reason the 0 light over writes all other lights
+	unsigned int index = 0;	// can't start at 0 because for some reason the 0 light over writes all other lights
 
 	while (theFile >> nextToken)
 	{
@@ -1617,6 +1655,8 @@ bool loadLightsFile()
 		glm::vec3 direction;
 		glm::vec3 param1;
 		float param2;
+
+		float rotation;
 
 		// Position
 		position.x = std::stof(nextToken);
@@ -1671,9 +1711,47 @@ bool loadLightsFile()
 		theFile >> nextToken;
 		param2 = std::stof(nextToken);
 
+		// Torches rotation
+		theFile >> nextToken;
+		rotation = std::stof(nextToken);
 
 		// Load everything into the lights
+		float ogX = position.x;
+		float ogY = position.y;
+		float ogZ = position.z;
+
+
+		float intX = (int)position.x;
+		float diffX = ogX - intX;
+		if (diffX > 0.5f)
+		{
+			diffX = -1.0f + diffX;
+		}
+		if (diffX != 0.5f)
+		{
+			position.x += diffX * 3.0f;
+			//position.x += 0.75f;
+		}
+
+		position.y += 0.575f;
+		
+		float intZ = (int)position.z;
+		float diffZ = ogZ - intZ;
+		if (diffZ > 0.5f)
+		{
+			diffZ = -1.0f + diffZ;
+		}
+		if (diffZ != 0.5f)
+		{
+			position.z += diffZ * 3.0f;
+			//position.z += 0.75f;
+		}
+		
+
+
 		::g_pTheLights->theLights[index].position = glm::vec4(position, 1.0f);
+
+
 		::g_pTheLights->theLights[index].diffuse = glm::vec4(diffuse, 1.0f);
 		::g_pTheLights->theLights[index].specular = glm::vec4(specular, 1.0f);
 		::g_pTheLights->theLights[index].atten = atten;
@@ -1681,13 +1759,42 @@ bool loadLightsFile()
 		::g_pTheLights->theLights[index].param1 = glm::vec4(param1, 1.0f);
 		::g_pTheLights->theLights[index].param2 = glm::vec4(param2, 0.0f, 0.0f, 1.0f);
 
+		//rotations.push_back(rotation);
+
+		if (::g_pTheLights->theLights[index].param1.x == 0)
+		{
+			// Make torch entities where there are point lights
+			cMesh* torchSet = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::LIGHT_FIXTURE, glm::vec3(1.0f));
+			torchSet->positionXYZ = glm::vec3(ogX, ogY, ogZ);
+			torchSet->orientationXYZ = glm::vec3(0.0f, glm::radians(rotation), 0.0f);
+			::vec_pTorches.push_back(new cTorchObject(torchSet, index));
+			::g_vec_pMeshes.push_back(torchSet);
+
+
+			cMesh* pointLightBall = new cMesh();
+			pointLightBall->meshName = "Isosphere_Smooth_Normals.ply";
+			pointLightBall->bIsWireframe = true;
+			pointLightBall->bDontLight = true;
+			pointLightBall->bUseWholeObjectDiffuseColour = true;
+			pointLightBall->wholeObjectDiffuseRGBA = ::g_pTheLights->theLights[index].specular;
+			pointLightBall->positionXYZ = ::g_pTheLights->theLights[index].position;
+			pointLightBall->setUniformScale(0.1f);
+			::g_vec_pPointLights.push_back(pointLightBall);
+		}
+
 		index++;
 	} //end of while
 
-	mazeLightsStartIndex = index;
-	::g_currentLightIndex = index;
+	//mazeLightsStartIndex = index;
+	//::g_currentLightIndex = index;
 
 	theFile.close();
+
+	for (unsigned int indexA = 0; indexA != index; indexA++)
+	{
+		
+	}
+
 	return true;
 
 } //end of load lights
@@ -1834,6 +1941,9 @@ void loadGameJamModels()
 	modelLocations.push_back("dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("dfk_torch_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("Engine_Exhaust_Imposter.ply");	// for the torch lights
+
+	//modelLocations.push_back("SK_Anglerox_XYZ_N_RGBA_UV_converted_3.ply");
+	modelLocations.push_back("Pokemon.ply");
 }
 
 // GRAPHICS 2 Midterm
@@ -2505,7 +2615,7 @@ bool loadTSVGrid()
 	// SU/SUU - up stairs
 	// - - wall
 
-	cDungeonMeshBuilder dungeonBuilder;
+	//cDungeonMeshBuilder dungeonBuilder;
 
 	// TODO: Either in these for loops or do it again, make the graph and nodes
 	// 
@@ -2532,42 +2642,42 @@ bool loadTSVGrid()
 				//newMesh = new cMesh();
 				// Made a builder that does the nitty gritty for me, still have to set position and stuff of the floor itself afterwards
 				
-				newMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(1.0f));
+				newMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(1.0f));
 
 				// Position
 				newMesh->positionXYZ.x = 0.0f + (2.5f * x);
 				newMesh->positionXYZ.y = 0.0f;
 				newMesh->positionXYZ.z = 0.0f + (2.5f * y);
 
-				cMesh* door = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::DOOR, glm::vec3(scale));
+				cMesh* door = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::DOOR, glm::vec3(scale));
 				newMesh->vec_pChildMeshes.push_back(door);
 
 				// Check where the walls of the floor are
 				if (grid[x - 1][y] == "-")	// East or right
 				{
-					cMesh* eastWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
-					eastWall->positionXYZ = glm::vec3(-1.2f, 0.0f, 0.0f);
+					cMesh* eastWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
+					eastWall->positionXYZ = glm::vec3(-1.25f, 0.0f, 0.0f);
 					eastWall->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(eastWall);
 				}
 				if (grid[x + 1][y] == "-")	// West or left
 				{
-					cMesh* westWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
-					westWall->positionXYZ = glm::vec3(1.2f, 0.0f, 0.0f);
+					cMesh* westWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
+					westWall->positionXYZ = glm::vec3(1.25f, 0.0f, 0.0f);
 					westWall->orientationXYZ = glm::vec3(0.0f, glm::radians(270.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(westWall);
 				}
 				if (grid[x][y - 1] == "-")	// South or backwards
 				{
-					cMesh* southWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
-					southWall->positionXYZ = glm::vec3(0.0f, 0.0f, -1.2f);
+					cMesh* southWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
+					southWall->positionXYZ = glm::vec3(0.0f, 0.0f, -1.25f);
 					southWall->orientationXYZ = glm::vec3(0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(southWall);
 				}
 				if (grid[x][y + 1] == "-")	// North or forwards
 				{
-					cMesh* northWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
-					northWall->positionXYZ = glm::vec3(0.0f, 0.0f, 1.2f);
+					cMesh* northWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(scale));
+					northWall->positionXYZ = glm::vec3(0.0f, 0.0f, 1.25f);
 					northWall->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(northWall);
 				}
@@ -2636,7 +2746,7 @@ bool loadTSVGrid()
 			else if (grid[x][y] == "DS" || grid[x][y] == "DP")		// TODO: DP are portcullis, for now they'll be treated the same as the secret doors
 			{
 				// Secret doors are just going to use a different model for the door itself, otherwise I think it's going to be the same logic as the regular door
-				newMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
+				newMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
 
 				// Position
 				newMesh->positionXYZ.x = 0.0f + (2.5f * x);
@@ -2646,11 +2756,11 @@ bool loadTSVGrid()
 				cMesh* gateMesh;
 				if (grid[x][y] == "DS")	// in case I ever actually do make them different
 				{
-					gateMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::SECRETDOOR, glm::vec3(1.0f));
+					gateMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::SECRETDOOR, glm::vec3(1.0f));
 				}
 				else
 				{
-					gateMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::PORTCULLIS, glm::vec3(1.0f));
+					gateMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::PORTCULLIS, glm::vec3(1.0f));
 				}
 				
 				newMesh->vec_pChildMeshes.push_back(gateMesh);
@@ -2658,28 +2768,28 @@ bool loadTSVGrid()
 				// Check where the walls of the floor are
 				if (grid[x - 1][y] == "-")	// East or right
 				{
-					cMesh* eastWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* eastWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					eastWall->positionXYZ = glm::vec3(-1.2f, 0.0f, 0.0f);
 					eastWall->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(eastWall);
 				}
 				if (grid[x + 1][y] == "-")	// West or left
 				{
-					cMesh* westWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* westWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					westWall->positionXYZ = glm::vec3(1.2f, 0.0f, 0.0f);
 					westWall->orientationXYZ = glm::vec3(0.0f, glm::radians(270.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(westWall);
 				}
 				if (grid[x][y - 1] == "-")	// South or backwards
 				{
-					cMesh* southWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* southWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					southWall->positionXYZ = glm::vec3(0.0f, 0.0f, -1.2f);
 					southWall->orientationXYZ = glm::vec3(0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(southWall);
 				}
 				if (grid[x][y + 1] == "-")	// North or forwards
 				{
-					cMesh* northWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* northWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					northWall->positionXYZ = glm::vec3(0.0f, 0.0f, 1.2f);
 					northWall->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(northWall);
@@ -2700,7 +2810,7 @@ bool loadTSVGrid()
 			|| grid[x][y] == "SUU")	// Stairs, logic only needs to be separated for the y position, so let's just wrap the y value
 			{
 				
-				newMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::STAIRS, glm::vec3(scale));
+				newMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::STAIRS, glm::vec3(scale));
 				newMesh->positionXYZ.x = 0.0f + (2.5f * x);
 				if (grid[x][y] == "SD" || grid[x][y] == "SDD")
 				{
@@ -2726,32 +2836,32 @@ bool loadTSVGrid()
 			}	// end of stairs
 			else if (grid[x][y] == "F")		// regular floor, check and place walls if necessarry
 			{
-				newMesh = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
+				newMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
 				
 				if (grid[x - 1][y] == "-")	// East or right
 				{
-					cMesh* eastWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* eastWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					eastWall->positionXYZ = glm::vec3(-1.2f, 0.0f, 0.0f);
 					eastWall->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(eastWall);
 				}
 				if (grid[x + 1][y] == "-")	// West or left
 				{
-					cMesh* westWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* westWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					westWall->positionXYZ = glm::vec3(1.2f, 0.0f, 0.0f);
 					westWall->orientationXYZ = glm::vec3(0.0f, glm::radians(270.0f), 0.0f);
 					newMesh->vec_pChildMeshes.push_back(westWall);
 				}
 				if (grid[x][y - 1] == "-")	// South or backwards
 				{
-					cMesh* southWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* southWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					southWall->positionXYZ = glm::vec3(0.0f, 0.0f, -1.2f);
 					southWall->orientationXYZ = glm::vec3(0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(southWall);
 				}
 				if (grid[x][y + 1] == "-")	// North or forwards
 				{
-					cMesh* northWall = dungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
+					cMesh* northWall = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::WALL, glm::vec3(1.0f));
 					northWall->positionXYZ = glm::vec3(0.0f, 0.0f, 1.2f);
 					northWall->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);				// I think these walls are double sided with normals so I shouldn't need to worry about what direction it's facing
 					newMesh->vec_pChildMeshes.push_back(northWall);
@@ -2761,6 +2871,9 @@ bool loadTSVGrid()
 				newMesh->positionXYZ.y = 0.0f;
 				newMesh->positionXYZ.z = 0.0f + (2.5f * y);
 				newMesh->orientationXYZ = glm::vec3(0.0f);
+
+				// temp erase
+				//newMesh->orientationXYZ.z = glm::radians(45.0f);
 
 				::g_vec_pMeshes.push_back(newMesh);
 			}	// end of floor

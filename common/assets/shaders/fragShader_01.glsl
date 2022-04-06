@@ -164,6 +164,8 @@ const float offset = 1.0 / 300.0;
 // Everything inside the "black hole" isn't drawn
 uniform float blackHoleSize;
 
+uniform bool bUseAllLights;
+
 // Skybox or reflection or light probe
 //uniform samplerCube skyBox;			// GL_TEXTURE_CUBE_MAP
 
@@ -179,6 +181,11 @@ out vec4 pixelOutputSpecular;			// = 4;		rgb, w = power
 const float G_BUFFER_OBJECT_NOT_LIT = 0.0f;
 const float G_BUFFER_LIT = 1.0f;
 
+
+in vec3 fTangentViewPos;
+in vec3 fTangentFragPos;
+in vec3 fTangentLightPos;
+in mat3 fTBN;
 
 void main()
 {
@@ -370,40 +377,49 @@ void main()
 	// Apply lighting to G-Buffer
 	if ( renderPassNumber == PASS_2_LIGHT_PASS )
 	{
+		// Now we do the light pass.
+		// The big difference is we are reading from the previous textures 
+		//	we wrote to in the 1st pass (that wrote to the G-Buffer)
+
+		// Get the UV for this pixel
+		vec2 UVlookup;
+		UVlookup.x = gl_FragCoord.x / screenWidthHeight.x;	// Width
+		UVlookup.y = gl_FragCoord.y / screenWidthHeight.y;	// Height
+		
+		//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
+        //                              vec3 vertexWorldPos, vec4 vertexSpecular );
+		
+		vec4 vertDiffuse = 		 texture( texVertexMaterialColour, UVlookup ).rgba;
+		vec4 vertWorldPosition = texture( texVertexWorldPos,       UVlookup ).rgba;
+		
+		// Is this pixel being lit (calculating light calculation)?
+		if ( vertWorldPosition.w == G_BUFFER_OBJECT_NOT_LIT )
+		{	
+			// Nope. 
+			pixelOutputFragColour.rgb = vertDiffuse.rgb;
+			pixelOutputFragColour.a = 1.0f;
+			// Early exit
+			return;
+		}
+		
+		// Otherwise, we ARE lighting this pixel
+		// So get the additional info we need for lighting
+		vec4 vertNormal = 		 texture( texVertexNormal,         UVlookup ).rgba;
+		vec4 vertSpecular = 	 texture( texVertexSpecular,       UVlookup ).rgba;
+
+		//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
+        //                              vec3 vertexWorldPos, vec4 vertexSpecular );
+		vertSpecular.rgb *= 0.0001f;
+		vertSpecular.rgb += vec3(1.0f);
+		
+		vertNormal.xyz = normalize(vertNormal.xyz);
 
 		if (textureOperator == 4)
 		{
-			// Get the UV for this pixel
-			vec2 UVlookup;
-			UVlookup.x = gl_FragCoord.x / screenWidthHeight.x;	// Width
-			UVlookup.y = gl_FragCoord.y / screenWidthHeight.y;	// Height
-
-			vec4 vertDiffuse = 		 texture( texVertexMaterialColour, UVlookup ).rgba;
-			vec4 vertWorldPosition = texture( texVertexWorldPos,       UVlookup ).rgba;
-		
-			// Is this pixel being lit (calculating light calculation)?
-			if ( vertWorldPosition.w == G_BUFFER_OBJECT_NOT_LIT )
-			{	
-				// Nope. 
-				pixelOutputFragColour.rgb = vertDiffuse.rgb;
-				pixelOutputFragColour.a = 1.0f;
-				// Early exit
-				return;
-			}
-		
-			// Otherwise, we ARE lighting this pixel
-			// So get the additional info we need for lighting
-			vec4 vertNormal = 		 texture( texVertexNormal,         UVlookup ).rgba;
-			vec4 vertSpecular = 	 texture( texVertexSpecular,       UVlookup ).rgba;
-	
-			//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
-			//                              vec3 vertexWorldPos, vec4 vertexSpecular );
-			vertSpecular.rgb *= 0.0001f;
-			vertSpecular.rgb += vec3(1.0f);
-		
 			vec4 normalColour = texture2D ( texture_02, fUVx2.xy, 1.0 ) * texture2DRatios0to3.z;
 			// https://learnopengl.com/Advanced-Lighting/Normal-Mapping
-			vec3 normal = vec3(2.0*(normalColour - 0.5));
+			//vec3 normal = vec3(2.0*(normalColour - 0.5));
+			vec3 normal = vec3(normalColour * 2.0 - 1.0);
 			//normal += fVertWorldLocation.xyz + fNormal.xyz;
 
 			//vertNormal.xyz = normalize(vertNormal.xyz);
@@ -452,43 +468,7 @@ void main()
 			return;
 		}
 
-		
-		// Now we do the light pass.
-		// The big difference is we are reading from the previous textures 
-		//	we wrote to in the 1st pass (that wrote to the G-Buffer)
 
-		// Get the UV for this pixel
-		vec2 UVlookup;
-		UVlookup.x = gl_FragCoord.x / screenWidthHeight.x;	// Width
-		UVlookup.y = gl_FragCoord.y / screenWidthHeight.y;	// Height
-		
-		//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
-        //                              vec3 vertexWorldPos, vec4 vertexSpecular );
-		
-		vec4 vertDiffuse = 		 texture( texVertexMaterialColour, UVlookup ).rgba;
-		vec4 vertWorldPosition = texture( texVertexWorldPos,       UVlookup ).rgba;
-		
-		// Is this pixel being lit (calculating light calculation)?
-		if ( vertWorldPosition.w == G_BUFFER_OBJECT_NOT_LIT )
-		{	
-			// Nope. 
-			pixelOutputFragColour.rgb = vertDiffuse.rgb;
-			pixelOutputFragColour.a = 1.0f;
-			// Early exit
-			return;
-		}
-		
-		// Otherwise, we ARE lighting this pixel
-		// So get the additional info we need for lighting
-		vec4 vertNormal = 		 texture( texVertexNormal,         UVlookup ).rgba;
-		vec4 vertSpecular = 	 texture( texVertexSpecular,       UVlookup ).rgba;
-
-		//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
-        //                              vec3 vertexWorldPos, vec4 vertexSpecular );
-		vertSpecular.rgb *= 0.0001f;
-		vertSpecular.rgb += vec3(1.0f);
-		
-		vertNormal.xyz = normalize(vertNormal.xyz);
 		pixelOutputFragColour = calcualteLightContrib( vertDiffuse.rgb,	
 		                                               vertNormal.xyz, 		
 		                                               vertWorldPosition.xyz,	
@@ -710,6 +690,24 @@ if ( bIsSkyBox )
 		if (textureOperator == 4)
 		{
 			vertexDiffuseColour.rgb = texture( texture_01, fUVx2.xy ).rgb * texture2DRatios0to3.y;
+
+			vec3 normalColour = texture2D ( texture_02, fUVx2.xy, 1.0 ).rgb * texture2DRatios0to3.z;
+			// https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+			//vec3 normal = vec3(2.0*(normalColour - 0.5));
+			vec3 normal = normalize( normalColour * 2.0 - 1.0 );
+			//vec3 normal = vec3(normalColour.x * 2.0 - 1.0, normalColour.y * 2.0 - 1.0, normalColour.z * 2.0 -1.0);
+			//normal += fVertWorldLocation.xyz + fNormal.xyz;
+
+			//vertNormal.xyz = normalize(vertNormal.xyz);
+			//pixelOutputFragColour = calcualteLightContrib( vertexDiffuseColour.rgb,	
+			vertexDiffuseColour = calcualteLightContrib( vertexDiffuseColour.rgb,	
+		                                               normal.xyz, 		
+		                                               fVertWorldLocation.xyz,	
+		                                               wholeObjectSpecularColour.rgba );
+
+			//pixelOutputFragColour.a = 1.0f;
+			vertexDiffuseColour.a = 1.0f;
+
 			// I think the rest is for lighting/specular so that would happen during the lighting pass
 		// old DFK
 			//vertexDiffuseColour.rgb =	texture ( texture_01, fUVx2.xy ).rgb * texture2DRatios0to3.y;// +
@@ -842,7 +840,7 @@ if ( bIsSkyBox )
 
 		}
 		else if (textureOperator == 12)
-		{
+		{	// FBO textures
 			vertexDiffuseColour.rgb = 	
 					(texture( screenTex3VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
 					///(texture( tex2VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
@@ -851,7 +849,7 @@ if ( bIsSkyBox )
 
 		}
 		else if (textureOperator == 13)
-		{
+		{	// FBO textures
 			vertexDiffuseColour.rgb = 	
 					(texture( screenTex4VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
 					///(texture( tex2VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
@@ -1123,10 +1121,10 @@ vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 				// Get the dot product of the light and normalize
 				float dotProduct = dot( -theLights[index].direction.xyz,  
 										   normalize(norm.xyz) );	// -1 to 1
-
+				
 				dotProduct = max( 0.0f, dotProduct );		// 0 to 1
 			
-				lightContrib *= dotProduct;		
+				lightContrib *= dotProduct * 0.7f;		
 				
 				finalObjectColour.rgb += (vertexMaterialColour.rgb * lightContrib); 
 										 //+ (materialSpecular.rgb * lightSpecularContrib.rgb);
@@ -1139,6 +1137,12 @@ vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 		case POINT_LIGHT_TYPE:
 		case SPOT_LIGHT_TYPE:
 			{
+				// only run the lights that are within 50 units, likely not drawing or drawing low poly models at this distance anyways
+				float distFromEye = length(theLights[index].position.xyz - eyeLocation.xyz);
+				if ( !bUseAllLights && distFromEye > 50)
+				{
+					continue;
+				}
 				// Assume it's a point light 
 				// intLightType = 0
 				
@@ -1150,8 +1154,23 @@ vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 					// Light is too far away
 					continue;
 				}
-				vec3 lightVector = normalize(vLightToVertex);
-				float dotProduct = dot(lightVector, vertexNormal.xyz);	 
+
+				vec3 lightVector = normalize(vLightToVertex);;
+				//if ( textureOperator == 4 )
+//				if ( textureOperator == 4 )
+//				{
+//					mat3 transposeTBN = transpose(fTBN);
+//					vec3 tangentLightPos = transposeTBN * theLights[index].position.xyz;
+//					lightVector = normalize(tangentLightPos - fTangentFragPos);
+//					//vLightToVertex = fTangentLightPos - fTangentFragPos;
+//				}
+//				else
+//				{
+//					lightVector = normalize(vLightToVertex);
+//				}
+				
+				//float dotProduct = dot(lightVector, vertexNormal.xyz);	 
+				float dotProduct = dot(lightVector, norm);	 
 				
 				dotProduct = max( 0.0f, dotProduct );	
 				
@@ -1161,11 +1180,22 @@ vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 				// Specular 
 				vec3 lightSpecularContrib = vec3(0.0f);
 					
-				vec3 reflectVector = reflect( -lightVector, normalize(norm.xyz) );
+				//vec3 reflectVector = reflect( -lightVector, normalize(norm.xyz) );
+				vec3 reflectVector = reflect( -lightVector, norm.xyz );
 
 				// Get eye or view vector
 				// The location of the vertex in the world to your eye
-				vec3 eyeVector = normalize(eyeLocation.xyz - vertexWorldPos.xyz);
+				vec3 eyeVector; 
+				//if ( textureOperator == 4 ) 
+				if ( textureOperator == 100 ) 
+				{
+					//eyeVector = normalize( fTangentViewPos - fTangentFragPos );
+					eyeVector = normalize( eyeLocation.xyz - fTangentFragPos );
+				}
+				else
+				{
+					eyeVector = normalize(eyeLocation.xyz - vertexWorldPos.xyz);
+				}
 
 				// To simplify, we are NOT using the light specular value, just the object’s.
 				float objectSpecularPower = vertexSpecular.w; 

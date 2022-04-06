@@ -67,100 +67,100 @@ cMesh* cDungeonMeshBuilder::MakeMesh(TypeOfMesh type, glm::vec3 scale)
 
 		// Each door will have a light on each side of it
 		// Might be too much, idk, we'll have to see how bright the scene gets
-		cMesh* torchHolder1 = new cMesh();
-		torchHolder1->meshName = "dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply";
-		torchHolder1->positionXYZ = glm::vec3(0.0f, 2.4f, -0.1f);
-		torchHolder1->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
-		torchHolder1->bDontLight = dLight;
-		torchHolder1->clearTextureRatiosToZero();
-		torchHolder1->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
-		torchHolder1->textureNames[2] = "dfk_candleholders_01_normal.bmp";
-		torchHolder1->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
-		torchHolder1->textureRatios[1] = 1.0f;
-		torchHolder1->textureRatios[2] = 1.0f;
-		torchHolder1->textureRatios[3] = 0.3f;
-		torchHolder1->textureOperator = 4;
+		//cMesh* torchHolder1 = new cMesh();
+		//torchHolder1->meshName = "dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply";
+		//torchHolder1->positionXYZ = glm::vec3(0.0f, 2.4f, -0.1f);
+		//torchHolder1->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
+		//torchHolder1->bDontLight = dLight;
+		//torchHolder1->clearTextureRatiosToZero();
+		//torchHolder1->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		//torchHolder1->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		//torchHolder1->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		//torchHolder1->textureRatios[1] = 1.0f;
+		//torchHolder1->textureRatios[2] = 1.0f;
+		//torchHolder1->textureRatios[3] = 0.3f;
+		//torchHolder1->textureOperator = 4;
 
-		cMesh* torch1 = new cMesh();
-		torch1->meshName = "dfk_torch_XYZ_N_RGBA_UV_transformed.ply";
-		torch1->positionXYZ = glm::vec3(0.0f);
-		torch1->orientationXYZ = glm::vec3(0.0f);
-		torch1->bDontLight = dLight;
-		torch1->clearTextureRatiosToZero();
-		torch1->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
-		torch1->textureNames[2] = "dfk_candleholders_01_normal.bmp";
-		torch1->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
-		torch1->textureRatios[1] = 1.0f;
-		torch1->textureRatios[2] = 1.0f;
-		torch1->textureRatios[3] = 0.3f;
-		torch1->textureOperator = 4;
+		//cMesh* torch1 = new cMesh();
+		//torch1->meshName = "dfk_torch_XYZ_N_RGBA_UV_transformed.ply";
+		//torch1->positionXYZ = glm::vec3(0.0f);
+		//torch1->orientationXYZ = glm::vec3(0.0f);
+		//torch1->bDontLight = dLight;
+		//torch1->clearTextureRatiosToZero();
+		//torch1->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		//torch1->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		//torch1->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		//torch1->textureRatios[1] = 1.0f;
+		//torch1->textureRatios[2] = 1.0f;
+		//torch1->textureRatios[3] = 0.3f;
+		//torch1->textureOperator = 4;
 
-		cMesh* flame1 = new cMesh();
-		flame1->meshName = "Engine_Exhaust_Imposter.ply";
-		flame1->clearTextureRatiosToZero();
-		flame1->textureNames[1] = "Long_blue_Jet_Flame.bmp";
-		flame1->textureRatios[1] = 1.0f;
-		flame1->friendlyName = "Torch Light";
-		flame1->orientationXYZ = glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(-22.5f));
-		flame1->positionXYZ = glm::vec3(0.35f, 0.575f, 0.0f);
-		flame1->bIsImposter = true;
-		flame1->scale = glm::vec3(0.25f, 0.25f, 0.5f);
+		//cMesh* flame1 = new cMesh();
+		//flame1->meshName = "Engine_Exhaust_Imposter.ply";
+		//flame1->clearTextureRatiosToZero();
+		//flame1->textureNames[1] = "Long_blue_Jet_Flame.bmp";
+		//flame1->textureRatios[1] = 1.0f;
+		//flame1->friendlyName = "Torch Light";
+		//flame1->orientationXYZ = glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(-22.5f));
+		//flame1->positionXYZ = glm::vec3(0.35f, 0.575f, 0.0f);
+		//flame1->bIsImposter = true;
+		//flame1->scale = glm::vec3(0.25f, 0.25f, 0.5f);
 
-		// flames need to be drawn before everything else... ughhh lol
-		torch1->vec_pChildMeshes.push_back(flame1);
-		torchHolder1->vec_pChildMeshes.push_back(torch1);
-		doorWallMesh->vec_pChildMeshes.push_back(torchHolder1);
+		//// flames need to be drawn before everything else... ughhh lol
+		//torch1->vec_pChildMeshes.push_back(flame1);
+		//torchHolder1->vec_pChildMeshes.push_back(torch1);
+		//doorWallMesh->vec_pChildMeshes.push_back(torchHolder1);
 
-		// TODO:
-		// This is all well and good but I still need to set up the light at that index, 
-		// and I can't set the position without the grid information
-		// so I might as well do it outside with the position and try to grab the torches from there :)
-		//cTorchObject* tempTorch1 = new cTorchObject(flame1, ::g_currentLightIndex);
-		//::g_currentLightIndex++;
-		//::vec_pTorches.push_back(tempTorch1);
+		//// TODO:
+		//// This is all well and good but I still need to set up the light at that index, 
+		//// and I can't set the position without the grid information
+		//// so I might as well do it outside with the position and try to grab the torches from there :)
+		////cTorchObject* tempTorch1 = new cTorchObject(flame1, ::g_currentLightIndex);
+		////::g_currentLightIndex++;
+		////::vec_pTorches.push_back(tempTorch1);
 
-		cMesh* torchHolder2 = new cMesh();
-		torchHolder2->meshName = "dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply";
-		torchHolder2->positionXYZ = glm::vec3(0.0f, 2.4f, 0.1f);
-		torchHolder2->orientationXYZ = glm::vec3(0.0f, glm::radians(-90.0f), 0.0f);
-		torchHolder2->bDontLight = dLight;
-		torchHolder2->clearTextureRatiosToZero();
-		torchHolder2->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
-		torchHolder2->textureNames[2] = "dfk_candleholders_01_normal.bmp";
-		torchHolder2->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
-		torchHolder2->textureRatios[1] = 1.0f;
-		torchHolder2->textureRatios[2] = 1.0f;
-		torchHolder2->textureRatios[3] = 0.3f;
-		torchHolder2->textureOperator = 4;
+		//cMesh* torchHolder2 = new cMesh();
+		//torchHolder2->meshName = "dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply";
+		//torchHolder2->positionXYZ = glm::vec3(0.0f, 2.4f, 0.1f);
+		//torchHolder2->orientationXYZ = glm::vec3(0.0f, glm::radians(-90.0f), 0.0f);
+		//torchHolder2->bDontLight = dLight;
+		//torchHolder2->clearTextureRatiosToZero();
+		//torchHolder2->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		//torchHolder2->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		//torchHolder2->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		//torchHolder2->textureRatios[1] = 1.0f;
+		//torchHolder2->textureRatios[2] = 1.0f;
+		//torchHolder2->textureRatios[3] = 0.3f;
+		//torchHolder2->textureOperator = 4;
 
-		cMesh* torch2 = new cMesh();
-		torch2->meshName = "dfk_torch_XYZ_N_RGBA_UV_transformed.ply";
-		torch2->positionXYZ = glm::vec3(0.0f);
-		torch2->orientationXYZ = glm::vec3(0.0f);
-		torch2->bDontLight = dLight;
-		torch2->clearTextureRatiosToZero();
-		torch2->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
-		torch2->textureNames[2] = "dfk_candleholders_01_normal.bmp";
-		torch2->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
-		torch2->textureRatios[1] = 1.0f;
-		torch2->textureRatios[2] = 1.0f;
-		torch2->textureRatios[3] = 0.3f;
-		torch2->textureOperator = 4;
+		//cMesh* torch2 = new cMesh();
+		//torch2->meshName = "dfk_torch_XYZ_N_RGBA_UV_transformed.ply";
+		//torch2->positionXYZ = glm::vec3(0.0f);
+		//torch2->orientationXYZ = glm::vec3(0.0f);
+		//torch2->bDontLight = dLight;
+		//torch2->clearTextureRatiosToZero();
+		//torch2->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		//torch2->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		//torch2->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		//torch2->textureRatios[1] = 1.0f;
+		//torch2->textureRatios[2] = 1.0f;
+		//torch2->textureRatios[3] = 0.3f;
+		//torch2->textureOperator = 4;
 
-		cMesh* flame2 = new cMesh();
-		flame2->meshName = "Engine_Exhaust_Imposter.ply";
-		flame2->clearTextureRatiosToZero();
-		flame2->textureNames[1] = "Long_blue_Jet_Flame.bmp";
-		flame2->textureRatios[1] = 1.0f;
-		flame2->friendlyName = "Torch Light";
-		flame2->orientationXYZ = glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(-22.5f));
-		flame2->positionXYZ = glm::vec3(0.35f, 0.575f, 0.0f);
-		flame2->bIsImposter = true;
-		flame2->scale = glm::vec3(0.25f, 0.25f, 0.5f);
+		//cMesh* flame2 = new cMesh();
+		//flame2->meshName = "Engine_Exhaust_Imposter.ply";
+		//flame2->clearTextureRatiosToZero();
+		//flame2->textureNames[1] = "Long_blue_Jet_Flame.bmp";
+		//flame2->textureRatios[1] = 1.0f;
+		//flame2->friendlyName = "Torch Light";
+		//flame2->orientationXYZ = glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(-22.5f));
+		//flame2->positionXYZ = glm::vec3(0.35f, 0.575f, 0.0f);
+		//flame2->bIsImposter = true;
+		//flame2->scale = glm::vec3(0.25f, 0.25f, 0.5f);
 
-		torch2->vec_pChildMeshes.push_back(flame2);
-		torchHolder2->vec_pChildMeshes.push_back(torch2);
-		doorWallMesh->vec_pChildMeshes.push_back(torchHolder2);
+		//torch2->vec_pChildMeshes.push_back(flame2);
+		//torchHolder2->vec_pChildMeshes.push_back(torch2);
+		//doorWallMesh->vec_pChildMeshes.push_back(torchHolder2);
 
 		//cTorchObject* tempTorch2 = new cTorchObject(flame2, ::g_currentLightIndex);
 		//::g_currentLightIndex++;
@@ -245,6 +245,52 @@ cMesh* cDungeonMeshBuilder::MakeMesh(TypeOfMesh type, glm::vec3 scale)
 		meshToBuild->textureRatios[2] = 1.0f;
 		meshToBuild->textureRatios[3] = 0.3f;
 		meshToBuild->textureOperator = 4;
+	}
+	else if (type == TypeOfMesh::LIGHT_FIXTURE)
+	{
+		meshToBuild = new cMesh();
+		meshToBuild->meshName = "dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply";
+		meshToBuild->positionXYZ = glm::vec3(0.0f, 2.4f, -0.1f);
+		meshToBuild->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
+		meshToBuild->bDontLight = dLight;
+		meshToBuild->clearTextureRatiosToZero();
+		meshToBuild->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		meshToBuild->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		meshToBuild->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		meshToBuild->textureRatios[1] = 1.0f;
+		meshToBuild->textureRatios[2] = 1.0f;
+		meshToBuild->textureRatios[3] = 0.3f;
+		meshToBuild->textureOperator = 4;
+
+		cMesh* torch1 = new cMesh();
+		torch1->meshName = "dfk_torch_XYZ_N_RGBA_UV_transformed.ply";
+		torch1->positionXYZ = glm::vec3(0.0f);
+		torch1->orientationXYZ = glm::vec3(0.0f);
+		torch1->bDontLight = dLight;
+		torch1->clearTextureRatiosToZero();
+		torch1->textureNames[1] = "dfk_candleholders_01_basecolor.bmp";
+		torch1->textureNames[2] = "dfk_candleholders_01_normal.bmp";
+		torch1->textureNames[3] = "dfk_candleholders_01_SmMetAO.bmp";
+		torch1->textureRatios[1] = 1.0f;
+		torch1->textureRatios[2] = 1.0f;
+		torch1->textureRatios[3] = 0.3f;
+		torch1->textureOperator = 4;
+
+		cMesh* flame1 = new cMesh();
+		flame1->meshName = "Engine_Exhaust_Imposter.ply";
+		flame1->clearTextureRatiosToZero();
+		flame1->textureNames[1] = "Long_blue_Jet_Flame.bmp";
+		flame1->textureRatios[1] = 1.0f;
+		flame1->friendlyName = "Torch Light";
+		flame1->orientationXYZ = glm::vec3(glm::radians(90.0f), 0.0f, glm::radians(-22.5f));
+		flame1->positionXYZ = glm::vec3(0.35f, 0.575f, 0.0f);
+		flame1->bIsImposter = true;
+		flame1->scale = glm::vec3(0.25f, 0.25f, 0.5f);
+
+		// flames need to be drawn before everything else... ughhh lol
+		torch1->vec_pChildMeshes.push_back(flame1);
+		meshToBuild->vec_pChildMeshes.push_back(torch1);
+
 	}
 
 	return meshToBuild;
