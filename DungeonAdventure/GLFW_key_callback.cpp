@@ -81,6 +81,14 @@ bool bShowAllLights = false;
         glUniform1f(::pShaderProc->mapUniformName_to_UniformLocation["bUseAllLights"], (float)bShowAllLights);
     }
 
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
+        {
+            ::g_vec_pNodes[index]->bIsVisible = !::g_vec_pNodes[index]->bIsVisible;
+        }
+    }
+
     /*if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS)
     {
         std::string errorString;

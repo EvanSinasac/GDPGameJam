@@ -6,7 +6,7 @@ Graph::Graph()
 
 }
 
-void Graph::CreateNode(char id, Vertex position, bool bHasGoal)
+void Graph::CreateNode(unsigned int id, Vertex position, bool bHasGoal)
 {
 	Node* node = new Node();
 	node->id = id;
@@ -16,13 +16,13 @@ void Graph::CreateNode(char id, Vertex position, bool bHasGoal)
 	node->hasGoal = bHasGoal;
 	node->costSoFar = FLT_MAX;
 	node->hDistance = 0.0f;
-	node->type = '_';
+	node->type = "-";
 	node->isHomeBase = false;
 
 	this->nodes.push_back(node);
 }
 
-void Graph::CreateNode(char id, Vertex position, char typ, bool isHomeBase, bool bHasGoal)
+void Graph::CreateNode(unsigned int id, Vertex position, std::string typ, bool isHomeBase, bool bHasGoal, bool bIsExit)
 {
 	Node* node = new Node();
 	node->id = id;
@@ -34,6 +34,7 @@ void Graph::CreateNode(char id, Vertex position, char typ, bool isHomeBase, bool
 	node->hDistance = 0.0f;
 	node->type = typ;
 	node->isHomeBase = isHomeBase;
+	node->isExit = bIsExit;
 
 	this->nodes.push_back(node);
 }
@@ -43,7 +44,7 @@ void Graph::AddEdge(Node* origin, Node* destination, float weight, bool bUndirec
 	pair<Node*, float> edge;
 	float defaultWeight = weight;
 	edge.first = destination;
-	if (destination->type == 'y')
+	if (destination->type == "y")
 	{
 		defaultWeight *= 2.0f;
 	}
@@ -55,7 +56,7 @@ void Graph::AddEdge(Node* origin, Node* destination, float weight, bool bUndirec
 		defaultWeight = weight;
 		pair<Node*, float> reverseEdge;
 		reverseEdge.first = origin;
-		if (origin->type == 'y')
+		if (origin->type == "y")
 		{
 			defaultWeight *= 2.0f;
 		}
@@ -73,15 +74,15 @@ void Graph::PrintGraph()
 		{
 			cout << " (" << edge.first->id << ", " << edge.second << ") ";
 		}
-		cout << "  X: " << currNode->position.x << "  Y: " << currNode->position.y << " ";
-		if (currNode->hasGoal)
-		{
-			cout << " this node has a resource";
-		}
-		if (currNode->isHomeBase)
-		{
-			cout << " this node is the homeBase";
-		}
+		cout << "  X: " << currNode->position.x << "  Y: " << currNode->position.y << "  Z: " << currNode->position.z;
+		//if (currNode->hasGoal)
+		//{
+		//	cout << " this node has a resource";
+		//}
+		//if (currNode->isHomeBase)
+		//{
+		//	cout << " this node is the homeBase";
+		//}
 		cout << endl;
 	}
 }

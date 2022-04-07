@@ -97,6 +97,8 @@ extern std::vector< cMesh* > g_vec_pMeshes;
 extern std::vector<cMesh*> g_vec_pPointLights;
 extern bool drawLightBalls;
 
+extern std::vector<cMesh*> g_vec_pNodes;
+
 // Full screen quad mesh for 2nd rendering pass
 extern cMesh* g_pFullScreenQuad;    //NULL;
 //extern cMesh* g_pStationAngle1Quad;

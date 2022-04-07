@@ -64,7 +64,7 @@ void loadGraphicsProject2Models();
 void loadAIModels();
 void loadGameJamModels();
 
-void MakeGraphAndMeshes();
+//void MakeGraphAndMeshes();
 void MakeFSMEntities();
 
 bool loadTSVGrid();			// modified version from Graphics 1 Final
@@ -1003,6 +1003,17 @@ int main(int argv, char** argc)
 					::g_pVAOManager);
 			}
 		}
+
+		for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
+		{
+			matModel = glm::mat4(1.0f);
+			DrawObject(::g_vec_pNodes[index],
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
 		
 		// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
 		// so, there's an extra model without the model itself being loaded on the list of meshes that gets drawn last
@@ -1062,8 +1073,8 @@ int main(int argv, char** argc)
 				//	::g_pVAOManager);
 
 				// temp
-				if (glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 50.0f)
-				{
+				//if (glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 50.0f)
+				//{
 					// this is a pretty huge speed up, by not drawing objects that are outside of the vision anyways, but it's not really LOD
 					// so I gotta find some real low poly models and make entities that can switch between the models instead of just doing the current mesh
 					DrawObject(pCurrentMesh,
@@ -1072,7 +1083,7 @@ int main(int argv, char** argc)
 						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
 						program,
 						::g_pVAOManager);
-				}
+				//}
 				
 			}
 
@@ -1941,6 +1952,7 @@ void loadGameJamModels()
 	modelLocations.push_back("dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("dfk_torch_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("Engine_Exhaust_Imposter.ply");	// for the torch lights
+	modelLocations.push_back("Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply");
 
 	//modelLocations.push_back("SK_Anglerox_XYZ_N_RGBA_UV_converted_3.ply");
 	modelLocations.push_back("Pokemon.ply");
@@ -2220,315 +2232,317 @@ char GetColourCharacter(unsigned char r, unsigned char g, unsigned char b)
 	return 'x';
 }
 
-void MakeGraphAndMeshes()
-{
-	char* data = bmp->GetData();
-	unsigned long imageWidth = bmp->GetImageWidth();
-	unsigned long imageHeight = bmp->GetImageHeight();
-	char name = 'a';
+// Don't think I'm using this keeping it for reference
 
-	int index = 0;
-	for (unsigned long x = 0; x < imageWidth; x++) {
-		for (unsigned long y = 0; y < imageHeight; y++) {
-			char c = GetColourCharacter(data[index++], data[index++], data[index++]);
-			printf("%c", c);
-
-			cMesh* tempMesh = new cMesh();
-			tempMesh->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
-			tempMesh->positionXYZ = glm::vec3(y, x, 0.0f);
-			tempMesh->orientationXYZ = glm::vec3(0.0f);
-			tempMesh->setUniformScale(1.0f);
-			tempMesh->bUseWholeObjectDiffuseColour = true;
-			if (c == 'r')			// resource
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-				gNumResources++;
-			}
-			else if (c == 'g')		// spawn point
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-				spawnPoints.push_back(glm::vec3(y, x, 0.0f));
-			}
-			else if (c == 'b')		// home base
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-			}
-			else if (c == 'y')		// difficult terrain
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-			}
-			else if (c == 'w')		// regular terrain
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-			}
-			else if (c == '_')		// not traversable
-			{
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-			}
-			else if (c == 'x')		// reading error, colour in BMP is not one of our tile colours
-			{
-				//std::cout << "Uh oh, something wrong with the graph" << std::endl;
-				//tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.8f, 0.4f, 1.0f);
-			}
-			else
-			{
-				std::cout << "SOMETHING REALLY WRONG WITH THE GRAPH" << std::endl;
-				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.8f, 0.0f, 1.0f);
-			}
-			tempMesh->bDontLight = true;
-			tempMesh->clearTextureRatiosToZero();
-			::g_vec_pMeshes.push_back(tempMesh);
-
-			// if the colour of the node is blue, it's the home base, if the colour of the node is red, it's a resource (or it has a goal)
-			::g_Graph->CreateNode(name, Vertex(y, x, 0.0f), c, (c == 'b'), (c == 'r'));
-			name++;
-		}
-		printf("\n");
-	}
-	//system("pause");
-
-	// BMP has been read, maze/graph is generated, now we need to make edges for the graph...
-
-	//for (unsigned int index = 0; index != ::g_Graph->nodes.size(); index++)
-	//{
-	//	std::cout << "Node: " << index << " is " << ::g_Graph->nodes[index]->id
-	//		<< " at x: " << ::g_Graph->nodes[index]->position.x << " y: " << ::g_Graph->nodes[index]->position.y
-	//		<< std::endl;
- //	}
-	//system("pause");
-
-
-	// other option, takes longer but makes more sense in my head
-	// go through the nodes and find all the neighbhouring nodes
-	for (unsigned int indexA = 0; indexA != ::g_Graph->nodes.size() - 1; indexA++)
-	{
-		float posAX = ::g_Graph->nodes[indexA]->position.x;
-		float posAY = ::g_Graph->nodes[indexA]->position.y;
-
-		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
-		if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
-		{
-			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
-			{
-				// and then compare the position of each node at indexB to the position of the node at indexA
-				float posBX = ::g_Graph->nodes[indexB]->position.x;
-				float posBY = ::g_Graph->nodes[indexB]->position.y;
-
-				// Left
-				if (posBX == posAX - 1 && posBY == posAY)
-				{
-					// ok, so this node is to the left of our node
-					// now we need to check what type it is, if it's black we don't make an Edge
-					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-					{
-						// node is white, red, green, blue or yellow, make an edge
-						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-							::g_Graph->nodes[indexB],
-							10.0f,
-							true);
-					}
-				}
-				if (posBX == posAX + 1 && posBY == posAY)	// right
-				{
-					// now we need to check what type it is, if it's black we don't make an Edge
-					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-					{
-						// node is white, red, green, blue or yellow, make an edge
-						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-							::g_Graph->nodes[indexB],
-							10.0f,
-							true);
-					}
-				}
-
-				if (posBY == posAY + 1 && posBX == posAX)	// up
-				{
-					// now we need to check what type it is, if it's black we don't make an Edge
-					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-					{
-						// node is white, red, green, blue or yellow, make an edge
-						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-							::g_Graph->nodes[indexB],
-							10.0f,
-							true);
-					}
-				}
-				if (posBY == posAY - 1 && posBX == posAX)	// down
-				{
-					// now we need to check what type it is, if it's black we don't make an Edge
-					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-					{
-						// node is white, red, green, blue or yellow, make an edge
-						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-							::g_Graph->nodes[indexB],
-							10.0f,
-							true);
-					}
-				}
-
-				// Now the fun part... Diagonals
-				// which are dependent on the nodes left, right, above and below the current node... uggh
-
-				// Left and Above
-				if (posBX == posAX - 1
-					&& posBY == posAY + 1)
-				{
-					// first find the nodes to the left and above the current node
-					// holy cow this is inefficient
-					Node* tempNodeA = nullptr;
-					Node* tempNodeB = nullptr;
-					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
-					{
-						float posCX = ::g_Graph->nodes[indexC]->position.x;
-						float posCY = ::g_Graph->nodes[indexC]->position.y;
-						if (posCX == posAX - 1 && posCY == posAY)	// node to the left of current node
-						{
-							tempNodeA = ::g_Graph->nodes[indexC];
-						}
-						if (posCX == posAX && posCY == posAY + 1)	// node above the current node
-						{
-							tempNodeB = ::g_Graph->nodes[indexC];
-						}
-					}
-					if (tempNodeA != nullptr && tempNodeB != nullptr)
-					{
-						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
-							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
-						{
-							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-							{
-								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-									::g_Graph->nodes[indexB],
-									14.0f,
-									true);
-							}
-						}
-					}
-				}
-
-				// Left and Below
-				if (posBX == posAX - 1
-					&& posBY == posAY - 1)
-				{
-					Node* tempNodeA = nullptr;
-					Node* tempNodeB = nullptr;
-					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
-					{
-						float posCX = ::g_Graph->nodes[indexC]->position.x;
-						float posCY = ::g_Graph->nodes[indexC]->position.y;
-						if (posCX == posAX - 1 && posCY == posAY)	// node to the left of current node
-						{
-							tempNodeA = ::g_Graph->nodes[indexC];
-						}
-						if (posCX == posAX && posCY == posAY - 1)	// node below the current node
-						{
-							tempNodeB = ::g_Graph->nodes[indexC];
-						}
-					}
-					if (tempNodeA != nullptr && tempNodeB != nullptr)
-					{
-						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
-							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
-						{
-							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-							{
-								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-									::g_Graph->nodes[indexB],
-									14.0f,
-									true);
-							}
-						}
-					}
-				}
-
-				// Right and Above
-				if (posBX == posAX + 1
-					&& posBY == posAY + 1)
-				{
-					// first find the nodes to the left and above the current node
-					// holy cow this is inefficient
-					Node* tempNodeA = nullptr;
-					Node* tempNodeB = nullptr;
-					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
-					{
-						float posCX = ::g_Graph->nodes[indexC]->position.x;
-						float posCY = ::g_Graph->nodes[indexC]->position.y;
-						if (posCX == posAX + 1 && posCY == posAY)	// node to the right of current node
-						{
-							tempNodeA = ::g_Graph->nodes[indexC];
-						}
-						if (posCX == posAX && posCY == posAY + 1)	// node above the current node
-						{
-							tempNodeB = ::g_Graph->nodes[indexC];
-						}
-					}
-					if (tempNodeA != nullptr && tempNodeB != nullptr)
-					{
-						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
-							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
-						{
-							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-							{
-								// node is  yellow, double edge weight
-								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-									::g_Graph->nodes[indexB],
-									14.0f,
-									true);
-							}
-						}
-					}
-				}
-
-				// Right and Below
-				if (posBX == posAX - 1
-					&& posBY == posAY - 1)
-				{
-					Node* tempNodeA = nullptr;
-					Node* tempNodeB = nullptr;
-					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
-					{
-						float posCX = ::g_Graph->nodes[indexC]->position.x;
-						float posCY = ::g_Graph->nodes[indexC]->position.y;
-						if (posCX == posAX + 1 && posCY == posAY)	// node to the right of current node
-						{
-							tempNodeA = ::g_Graph->nodes[indexC];
-						}
-						if (posCX == posAX && posCY == posAY - 1)	// node below the current node
-						{
-							tempNodeB = ::g_Graph->nodes[indexC];
-						}
-					}
-					if (tempNodeA != nullptr && tempNodeB != nullptr)
-					{
-						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
-							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
-						{
-							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
-							{
-								// node is  yellow, double edge weight
-								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
-									::g_Graph->nodes[indexB],
-									14.0f,
-									true);
-							}
-						}
-					}
-				}
-
-			}
-		}
-		
-	}
-
-	//::g_Graph->PrintGraph();
-
-	//system("pause");
-
-	MakeFSMEntities();
-
-	return;
-}
+//void MakeGraphAndMeshes()
+//{
+//	char* data = bmp->GetData();
+//	unsigned long imageWidth = bmp->GetImageWidth();
+//	unsigned long imageHeight = bmp->GetImageHeight();
+//	char name = 'a';
+//
+//	int index = 0;
+//	for (unsigned long x = 0; x < imageWidth; x++) {
+//		for (unsigned long y = 0; y < imageHeight; y++) {
+//			char c = GetColourCharacter(data[index++], data[index++], data[index++]);
+//			printf("%c", c);
+//
+//			cMesh* tempMesh = new cMesh();
+//			tempMesh->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
+//			tempMesh->positionXYZ = glm::vec3(y, x, 0.0f);
+//			tempMesh->orientationXYZ = glm::vec3(0.0f);
+//			tempMesh->setUniformScale(1.0f);
+//			tempMesh->bUseWholeObjectDiffuseColour = true;
+//			if (c == 'r')			// resource
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+//				gNumResources++;
+//			}
+//			else if (c == 'g')		// spawn point
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+//				spawnPoints.push_back(glm::vec3(y, x, 0.0f));
+//			}
+//			else if (c == 'b')		// home base
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+//			}
+//			else if (c == 'y')		// difficult terrain
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+//			}
+//			else if (c == 'w')		// regular terrain
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+//			}
+//			else if (c == '_')		// not traversable
+//			{
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+//			}
+//			else if (c == 'x')		// reading error, colour in BMP is not one of our tile colours
+//			{
+//				//std::cout << "Uh oh, something wrong with the graph" << std::endl;
+//				//tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.8f, 0.4f, 1.0f);
+//			}
+//			else
+//			{
+//				std::cout << "SOMETHING REALLY WRONG WITH THE GRAPH" << std::endl;
+//				tempMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.8f, 0.0f, 1.0f);
+//			}
+//			tempMesh->bDontLight = true;
+//			tempMesh->clearTextureRatiosToZero();
+//			::g_vec_pMeshes.push_back(tempMesh);
+//
+//			// if the colour of the node is blue, it's the home base, if the colour of the node is red, it's a resource (or it has a goal)
+//			::g_Graph->CreateNode(name, Vertex(y, x, 0.0f), c, (c == 'b'), (c == 'r'));
+//			name++;
+//		}
+//		printf("\n");
+//	}
+//	//system("pause");
+//
+//	// BMP has been read, maze/graph is generated, now we need to make edges for the graph...
+//
+//	//for (unsigned int index = 0; index != ::g_Graph->nodes.size(); index++)
+//	//{
+//	//	std::cout << "Node: " << index << " is " << ::g_Graph->nodes[index]->id
+//	//		<< " at x: " << ::g_Graph->nodes[index]->position.x << " y: " << ::g_Graph->nodes[index]->position.y
+//	//		<< std::endl;
+// //	}
+//	//system("pause");
+//
+//
+//	// other option, takes longer but makes more sense in my head
+//	// go through the nodes and find all the neighbhouring nodes
+//	for (unsigned int indexA = 0; indexA != ::g_Graph->nodes.size() - 1; indexA++)
+//	{
+//		float posAX = ::g_Graph->nodes[indexA]->position.x;
+//		float posAY = ::g_Graph->nodes[indexA]->position.y;
+//
+//		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
+//		if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
+//		{
+//			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
+//			{
+//				// and then compare the position of each node at indexB to the position of the node at indexA
+//				float posBX = ::g_Graph->nodes[indexB]->position.x;
+//				float posBY = ::g_Graph->nodes[indexB]->position.y;
+//
+//				// Left
+//				if (posBX == posAX - 1 && posBY == posAY)
+//				{
+//					// ok, so this node is to the left of our node
+//					// now we need to check what type it is, if it's black we don't make an Edge
+//					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//					{
+//						// node is white, red, green, blue or yellow, make an edge
+//						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//							::g_Graph->nodes[indexB],
+//							10.0f,
+//							true);
+//					}
+//				}
+//				if (posBX == posAX + 1 && posBY == posAY)	// right
+//				{
+//					// now we need to check what type it is, if it's black we don't make an Edge
+//					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//					{
+//						// node is white, red, green, blue or yellow, make an edge
+//						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//							::g_Graph->nodes[indexB],
+//							10.0f,
+//							true);
+//					}
+//				}
+//
+//				if (posBY == posAY + 1 && posBX == posAX)	// up
+//				{
+//					// now we need to check what type it is, if it's black we don't make an Edge
+//					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//					{
+//						// node is white, red, green, blue or yellow, make an edge
+//						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//							::g_Graph->nodes[indexB],
+//							10.0f,
+//							true);
+//					}
+//				}
+//				if (posBY == posAY - 1 && posBX == posAX)	// down
+//				{
+//					// now we need to check what type it is, if it's black we don't make an Edge
+//					if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//					{
+//						// node is white, red, green, blue or yellow, make an edge
+//						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//							::g_Graph->nodes[indexB],
+//							10.0f,
+//							true);
+//					}
+//				}
+//
+//				// Now the fun part... Diagonals
+//				// which are dependent on the nodes left, right, above and below the current node... uggh
+//
+//				// Left and Above
+//				if (posBX == posAX - 1
+//					&& posBY == posAY + 1)
+//				{
+//					// first find the nodes to the left and above the current node
+//					// holy cow this is inefficient
+//					Node* tempNodeA = nullptr;
+//					Node* tempNodeB = nullptr;
+//					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
+//					{
+//						float posCX = ::g_Graph->nodes[indexC]->position.x;
+//						float posCY = ::g_Graph->nodes[indexC]->position.y;
+//						if (posCX == posAX - 1 && posCY == posAY)	// node to the left of current node
+//						{
+//							tempNodeA = ::g_Graph->nodes[indexC];
+//						}
+//						if (posCX == posAX && posCY == posAY + 1)	// node above the current node
+//						{
+//							tempNodeB = ::g_Graph->nodes[indexC];
+//						}
+//					}
+//					if (tempNodeA != nullptr && tempNodeB != nullptr)
+//					{
+//						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
+//							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
+//						{
+//							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//							{
+//								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//									::g_Graph->nodes[indexB],
+//									14.0f,
+//									true);
+//							}
+//						}
+//					}
+//				}
+//
+//				// Left and Below
+//				if (posBX == posAX - 1
+//					&& posBY == posAY - 1)
+//				{
+//					Node* tempNodeA = nullptr;
+//					Node* tempNodeB = nullptr;
+//					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
+//					{
+//						float posCX = ::g_Graph->nodes[indexC]->position.x;
+//						float posCY = ::g_Graph->nodes[indexC]->position.y;
+//						if (posCX == posAX - 1 && posCY == posAY)	// node to the left of current node
+//						{
+//							tempNodeA = ::g_Graph->nodes[indexC];
+//						}
+//						if (posCX == posAX && posCY == posAY - 1)	// node below the current node
+//						{
+//							tempNodeB = ::g_Graph->nodes[indexC];
+//						}
+//					}
+//					if (tempNodeA != nullptr && tempNodeB != nullptr)
+//					{
+//						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
+//							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
+//						{
+//							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//							{
+//								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//									::g_Graph->nodes[indexB],
+//									14.0f,
+//									true);
+//							}
+//						}
+//					}
+//				}
+//
+//				// Right and Above
+//				if (posBX == posAX + 1
+//					&& posBY == posAY + 1)
+//				{
+//					// first find the nodes to the left and above the current node
+//					// holy cow this is inefficient
+//					Node* tempNodeA = nullptr;
+//					Node* tempNodeB = nullptr;
+//					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
+//					{
+//						float posCX = ::g_Graph->nodes[indexC]->position.x;
+//						float posCY = ::g_Graph->nodes[indexC]->position.y;
+//						if (posCX == posAX + 1 && posCY == posAY)	// node to the right of current node
+//						{
+//							tempNodeA = ::g_Graph->nodes[indexC];
+//						}
+//						if (posCX == posAX && posCY == posAY + 1)	// node above the current node
+//						{
+//							tempNodeB = ::g_Graph->nodes[indexC];
+//						}
+//					}
+//					if (tempNodeA != nullptr && tempNodeB != nullptr)
+//					{
+//						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
+//							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
+//						{
+//							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//							{
+//								// node is  yellow, double edge weight
+//								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//									::g_Graph->nodes[indexB],
+//									14.0f,
+//									true);
+//							}
+//						}
+//					}
+//				}
+//
+//				// Right and Below
+//				if (posBX == posAX - 1
+//					&& posBY == posAY - 1)
+//				{
+//					Node* tempNodeA = nullptr;
+//					Node* tempNodeB = nullptr;
+//					for (unsigned int indexC = 0; indexC != ::g_Graph->nodes.size(); indexC++)
+//					{
+//						float posCX = ::g_Graph->nodes[indexC]->position.x;
+//						float posCY = ::g_Graph->nodes[indexC]->position.y;
+//						if (posCX == posAX + 1 && posCY == posAY)	// node to the right of current node
+//						{
+//							tempNodeA = ::g_Graph->nodes[indexC];
+//						}
+//						if (posCX == posAX && posCY == posAY - 1)	// node below the current node
+//						{
+//							tempNodeB = ::g_Graph->nodes[indexC];
+//						}
+//					}
+//					if (tempNodeA != nullptr && tempNodeB != nullptr)
+//					{
+//						if (tempNodeA->type != '_' && tempNodeA->type != 'x'
+//							&& tempNodeB->type != '_' && tempNodeB->type != 'x')
+//						{
+//							if (::g_Graph->nodes[indexB]->type != '_' && ::g_Graph->nodes[indexB]->type != 'x')
+//							{
+//								// node is  yellow, double edge weight
+//								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+//									::g_Graph->nodes[indexB],
+//									14.0f,
+//									true);
+//							}
+//						}
+//					}
+//				}
+//
+//			}
+//		}
+//		
+//	}
+//
+//	//::g_Graph->PrintGraph();
+//
+//	//system("pause");
+//
+//	MakeFSMEntities();
+//
+//	return;
+//}
 
 void MakeFSMEntities()
 {
@@ -2568,7 +2582,7 @@ bool loadTSVGrid()
 				}
 				else
 				{
-					std::cout << grid[x][y] << " ";
+					//std::cout << grid[x][y] << " ";
 					x++;
 					grid[x][y] = nextLetter;
 				}
@@ -2586,22 +2600,22 @@ bool loadTSVGrid()
 					}
 					else
 					{
-						std::cout << grid[x][y] << " ";
+						//std::cout << grid[x][y] << " ";
 						x++;
 						grid[x][y] = nextLetter;
 					}
 				}
 				else
 				{
-					std::cout << grid[x][y] << " ";
+					//std::cout << grid[x][y] << " ";
 					x++;
 					grid[x][y] = nextLetter;
 				}
 			}
-			std::cout << grid[x][y] << " ";
+			//std::cout << grid[x][y] << " ";
 		}	//end of for x
 		// Newline
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		theFile.get();
 	}	// end of for y
 
@@ -2620,6 +2634,7 @@ bool loadTSVGrid()
 	// TODO: Either in these for loops or do it again, make the graph and nodes
 	// 
 	// Choose the mesh and location depending on the x/y values of the grid
+	unsigned int nodeID = 0;
 	for (unsigned int y = 0; y < 65; y++)
 	{
 		for (unsigned int x = 0; x < 51; x++)
@@ -2635,6 +2650,9 @@ bool loadTSVGrid()
 			if (grid[x][y] == "-")
 			{
 				// skip, we'll do the walls depending on the floor
+				::g_Graph->CreateNode(nodeID, glm::vec3(0.0f + (2.5f * x), 0.0f + 0.75f, 0.0f + (2.5f * y)),
+					grid[x][y], false, false, false);
+				nodeID++;
 			}
 			else if (grid[x][y] == "D")
 			{
@@ -2689,59 +2707,22 @@ bool loadTSVGrid()
 					newMesh->vec_pChildMeshes[0]->orientationXYZ += glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
 				}	// otherwise up/down is floor and we don't need to rotate
 
-				//std::cout << "First Door " << newMesh->meshName << " " << newMesh->positionXYZ.x << " " << newMesh->positionXYZ.y << " " << newMesh->positionXYZ.z << std::endl;
-				//std::cout << "First Child " << newMesh->vec_pChildMeshes[0]->meshName << std::endl;
-				//std::cout << "Second Child First " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;
-				//std::cout << "Second Child Second " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[1]->meshName << std::endl;
-				//std::cout << "Second Child Third " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->meshName << std::endl;
-				//std::cout << "Second Child Third First Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->meshName << std::endl;
-				//std::cout << "Second Child Third First Child Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;		// Engine Exhaust
-				//std::cout << "Second Child Fourth First Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->meshName << std::endl;
-				//std::cout << "Second Child Fourth First Child Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;	// Engine Exhaust
-				////std::cout << "Third Child " << newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->meshName << std::endl;
-
-				// This is good theoretically, but I can't make enough lights for the number of doors I have like this (shader limit)
-				// AND it doesn't look as good as I thought it would.  There's something a little strange, not sure if it's our shader or something else
-				// that lets the light go through meshes to light things on the other side, so when there's two lights so close it's a little weird looking 
-				// and even one light just makes it a little awkward.  I'll end up going through the entire maze and choosing places to have the lights
-				// and then using the world file and lights file to load them in
-				//::vec_pTorches.push_back(new cTorchObject(newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]
-				//	, ::g_currentLightIndex));
-
-				//if (::g_currentLightIndex < ::g_pTheLights->NUMBER_OF_LIGHTS)
-				//{
-				//	glm::vec3 pos = newMesh->positionXYZ +
-				//		newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->positionXYZ;
-
-				//	::g_pTheLights->theLights[::g_currentLightIndex].position = glm::vec4(pos, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].diffuse = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].specular = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].atten = glm::vec4(0.1f, 0.01f, 0.001f, 10.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].direction = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].param1 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].param2.x = 1.0f;
-				//}
-				//::g_currentLightIndex++;
 				
-				//::vec_pTorches.push_back(new cTorchObject(newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[3]->vec_pChildMeshes[0]->vec_pChildMeshes[0]
-				//	, ::g_currentLightIndex));
-
-				//if (::g_currentLightIndex < ::g_pTheLights->NUMBER_OF_LIGHTS)
-				//{
-				//	glm::vec3 pos = newMesh->positionXYZ +
-				//		newMesh->vec_pChildMeshes[0]->vec_pChildMeshes[2]->vec_pChildMeshes[0]->vec_pChildMeshes[0]->positionXYZ;
-
-				//	::g_pTheLights->theLights[::g_currentLightIndex].position = glm::vec4(pos, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].diffuse = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].specular = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].atten = glm::vec4(0.1f, 0.01f, 0.001f, 10.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].direction = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].param1 = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-				//	::g_pTheLights->theLights[::g_currentLightIndex].param2.x = 1.0f;
-				//}
-				//::g_currentLightIndex++;
-
 				::g_vec_pMeshes.push_back(newMesh);
+
+
+				//newNode = new Node();
+				//newNode->id = index;
+				//index++;
+				//newNode->hasGoal = false;
+				//newNode->isHomeBase = false;
+				//newNode->isExit = false;
+				//newNode->position = newMesh->positionXYZ;
+				//newNode->type = (char)grid[x][y].c_str();
+
+				::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+					grid[x][y], false, false, false);
+				nodeID++;
 			}	// end of Door logic
 			else if (grid[x][y] == "DS" || grid[x][y] == "DP")		// TODO: DP are portcullis, for now they'll be treated the same as the secret doors
 			{
@@ -2803,6 +2784,20 @@ bool loadTSVGrid()
 				}	// otherwise up/down is floor and we don't need to rotate
 
 				::g_vec_pMeshes.push_back(newMesh);
+
+
+				//newNode = new Node();
+				//newNode->id = index;
+				//index++;
+				//newNode->hasGoal = false;
+				//newNode->isHomeBase = false;
+				//newNode->isExit = false;
+				//newNode->position = newMesh->positionXYZ;
+				//newNode->type = (char)grid[x][y].c_str();
+
+				::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+					grid[x][y], false, false, false);
+				nodeID++;
 			}	// end of DS || DP
 			else if (grid[x][y] == "SD"
 			|| grid[x][y] == "SDD"
@@ -2876,9 +2871,263 @@ bool loadTSVGrid()
 				//newMesh->orientationXYZ.z = glm::radians(45.0f);
 
 				::g_vec_pMeshes.push_back(newMesh);
+
+				//newNode = new Node();
+				//newNode->id = index;
+				//index++;
+				//newNode->hasGoal = false;
+				//newNode->isHomeBase = false;
+				//newNode->isExit = false;
+				//newNode->position = newMesh->positionXYZ;
+				//newNode->type = (char)grid[x][y].c_str();
+				if (grid[x][y + 1] == "SD" || grid[x][y - 1] == "SD")
+				{
+					// SD is the stairs down, deeper into the dungeon
+					//newNode->isExit = true;
+					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+						grid[x][y], false, false, true);
+				}
+				else if (grid[x][y + 1] == "SU" || grid[x][y - 1] == "SU")
+				{
+					// SU is the stairs up, out of the dungeon
+					//newNode->isHomeBase = true;
+					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+						grid[x][y], true, false, false);
+				}
+				else
+				{
+					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+						grid[x][y], false, false, false);
+				}
+				//else if (grid[x][y] == "FS")
+				//{
+
+				//}
+
+				nodeID++;
 			}	// end of floor
 		}	// end of for x
 	}	// end of for y
+
+	// alright, the graph is filled out, let's make edges
+	for (unsigned int indexA = 0; indexA != ::g_Graph->nodes.size() - 1; indexA++)
+	{
+		glm::vec3 posA = glm::vec3(::g_Graph->nodes[indexA]->position.x,
+			::g_Graph->nodes[indexA]->position.y,
+			::g_Graph->nodes[indexA]->position.z);
+
+		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
+		//if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
+		if (::g_Graph->nodes[indexA]->type != "-")	// tsv file, - is wall
+		{
+			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
+			{
+				glm::vec3 posB = glm::vec3(::g_Graph->nodes[indexB]->position.x,
+					::g_Graph->nodes[indexB]->position.y,
+					::g_Graph->nodes[indexB]->position.z);
+
+				if (glm::distance(posA, posB) <= 2.5f)
+				{
+					// there are no nodes in the walls or non-traversable locations, so all horizontal and vertical 
+					// nodes are safe to traverse
+					if (::g_Graph->nodes[indexB]->type != "-")
+					{
+						// node is white, red, green, blue or yellow, make an edge
+						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+							::g_Graph->nodes[indexB],
+							10.0f,
+							true);
+					}
+					else
+					{
+						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+													::g_Graph->nodes[indexB],
+													10000000.0f,
+													true);
+					}
+				}
+			} //end of for indexB
+		} //end of if indexA is wall
+	} //end of for indexA
+
+	// all the horizontal and vertical nodes are made
+	// second loop to handle diagonals
+	for (unsigned int indexA = 0; indexA != ::g_Graph->nodes.size(); indexA++)
+	{
+		glm::vec3 posA = glm::vec3(::g_Graph->nodes[indexA]->position.x,
+			::g_Graph->nodes[indexA]->position.y,
+			::g_Graph->nodes[indexA]->position.z);
+
+		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
+		//if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
+		if (::g_Graph->nodes[indexA]->type != "-")	// tsv file, - is wall
+		{
+			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
+			{
+				glm::vec3 posB = glm::vec3(::g_Graph->nodes[indexB]->position.x,
+					::g_Graph->nodes[indexB]->position.y,
+					::g_Graph->nodes[indexB]->position.z);
+
+				// this isn't part of the else if so it's just re-adding
+				if (glm::distance(posA, posB) <= 3.6f && glm::distance(posA, posB) > 2.5f)
+				{
+					// whoops, just because we can go diagonal, doesn't mean we should
+					// wait... if I don't make nodes in the walls, I can't check the "nodes" above and below
+					// a current spot for the diagonals...
+					if (::g_Graph->nodes[indexB]->type != "-")
+					{
+						// node is white, red, green, blue or yellow, make an edge
+						// alright, this takes a bit more storage to make nodes in the walls, but this way
+						// I can check the edges from the current node and if any of the relevant ones are walls
+						// THEN we don't make the edge
+						glm::vec3 dir = posB - posA;
+						// direction from current node to edge node
+						// horizontal and vertical nodes are 2.5 units away
+						Node* tempHori = nullptr;
+						Node* tempVerti = nullptr;
+						for (unsigned int indexC = 0; indexC != ::g_Graph->nodes[indexA]->edges.size(); indexC++)
+						{
+							glm::vec3 posC = glm::vec3(::g_Graph->nodes[indexA]->edges[indexC].first->position.x,
+								::g_Graph->nodes[indexA]->edges[indexC].first->position.y,
+								::g_Graph->nodes[indexA]->edges[indexC].first->position.z);
+
+							if (posA.x + dir.x == posC.x)
+							{
+								tempHori = ::g_Graph->nodes[indexA]->edges[indexC].first;
+							}
+							if (posA.z + dir.z == posC.z)
+							{
+								tempVerti = ::g_Graph->nodes[indexA]->edges[indexC].first;
+							}
+						}
+						if (tempHori != nullptr && tempVerti != nullptr)
+						{
+							if (tempHori->type != "-" && tempVerti->type != "-")
+							{
+								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
+									::g_Graph->nodes[indexB],
+									15.0f,
+									true);
+							}
+						} //end of nullptr check
+					} //end of b isn't wall
+				} //end of distance is diagonal
+			} // end of for indexB
+		} //end of A isn't wall
+	} //end of for indexA
+
+	// testing
+	//::g_Graph->PrintGraph();
+
+	for (unsigned int index = 0; index != ::g_Graph->nodes.size(); index++)
+	{
+		cMesh* nodeMesh = new cMesh();
+		nodeMesh->meshName = "Isosphere_Smooth_Normals.ply";
+		nodeMesh->positionXYZ = glm::vec3(::g_Graph->nodes[index]->position.x,
+			::g_Graph->nodes[index]->position.y,
+			::g_Graph->nodes[index]->position.z);
+		nodeMesh->setUniformScale(0.4f);
+		nodeMesh->bUseWholeObjectDiffuseColour = true;
+		if (::g_Graph->nodes[index]->type == "F")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.8f, 0.2f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->type == "D"
+			|| ::g_Graph->nodes[index]->type == "DS"
+			|| ::g_Graph->nodes[index]->type == "DP")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.2f, 0.8f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->type == "-")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+		}
+		if (::g_Graph->nodes[index]->hasGoal)
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.1f, 0.1f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->isExit)
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.6f, 0.2f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->isHomeBase)
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.2f, 0.6f, 1.0f);
+		}
+		nodeMesh->bIsWireframe = true;
+		//nodeMesh->bIsVisible = true;
+		nodeMesh->bIsVisible = false;
+
+		for (unsigned int indexB = 0; indexB != ::g_Graph->nodes[index]->edges.size(); indexB++)
+		{
+			cMesh* edgeMesh = new cMesh();
+			edgeMesh->meshName = "Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply";
+			glm::vec3 dir = 
+				glm::vec3(::g_Graph->nodes[index]->edges[indexB].first->position.x,
+					::g_Graph->nodes[index]->edges[indexB].first->position.y,
+					::g_Graph->nodes[index]->edges[indexB].first->position.z)
+				-
+				glm::vec3(::g_Graph->nodes[index]->position.x,
+					::g_Graph->nodes[index]->position.y,
+					::g_Graph->nodes[index]->position.z)
+				;
+
+			dir = glm::normalize(dir);
+			dir += glm::vec3(::g_Graph->nodes[index]->position.x,
+				::g_Graph->nodes[index]->position.y,
+				::g_Graph->nodes[index]->position.z);
+			
+			if (dir.x > ::g_Graph->nodes[index]->position.x)
+			{	// left
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(90.0f), 0.0f);
+			}
+			else if (dir.x < ::g_Graph->nodes[index]->position.x)
+			{	// right
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(270.0f), 0.0f);
+			}
+			else if (dir.z < ::g_Graph->nodes[index]->position.z)
+			{	// backwards
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);
+			}
+
+			if (dir.x > ::g_Graph->nodes[index]->position.x
+				&& dir.z > ::g_Graph->nodes[index]->position.z)
+			{	// left and forwards
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(45.0f), 0.0f);
+			}
+			else if (dir.x < ::g_Graph->nodes[index]->position.x
+				&& dir.z > ::g_Graph->nodes[index]->position.z)
+			{	// right and forwards
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(270.0f + 45.0f), 0.0f);
+			}
+			else if (dir.x > ::g_Graph->nodes[index]->position.x
+				&& dir.z < ::g_Graph->nodes[index]->position.z)
+			{	// left and backwards 
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f - 45.0f), 0.0f);
+			}
+			else if (dir.x < ::g_Graph->nodes[index]->position.x
+				&& dir.z < ::g_Graph->nodes[index]->position.z)
+			{	// right and backwards
+				edgeMesh->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f + 45.0f), 0.0f);
+			}
+
+			
+			edgeMesh->bUseWholeObjectDiffuseColour = true;
+			if (::g_Graph->nodes[index]->edges[indexB].second == 10.0f)
+			{
+				edgeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.2f, 0.4f, 1.0f);
+				edgeMesh->scale = glm::vec3(1.0f, 1.0f, 5.0f);
+			}
+			else if (::g_Graph->nodes[index]->edges[indexB].second == 15.0f)
+			{
+				edgeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.2f, 0.2f, 0.8f, 1.0f);
+				edgeMesh->scale = glm::vec3(1.0f, 1.0f, 7.07f);
+			}
+			nodeMesh->vec_pChildMeshes.push_back(edgeMesh);
+		}
+
+		::g_vec_pNodes.push_back(nodeMesh);
+	}
 
 	return true;
 }	//end of loadTSVGrid
