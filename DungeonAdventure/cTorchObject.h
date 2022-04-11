@@ -1,14 +1,16 @@
 #pragma once
 
+#include "iEntity.h"
+
 #include "cMesh.h"
 
-class cTorchObject
+class cTorchObject : iEntity
 {
 public:
 	cTorchObject(cMesh* pMesh, unsigned int index);
 	~cTorchObject();
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 protected:
 

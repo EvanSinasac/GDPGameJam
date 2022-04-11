@@ -172,6 +172,8 @@
     <ClCompile Include="IdleState.cpp" />
     <ClCompile Include="InputHandling.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main_Functions.cpp" />
+    <ClCompile Include="Main_Load_Functions.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ReturnState.cpp" />
     <ClCompile Include="SearchState.cpp" />
@@ -202,6 +204,7 @@
     <ClInclude Include="globalThings.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="IdleState.h" />
+    <ClInclude Include="iEntity.h" />
     <ClInclude Include="iMediator.h" />
     <ClInclude Include="iMessage.h" />
     <ClInclude Include="MapInfo.h" />

@@ -61,6 +61,12 @@
     <Filter Include="Entities %28Objects%29">
       <UniqueIdentifier>{c9fd2cb3-84ea-4dce-b7dd-ee19d22997c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities %28Objects%29\Objects">
+      <UniqueIdentifier>{59db20e1-197e-4c6d-9da3-761d579dc101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities %28Objects%29\Entities">
+      <UniqueIdentifier>{228a1b4e-60e5-4bf7-b88e-fdc3431475de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BMPImage.cpp">
@@ -166,7 +172,13 @@
       <Filter>Builders</Filter>
     </ClCompile>
     <ClCompile Include="cTorchObject.cpp">
-      <Filter>Entities %28Objects%29</Filter>
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Main_Functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main_Load_Functions.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +273,9 @@
       <Filter>Builders</Filter>
     </ClInclude>
     <ClInclude Include="cTorchObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="iEntity.h">
       <Filter>Entities %28Objects%29</Filter>
     </ClInclude>
   </ItemGroup>
