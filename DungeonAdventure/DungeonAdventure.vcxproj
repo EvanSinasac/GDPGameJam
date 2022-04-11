@@ -156,6 +156,7 @@
     <ClCompile Include="cMediator.cpp" />
     <ClCompile Include="cMediator_Imp.cpp" />
     <ClCompile Include="cMesh.cpp" />
+    <ClCompile Include="cPlayerEntity.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cTorchObject.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="cMediator.h" />
     <ClInclude Include="cMediator_Imp.h" />
     <ClInclude Include="cMesh.h" />
+    <ClInclude Include="cPlayerEntity.h" />
     <ClInclude Include="cShaderManager.h" />
     <ClInclude Include="cTorchObject.h" />
     <ClInclude Include="cVAOManager.h" />

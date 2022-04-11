@@ -23,41 +23,42 @@ void handleAsyncKeyboard(GLFWwindow* pWindow, double deltaTime)
 
     if (cGFLWKeyboardModifiers::areAllModsUp(pWindow))
     {
-        // Use "fly" camera (keyboard for movement, mouse for aim)
-        if (glfwGetKey(pWindow, GLFW_KEY_W) == GLFW_PRESS)
+        if (::g_ObservationMode)
         {
-            ::cameraEye.x += ::cameraTarget.x * cameraMoveSpeed;
-            ::cameraEye.z += ::cameraTarget.z * cameraMoveSpeed;
-            //::g_pFlyCamera->MoveForward_Z(+cameraMoveSpeed);
+            // Use "fly" camera (keyboard for movement, mouse for aim)
+            if (glfwGetKey(pWindow, GLFW_KEY_W) == GLFW_PRESS)
+            {
+                ::cameraEye.x += ::cameraTarget.x * cameraMoveSpeed;
+                ::cameraEye.z += ::cameraTarget.z * cameraMoveSpeed;
+                //::g_pFlyCamera->MoveForward_Z(+cameraMoveSpeed);
+            }
+            if (glfwGetKey(pWindow, GLFW_KEY_S) == GLFW_PRESS)	// "backwards"
+            {
+                ::cameraEye.x -= ::cameraTarget.x * cameraMoveSpeed;
+                ::cameraEye.z -= ::cameraTarget.z * cameraMoveSpeed;
+                //::g_pFlyCamera->MoveForward_Z(-cameraMoveSpeed);
+            }
+            if (glfwGetKey(pWindow, GLFW_KEY_A) == GLFW_PRESS)	// "left"
+            {
+                ::cameraEye -= glm::normalize(glm::cross(::cameraTarget, ::upVector)) * cameraMoveSpeed;
+                //::g_pFlyCamera->MoveLeftRight_X(-cameraMoveSpeed);
+            }
+            if (glfwGetKey(pWindow, GLFW_KEY_D) == GLFW_PRESS)	// "right"
+            {
+                ::cameraEye += glm::normalize(glm::cross(::cameraTarget, ::upVector)) * cameraMoveSpeed;
+                //::g_pFlyCamera->MoveLeftRight_X(+cameraMoveSpeed);
+            }
+            if (glfwGetKey(pWindow, GLFW_KEY_Q) == GLFW_PRESS)	// "up"
+            {
+                ::cameraEye += cameraMoveSpeed * ::upVector;
+                //::g_pFlyCamera->MoveUpDown_Y(-cameraMoveSpeed);
+            }
+            if (glfwGetKey(pWindow, GLFW_KEY_E) == GLFW_PRESS)	// "down"
+            {
+                ::cameraEye -= cameraMoveSpeed * ::upVector;
+                //::g_pFlyCamera->MoveUpDown_Y(+cameraMoveSpeed);
+            }
         }
-        if (glfwGetKey(pWindow, GLFW_KEY_S) == GLFW_PRESS)	// "backwards"
-        {
-            ::cameraEye.x -= ::cameraTarget.x * cameraMoveSpeed;
-            ::cameraEye.z -= ::cameraTarget.z * cameraMoveSpeed;
-            //::g_pFlyCamera->MoveForward_Z(-cameraMoveSpeed);
-        }
-        if (glfwGetKey(pWindow, GLFW_KEY_A) == GLFW_PRESS)	// "left"
-        {
-            ::cameraEye -= glm::normalize(glm::cross(::cameraTarget, ::upVector)) * cameraMoveSpeed;
-            //::g_pFlyCamera->MoveLeftRight_X(-cameraMoveSpeed);
-        }
-        if (glfwGetKey(pWindow, GLFW_KEY_D) == GLFW_PRESS)	// "right"
-        {
-            ::cameraEye += glm::normalize(glm::cross(::cameraTarget, ::upVector)) * cameraMoveSpeed;
-            //::g_pFlyCamera->MoveLeftRight_X(+cameraMoveSpeed);
-        }
-        if (glfwGetKey(pWindow, GLFW_KEY_Q) == GLFW_PRESS)	// "up"
-        {
-            ::cameraEye += cameraMoveSpeed * ::upVector;
-            //::g_pFlyCamera->MoveUpDown_Y(-cameraMoveSpeed);
-        }
-        if (glfwGetKey(pWindow, GLFW_KEY_E) == GLFW_PRESS)	// "down"
-        {
-            ::cameraEye -= cameraMoveSpeed * ::upVector;
-            //::g_pFlyCamera->MoveUpDown_Y(+cameraMoveSpeed);
-        }
-
-        
 
         //if (glfwGetKey(pWindow, GLFW_KEY_P) == GLFW_PRESS)
         //{

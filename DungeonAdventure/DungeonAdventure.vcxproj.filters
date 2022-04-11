@@ -180,6 +180,9 @@
     <ClCompile Include="Main_Load_Functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cPlayerEntity.cpp">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="iEntity.h">
       <Filter>Entities %28Objects%29</Filter>
+    </ClInclude>
+    <ClInclude Include="cPlayerEntity.h">
+      <Filter>Entities %28Objects%29\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

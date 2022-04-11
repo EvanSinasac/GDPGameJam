@@ -58,6 +58,8 @@ void loadGraphicsMidtermModels(std::vector<std::string>& modelLocations);
 void loadGraphicsProject2Models(std::vector<std::string>& modelLocations);
 void loadAIModels(std::vector<std::string>& modelLocations);
 void loadGameJamModels(std::vector<std::string>& modelLocations);
+bool loadTextures();
+bool loadDefaultSkyBox();
 
 //void MakeGraphAndMeshes();
 void MakeFSMEntities(std::vector<glm::vec3> spawnPoints);
@@ -91,26 +93,6 @@ int main(int argv, char** argc)
 
 	float baseAtten = 0.4f;
 	float randomAddedAtten;
-
-	// Testing for AI Project 3
-	// TODO: Remove/Modify for project
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\example.bmp";
-	ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap.bmp";
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap2.bmp";
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap2V2.bmp";
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap3.bmp";		// DO NOT USE
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap3V2.bmp";		// Resized to 56x56
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap4.bmp";
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap5.bmp";
-	//ss << SOLUTION_DIR << "common\\assets\\textures\\resourceMap6.bmp";
-	//bmp = new BMPImage(ss.str());
-	//bmp = new BMPImage("resourceMap.bmp");
-
-	//MakeGraphAndMeshes();
-
-	//system("pause");
-
-	ss.str("");
 
 	// ********************************************************************************************
 
@@ -454,141 +436,23 @@ int main(int argv, char** argc)
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTextureSize);
 	std::cout << "GL_MAX_TEXTURE_SIZE = " << glMaxTextureSize << std::endl;
 
-	//Michael Feeney's BMP texture mapping
-	//// Load the textures
-	ss.str("");
-	ss << SOLUTION_DIR << "common\\assets\\textures\\";
-	::g_pTextureManager->SetBasePath(ss.str());
 
-
-	if (::g_pTextureManager->Create2DTextureFromBMPFile("Scope.bmp", true))
+	if (loadTextures())
 	{
-		std::cout << "Loaded Scope texture" << std::endl;
+		std::cout << "loadTextures finished OK!" << std::endl;
 	}
 	else
 	{
-		std::cout << "DIDN'T load Scope Texture" << std::endl;
+		std::cout << "One or more textures did not load, please investigate further..." << std::endl;
 	}
 
-	if (::g_pTextureManager->Create2DTextureFromBMPFile("Window.bmp", true))
+	if (loadDefaultSkyBox())
 	{
-		std::cout << "Loaded Window texture" << std::endl;
-	}
-	else
-	{
-		std::cout << "DIDN'T load Window texture" << std::endl;
-	}
-
-	
-	// Default don't have a texture
-	if (::g_pTextureManager->Create2DTextureFromBMPFile("BrightColouredUVMap.bmp", true))
-		//if (::g_pTextureManager->Create2DTextureFromBMPFile("Pebbleswithquarzite.bmp", true))
-	{
-		std::cout << "Loaded Bright Coloured texture" << std::endl;
+		std::cout << "loadDefaultSkyBox finished OK!" << std::endl;
 	}
 	else
 	{
-		std::cout << "DIDN'T load Bright Coloured texture" << std::endl;
-	}
-
-	if (::g_pTextureManager->Create2DTextureFromBMPFile("Long_blue_Jet_Flame.bmp", true))
-	{
-		std::cout << "Loaded long blue jet flame texture" << std::endl;
-	}
-	else
-	{
-		std::cout << "DIDN'T load long blue jet flame texture" << std::endl;
-	}
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Diffuse.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
-
-	ss << "DFK Textures\\";
-	::g_pTextureManager->SetBasePath(ss.str());
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_albedo.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_metallic.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_SmMetAO.bmp", true);
-
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_basecolor.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_normal.bmp", true);
-	::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_SmMetAO.bmp", true);
-
-	
-	// Add a skybox texture
-	std::string errorTextString;
-	ss.str("");
-	ss << SOLUTION_DIR << "common\\assets\\textures\\cubemaps\\";
-	::g_pTextureManager->SetBasePath(ss.str());		// update base path to cube texture location
-
-	if (!::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
-		"TropicalSunnyDayRight2048.bmp",	/* +X */	"TropicalSunnyDayLeft2048.bmp" /* -X */,
-		"TropicalSunnyDayUp2048.bmp",		/* +Y */	"TropicalSunnyDayDown2048.bmp" /* -Y */,
-		"TropicalSunnyDayFront2048.bmp",	/* +Z */	"TropicalSunnyDayBack2048.bmp" /* -Z */,
-		true, errorTextString))
-	{
-		std::cout << "Didn't load because: " << errorTextString << std::endl;
-	}
-
-
-	if (!::g_pTextureManager->CreateCubeTextureFromBMPFiles("Space01",
-		"SpaceBox_right1_posX.bmp",		/* +X */	"SpaceBox_left2_negX.bmp" /* -X */,
-		"SpaceBox_top3_posY.bmp",		/* +Y */	"SpaceBox_bottom4_negY.bmp" /* -Y */,
-		"SpaceBox_front5_posZ.bmp",		/* +Z */	"SpaceBox_back6_negZ.bmp" /* -Z */,
-		true, errorTextString))
-	{
-		std::cout << "Didn't load because: " << errorTextString << std::endl;
-	}
-
-	if (!::g_pTextureManager->CreateCubeTextureFromBMPFiles("City01",
-		"city_lf.bmp",		/* +X */	"city_rt.bmp" /* -X */,
-		"city_dn.bmp",		/* +Y */	"city_up.bmp" /* -Y */,
-		"city_ft.bmp",		/* +Z */	"city_bk.bmp" /* -Z */,
-		true, errorTextString))
-	{
-		std::cout << "Didn't load because: " << errorTextString << std::endl;
-	}
-
-	//// Turns out to make a "cube" map, the images need to be squares
-	if (!::g_pTextureManager->CreateCubeTextureFromBMPFiles("Skyrim",
-		"Skyrim_Right.bmp",		/* +X */	"Skyrim_Left.bmp" /* -X */,
-		"Skyrim_Top.bmp",		/* +Y */	"Skyrim_Bottom.bmp" /* -Y */,
-		"Skyrim_Forward.bmp",		/* +Z */	"Skyrim_Back.bmp" /* -Z */,
-		true, errorTextString))
-	{
-		std::cout << "Didn't load because: " << errorTextString << std::endl;
+		std::cout << "One or more cube map textures did not load, please investigate further..." << std::endl;
 	}
 
 	// Make sphere for "skybox" before world file
@@ -739,6 +603,7 @@ int main(int argv, char** argc)
 		deltaTime = (deltaTime > MAX_DELTA_TIME ? MAX_DELTA_TIME : deltaTime);
 		previousTime = currentTime;
 
+		::g_pPlayer->Update(deltaTime);
 
 		//testEntity->Update(deltaTime);
 		for (unsigned int index = 0; index != ::vec_pFSMEntities.size(); index++)
@@ -825,18 +690,20 @@ int main(int argv, char** argc)
 
 		matView = glm::mat4(1.0f);
 
-		if (::g_scene)
+		if (!::g_ObservationMode)
 		{
-			matView = glm::lookAt(glm::vec3(-2.5f, 4.5f, 12.5f),
-				glm::vec3(-2.5f, 4.5f, 12.5f) + glm::vec3(0.01f, -0.3f, -0.95f),
-				upVector);
+			glm::vec3 normLookAt = glm::normalize(::g_pPlayer->lookAt);
+			::cameraEye = glm::vec3(::g_pPlayer->position.x + normLookAt.x, 
+				::g_pPlayer->position.y + 1.5f,
+				::g_pPlayer->position.z + normLookAt.z);
+			::cameraTarget = ::g_pPlayer->lookAt;
 		}
-		else
-		{
+		//else
+		//{
 			matView = glm::lookAt(::cameraEye,
 				::cameraEye + ::cameraTarget,
 				upVector);
-		}
+		//}
 
 		// ...
 		glUniform4f(pShaderProc->getUniformID_From_Name("eyeLocation"),
@@ -964,15 +831,17 @@ int main(int argv, char** argc)
 		//                                                                                      
 		//    
 
+		matModel = glm::mat4(1.0f);
+		DrawObject(::g_pPlayer->m_Mesh, 
+			matModel,
+			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+			program,
+			::g_pVAOManager);
+
 		for (unsigned int index = 0; index != vec_pFSMEntities.size(); index++)
 		{
 			matModel = glm::mat4(1.0f);
-			//DrawObject(vec_pFSMEntities[index]->m_Mesh,
-			//	matModel,
-			//	matModel_Location,
-			//	matModelInverseTranspose_Location,
-			//	program,
-			//	::g_pVAOManager);
 
 			DrawObject(vec_pFSMEntities[index]->m_Mesh,
 				matModel,
@@ -1000,12 +869,27 @@ int main(int argv, char** argc)
 		for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
 		{
 			matModel = glm::mat4(1.0f);
-			DrawObject(::g_vec_pNodes[index],
-				matModel,
-				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-				program,
-				::g_pVAOManager);
+			if (!::g_ObservationMode)
+			{
+				if (glm::distance(::g_vec_pNodes[index]->positionXYZ, ::cameraEye) < 75.0f)
+				{
+					DrawObject(::g_vec_pNodes[index],
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+				}
+			}
+			else
+			{
+				DrawObject(::g_vec_pNodes[index],
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
 		}
 		
 		// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
@@ -1455,29 +1339,32 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = ypos;
 		firstMouse = false;
 	}
-	//find the offset of where the mouse positions have moved
-	float xOffset = xpos - lastX;
-	float yOffset = lastY - ypos;
-	lastX = xpos;
-	lastY = ypos;
-	//multiply by sensitivity so that it's not potentially crazy fast
-	float sensitivity = 0.1f;
-	xOffset *= sensitivity;
-	yOffset *= sensitivity;
+	//if (::g_ObservationMode)
+	//{
+		//find the offset of where the mouse positions have moved
+		float xOffset = xpos - lastX;
+		float yOffset = lastY - ypos;
+		lastX = xpos;
+		lastY = ypos;
+		//multiply by sensitivity so that it's not potentially crazy fast
+		float sensitivity = 0.1f;
+		xOffset *= sensitivity;
+		yOffset *= sensitivity;
 
-	::cameraYaw += xOffset;         // The yaw is the rotation around the ::camera's y-axis (so we want to add the xOffset to it)
-	::cameraPitch += yOffset;       // The pitch is the rotation around the ::camera's x-axis (so we want to add the yOffset to it)
-	//This limits the pitch so that we can't just spin the ::camera under/over itself
-	if (::cameraPitch > 89.0f)
-		::cameraPitch = 89.0f;
-	if (::cameraPitch < -89.0f)
-		::cameraPitch = -89.0f;
-	//calculations for the new direction based on the mouse movements
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(::cameraYaw)) * cos(glm::radians(::cameraPitch));
-	direction.y = sin(glm::radians(::cameraPitch));
-	direction.z = sin(glm::radians(::cameraYaw)) * cos(glm::radians(::cameraPitch));
-	::cameraTarget = glm::normalize(direction);
+		::cameraYaw += xOffset;         // The yaw is the rotation around the ::camera's y-axis (so we want to add the xOffset to it)
+		::cameraPitch += yOffset;       // The pitch is the rotation around the ::camera's x-axis (so we want to add the yOffset to it)
+		//This limits the pitch so that we can't just spin the ::camera under/over itself
+		if (::cameraPitch > 89.0f)
+			::cameraPitch = 89.0f;
+		if (::cameraPitch < -89.0f)
+			::cameraPitch = -89.0f;
+		//calculations for the new direction based on the mouse movements
+		glm::vec3 direction;
+		direction.x = cos(glm::radians(::cameraYaw)) * cos(glm::radians(::cameraPitch));
+		direction.y = sin(glm::radians(::cameraPitch));
+		direction.z = sin(glm::radians(::cameraYaw)) * cos(glm::radians(::cameraPitch));
+		::cameraTarget = glm::normalize(direction);
+	//}
 } //fly ::camera
 
 // GRAPHICS 2 Midterm

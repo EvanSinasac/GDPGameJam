@@ -472,4 +472,151 @@ void loadGameJamModels(std::vector<std::string>& modelLocations)
 
 	//modelLocations.push_back("SK_Anglerox_XYZ_N_RGBA_UV_converted_3.ply");
 	modelLocations.push_back("Pokemon.ply");
+
+
+	modelLocations.push_back("dalek2005_XYZ_N_RGBA_UV_hi_res.ply");
+}
+
+bool loadTextures()
+{
+	bool loadedAll = true;
+	//Michael Feeney's BMP texture mapping
+	//// Load the textures
+
+	std::stringstream ss;
+	ss << SOLUTION_DIR << "common\\assets\\textures\\";
+	::g_pTextureManager->SetBasePath(ss.str());
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Scope.bmp", true);
+
+	//if (::g_pTextureManager->Create2DTextureFromBMPFile("Scope.bmp", true))
+	//{
+	//	std::cout << "Loaded Scope texture" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "DIDN'T load Scope Texture" << std::endl;
+	//}
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Window.bmp", true);
+
+	//if (::g_pTextureManager->Create2DTextureFromBMPFile("Window.bmp", true))
+	//{
+	//	std::cout << "Loaded Window texture" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "DIDN'T load Window texture" << std::endl;
+	//}
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("BrightColouredUVMap.bmp", true);
+
+	// Default don't have a texture
+	//if (::g_pTextureManager->Create2DTextureFromBMPFile("BrightColouredUVMap.bmp", true))
+	//	//if (::g_pTextureManager->Create2DTextureFromBMPFile("Pebbleswithquarzite.bmp", true))
+	//{
+	//	std::cout << "Loaded Bright Coloured texture" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "DIDN'T load Bright Coloured texture" << std::endl;
+	//}
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Long_blue_Jet_Flame.bmp", true);
+
+	//if (::g_pTextureManager->Create2DTextureFromBMPFile("Long_blue_Jet_Flame.bmp", true))
+	//{
+	//	std::cout << "Loaded long blue jet flame texture" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "DIDN'T load long blue jet flame texture" << std::endl;
+	//}
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Diffuse.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
+
+	ss << "DFK Textures\\";
+	::g_pTextureManager->SetBasePath(ss.str());
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_ceiling_stone_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doors_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_floor_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_stairs_wood_01_metallic.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wall_a_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_doorframe_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_gate_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_SmMetAO.bmp", true);
+
+	return loadedAll;
+}
+
+bool loadDefaultSkyBox()
+{
+	bool loadedAll = true;
+	// Add a skybox texture
+	std::string errorTextString;
+	std::stringstream ss;
+	ss << SOLUTION_DIR << "common\\assets\\textures\\cubemaps\\";
+	::g_pTextureManager->SetBasePath(ss.str());		// update base path to cube texture location
+
+	loadedAll &= ::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
+		"TropicalSunnyDayRight2048.bmp",	/* +X */	"TropicalSunnyDayLeft2048.bmp" /* -X */,
+		"TropicalSunnyDayUp2048.bmp",		/* +Y */	"TropicalSunnyDayDown2048.bmp" /* -Y */,
+		"TropicalSunnyDayFront2048.bmp",	/* +Z */	"TropicalSunnyDayBack2048.bmp" /* -Z */,
+		true, errorTextString);
+
+
+
+	loadedAll &= ::g_pTextureManager->CreateCubeTextureFromBMPFiles("Space01",
+		"SpaceBox_right1_posX.bmp",		/* +X */	"SpaceBox_left2_negX.bmp" /* -X */,
+		"SpaceBox_top3_posY.bmp",		/* +Y */	"SpaceBox_bottom4_negY.bmp" /* -Y */,
+		"SpaceBox_front5_posZ.bmp",		/* +Z */	"SpaceBox_back6_negZ.bmp" /* -Z */,
+		true, errorTextString);
+
+	loadedAll &= ::g_pTextureManager->CreateCubeTextureFromBMPFiles("City01",
+		"city_lf.bmp",		/* +X */	"city_rt.bmp" /* -X */,
+		"city_dn.bmp",		/* +Y */	"city_up.bmp" /* -Y */,
+		"city_ft.bmp",		/* +Z */	"city_bk.bmp" /* -Z */,
+		true, errorTextString);
+
+	//// Turns out to make a "cube" map, the images need to be squares
+	loadedAll &= ::g_pTextureManager->CreateCubeTextureFromBMPFiles("Skyrim",
+		"Skyrim_Right.bmp",		/* +X */	"Skyrim_Left.bmp" /* -X */,
+		"Skyrim_Top.bmp",		/* +Y */	"Skyrim_Bottom.bmp" /* -Y */,
+		"Skyrim_Forward.bmp",		/* +Z */	"Skyrim_Back.bmp" /* -Z */,
+		true, errorTextString);
+
+	return loadedAll;
 }

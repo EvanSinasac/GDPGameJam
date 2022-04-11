@@ -17,11 +17,16 @@
 #include "Graph.h"
 #include "cFSMEntity.h"
 #include "cTorchObject.h"
+#include "cPlayerEntity.h"
 // 
 
 extern bool g_updateFBOResolution;
-extern bool g_scene;
 extern int g_2DEffectOp;
+
+
+extern bool g_ObservationMode;
+extern glm::vec3 lastCamPosition;
+extern glm::vec3 lastCamLookAt;
 
 // These are all things that are "project global", 
 //	so need to be visible to many files and parts
@@ -42,6 +47,8 @@ extern Graph* g_Graph;
 
 extern std::vector<cFSMEntity*> vec_pFSMEntities;
 extern float entitySpeedModifier;
+
+extern cPlayerEntity* g_pPlayer;
 
 extern std::vector<cTorchObject*> vec_pTorches;
 // ************************************************

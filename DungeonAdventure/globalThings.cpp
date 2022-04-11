@@ -2,8 +2,12 @@
 //Stuff done in class with Michael Feeney
 
 bool g_updateFBOResolution = false;
-bool g_scene = false;
 int g_2DEffectOp = 0;
+
+
+bool g_ObservationMode = true;
+glm::vec3 lastCamPosition = glm::vec3(0.0f);
+glm::vec3 lastCamLookAt = glm::vec3(0.0f, 0.0f, 1.0f);
 
 cShaderManager::cShaderProgram* pShaderProc = NULL;
 
@@ -12,6 +16,8 @@ Graph* g_Graph = new Graph();
 
 std::vector<cFSMEntity*> vec_pFSMEntities;
 float entitySpeedModifier = 1.0f;
+
+cPlayerEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
 
 std::vector<cTorchObject*> vec_pTorches;
 

@@ -70,6 +70,8 @@ bool bShowAllLights = false;
         ::g_bShowDebugObjects = !::g_bShowDebugObjects;
     }
 
+
+
     if (key == GLFW_KEY_Z && action == GLFW_PRESS)
     {
         ::drawLightBalls = !::drawLightBalls;
@@ -89,54 +91,23 @@ bool bShowAllLights = false;
         }
     }
 
-    /*if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS)
+    
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {
-        std::string errorString;
-        if (!::g_pFBO->reset(1920, 1080, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
+        ::g_pPlayer->Move("FORWARD");
     }
-    else if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
     {
-        std::string errorString;
-        if (!::g_pFBO->reset(127, 64, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
+        ::g_pPlayer->Move("BACKWARDS");
     }
-    else if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
     {
-        std::string errorString;
-        if (!::g_pFBO->reset(1280, 1024, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
+        ::g_pPlayer->Rotate("LEFT");
     }
-    else if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS)
+    if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     {
-        std::string errorString;
-        if (!::g_pFBO->reset(3840, 2160, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
+        ::g_pPlayer->Rotate("RIGHT");
     }
-    else if (key == GLFW_KEY_KP_5 && action == GLFW_PRESS)
-    {
-        std::string errorString;
-        if (!::g_pFBO->reset(1200, 640, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
-    }
-    else if (key == GLFW_KEY_KP_6 && action == GLFW_PRESS)
-    {
-        std::string errorString;
-        if (!::g_pFBO->reset(1900, 1012, errorString))
-        {
-            std::cout << errorString << std::endl;
-        }
-    }*/
     
     
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
@@ -146,7 +117,20 @@ bool bShowAllLights = false;
 
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        ::g_scene = !::g_scene;
+        ::g_ObservationMode = !::g_ObservationMode;
+        if (::g_ObservationMode)
+        {
+            ::cameraEye = ::lastCamPosition;
+            ::cameraTarget = ::lastCamLookAt;
+        }
+        else
+        {
+            ::lastCamPosition = ::cameraEye;
+            ::lastCamLookAt = ::cameraTarget;
+            // set cameraEye and cameraTarget to player position
+            ::cameraEye = ::g_pPlayer->position;
+            ::cameraTarget = ::g_pPlayer->lookAt;
+        }
     }
 
     if (key == GLFW_KEY_0 && action == GLFW_PRESS)

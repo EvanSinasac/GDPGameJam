@@ -353,6 +353,8 @@ bool loadTSVGrid()
 					//newNode->isHomeBase = true;
 					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
 						grid[x][y], true, false, false);
+
+					::g_pPlayer = new cPlayerEntity(newMesh->positionXYZ, vec3NORTH, ::g_Graph->nodes[::g_Graph->nodes.size() - 1]);
 				}
 				else
 				{
