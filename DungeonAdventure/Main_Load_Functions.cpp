@@ -475,6 +475,7 @@ void loadGameJamModels(std::vector<std::string>& modelLocations)
 
 
 	modelLocations.push_back("dalek2005_XYZ_N_RGBA_UV_hi_res.ply");
+	modelLocations.push_back("hollowknight_XYZ_N_RGBA_UV.ply");
 }
 
 bool loadTextures()
@@ -533,6 +534,17 @@ bool loadTextures()
 	//	std::cout << "DIDN'T load long blue jet flame texture" << std::endl;
 	//}
 
+	//if (::g_pTextureManager->Create2DTextureFromBMPFile("uv_hollow.bmp", true))
+	//{
+	//	std::cout << "uv_hollow finished ok" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "uv_hollow did not finish ok" << std::endl;
+	//}
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("uv_hollow.bmp", true);
+
+
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Diffuse.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Normal.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
@@ -579,6 +591,7 @@ bool loadTextures()
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_normal.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_SmMetAO.bmp", true);
 
+	
 	return loadedAll;
 }
 

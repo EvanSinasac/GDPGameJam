@@ -10,14 +10,16 @@ cPlayerEntity::cPlayerEntity()
 	this->m_CurrNode = NULL;
 
 	this->m_Mesh = new cMesh();
-	this->m_Mesh->meshName = "dalek2005_XYZ_N_RGBA_UV_hi_res.ply";
+	//this->m_Mesh->meshName = "dalek2005_XYZ_N_RGBA_UV_hi_res.ply";
+	this->m_Mesh->meshName = "hollowknight_XYZ_N_RGBA_UV.ply";
 	this->m_Mesh->positionXYZ = this->position;
 	this->m_Mesh->orientationXYZ = glm::vec3(0.0f);
-	this->m_Mesh->setUniformScale(0.03f);
+	//this->m_Mesh->setUniformScale(0.03f);
+	this->m_Mesh->setUniformScale(0.4f);
 	this->m_Mesh->bDontLight = false;
 	this->m_Mesh->friendlyName = "Player";
 	this->m_Mesh->clearTextureRatiosToZero();
-	this->m_Mesh->textureNames[1] = "RivetedMetalPlate.bmp";
+	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_Mesh->textureRatios[1] = 1.0f;
 }
 cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* startNode)
@@ -26,14 +28,19 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	, m_CurrNode(startNode)
 {
 	this->m_Mesh = new cMesh();
-	this->m_Mesh->meshName = "dalek2005_XYZ_N_RGBA_UV_hi_res.ply";
+	//this->m_Mesh->meshName = "dalek2005_XYZ_N_RGBA_UV_hi_res.ply";
+	this->m_Mesh->meshName = "hollowknight_XYZ_N_RGBA_UV.ply";
 	this->m_Mesh->positionXYZ = this->position;
 	// orientation in lookAt
-	this->m_Mesh->setUniformScale(0.03f);
+	//this->m_Mesh->setUniformScale(0.03f);
+	this->m_Mesh->setUniformScale(0.4f);
 	this->m_Mesh->bDontLight = true;
 	this->m_Mesh->friendlyName = "Player";
 	this->m_Mesh->clearTextureRatiosToZero();
-	this->m_Mesh->bUseWholeObjectDiffuseColour = true;
+	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";
+	this->m_Mesh->textureRatios[1] = 1.0f;
+
+	this->m_Mesh->bUseWholeObjectDiffuseColour = false;
 	this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.2f, 0.6f, 1.0f);
 
 	if (lookAt == vec3NORTH)
