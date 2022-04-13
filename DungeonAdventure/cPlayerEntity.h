@@ -1,18 +1,9 @@
 #pragma once
 
 #include "iEntity.h"
-#include "GLMCommon.h"
 #include "cMesh.h"
 #include "Graph.h"
 
-static const glm::vec3 vec3NORTH = glm::vec3(0.0f, 0.0f, 2.5f);
-static const glm::vec3 vec3NORTH_EAST = glm::vec3(-2.5f, 0.0f, 2.5f);
-static const glm::vec3 vec3EAST = glm::vec3(-2.5f, 0.0f, 0.0f);
-static const glm::vec3 vec3SOUTH_EAST = glm::vec3(-2.5f, 0.0f, -2.5f);
-static const glm::vec3 vec3SOUTH = glm::vec3(0.0f, 0.0f, -2.5f);
-static const glm::vec3 vec3SOUTH_WEST = glm::vec3(2.5f, 0.0f, -2.5f);
-static const glm::vec3 vec3WEST = glm::vec3(2.5f, 0.0f, 0.0f);
-static const glm::vec3 vec3NORTH_WEST = glm::vec3(2.5f, 0.0f, 2.5f);
 
 class cPlayerEntity : public iEntity
 {
@@ -25,18 +16,6 @@ public:
 
 	void Move(std::string directionToMove);
 	void Rotate(std::string directionToRotate);
-
-	enum class DIRECTIONS : int
-	{
-		NORTH = 0,
-		NORTH_EAST = 1,
-		EAST = 2,
-		SOUTH_EAST = 3,
-		SOUTH = 4,
-		SOUTH_WEST = 5,
-		WEST = 6,
-		NORTH_WEST = 7,
-	};
 
 	cMesh* m_Mesh;
 
