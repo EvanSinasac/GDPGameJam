@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <iostream>
+#include "cPlayerEntity.h"
 
 bool bShowAllLights = false;
 
@@ -94,19 +95,19 @@ bool bShowAllLights = false;
     
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {
-        ::g_pPlayer->Move("FORWARD");
+        ((cPlayerEntity*)::g_pPlayer)->Move("FORWARD");
     }
     if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
     {
-        ::g_pPlayer->Move("BACKWARDS");
+        ((cPlayerEntity*)::g_pPlayer)->Move("BACKWARDS");
     }
     if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
     {
-        ::g_pPlayer->Rotate("LEFT");
+        ((cPlayerEntity*)::g_pPlayer)->Rotate("LEFT");
     }
     if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     {
-        ::g_pPlayer->Rotate("RIGHT");
+        ((cPlayerEntity*)::g_pPlayer)->Rotate("RIGHT");
     }
     
     
@@ -128,8 +129,8 @@ bool bShowAllLights = false;
             ::lastCamPosition = ::cameraEye;
             ::lastCamLookAt = ::cameraTarget;
             // set cameraEye and cameraTarget to player position
-            ::cameraEye = ::g_pPlayer->position;
-            ::cameraTarget = ::g_pPlayer->lookAt;
+            ::cameraEye = ((cPlayerEntity*)::g_pPlayer)->position;
+            ::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
         }
     }
 

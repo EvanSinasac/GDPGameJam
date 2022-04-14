@@ -21,11 +21,13 @@
 #include <vector>
 #include <fstream>
 
+#include "cPlayerEntity.h"
+
 
 float lastX = 600.0f;
 float lastY = 320.0f;
 bool firstMouse = true;
-float cameraYaw = 90.0f;
+float cameraYaw = 0.0f;
 float cameraPitch = 0.0f;
 // am I even using these anymore?
 float doorLightDirCurX = 1.0f;
@@ -486,47 +488,75 @@ int main(int argv, char** argc)
 	//::g_vec_pMeshes.push_back(sphereSky);
 
 	// My camera reset stuff	(might be broken, idk anymore)
-	if (::cameraEye.x > 0 && ::cameraEye.z > 0)
+	//if (::cameraEye.x > 0 && ::cameraEye.z > 0)
+	//{
+	//	::cameraYaw = 180.f + (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+	//}
+	//else if (::cameraEye.x > 0 && ::cameraEye.z < 0)
+	//{
+	//	::cameraYaw = 90.f - (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+	//}
+	//else if (::cameraEye.x < 0 && ::cameraEye.z > 0)
+	//{
+	//	::cameraYaw = (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+	//}
+	//else if (::cameraEye.x < 0 && ::cameraEye.z < 0)
+	//{
+	//	::cameraYaw = (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+	//}
+	//else if (::cameraEye.x == 0.f)
+	//{
+	//	if (::cameraEye.z >= 0.f)
+	//	{
+	//		::cameraYaw = 270.f;
+	//	}
+	//	else
+	//	{
+	//		::cameraYaw = 90.f;
+	//	}
+	//}
+	//else if (::cameraEye.z == 0.f)
+	//{
+	//	if (::cameraEye.x <= 0)
+	//	{
+	//		::cameraYaw = 0.f;
+	//	}
+	//	else
+	//	{
+	//		::cameraYaw = 180.f;
+	//	}
+	//}
+	// 
+	// Why was I looking at cameraEye?  Cause I was focused on the camera looking at the origin
+	if (::cameraTarget == glm::vec3(0.0f))
 	{
-		::cameraYaw = 180.f + (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+		// whoops, safety
+		::cameraTarget = glm::vec3(1.0f, 0.0f, 0.0f);
 	}
-	else if (::cameraEye.x > 0 && ::cameraEye.z < 0)
+	::cameraTarget = glm::normalize(::cameraTarget);
+	if (::cameraTarget.x == 1.0f)
 	{
-		::cameraYaw = 90.f - (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+		::cameraYaw = 0.0f;
 	}
-	else if (::cameraEye.x < 0 && ::cameraEye.z > 0)
+	else if (::cameraTarget.x == -1.0f)
 	{
-		::cameraYaw = (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+		::cameraYaw = 180.0f;
 	}
-	else if (::cameraEye.x < 0 && ::cameraEye.z < 0)
+	else if (::cameraTarget.z == 1.0f)
 	{
-		::cameraYaw = (atan(::cameraEye.z / ::cameraEye.x) * 180.f / glm::pi<float>());
+		::cameraYaw = 90.0f;
 	}
-	else if (::cameraEye.x == 0.f)
+	else if (::cameraTarget.z == -1.0f)
 	{
-		if (::cameraEye.z >= 0.f)
-		{
-			::cameraYaw = 270.f;
-		}
-		else
-		{
-			::cameraYaw = 90.f;
-		}
+		::cameraYaw = 270.0f;
 	}
-	else if (::cameraEye.z == 0.f)
+	else
 	{
-		if (::cameraEye.x <= 0)
-		{
-			::cameraYaw = 0.f;
-		}
-		else
-		{
-			::cameraYaw = 180.f;
-		}
+		::cameraYaw = 0.0f;
 	}
 	//anyways, after figuring out the yaw, we set the target at the negative of the xz of the ::camera position and y=0 (this faces the ::camera towards the origin)
-	::cameraTarget = glm::vec3(-1.f * ::cameraEye.x, 0, -1.f * ::cameraEye.z);
-	glm::normalize(::cameraTarget);
+	//::cameraTarget = glm::vec3(-1.f * ::cameraEye.x, 0, -1.f * ::cameraEye.z);
+	//glm::normalize(::cameraTarget);
 
 	const double MAX_DELTA_TIME = 0.1;  // 100 ms
 	double previousTime = glfwGetTime();
@@ -640,6 +670,7 @@ int main(int argv, char** argc)
 
 		//glViewport(0, 0, width, height);
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		::g_pFBO->clearBuffers(true, true);
 
@@ -692,11 +723,11 @@ int main(int argv, char** argc)
 
 		if (!::g_ObservationMode)
 		{
-			glm::vec3 normLookAt = glm::normalize(::g_pPlayer->lookAt);
-			::cameraEye = glm::vec3(::g_pPlayer->position.x + normLookAt.x, 
-				::g_pPlayer->position.y + 1.5f,
-				::g_pPlayer->position.z + normLookAt.z);
-			::cameraTarget = ::g_pPlayer->lookAt;
+			glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+			::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+				((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+				((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+			::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
 		}
 		//else
 		//{
@@ -832,7 +863,7 @@ int main(int argv, char** argc)
 		//    
 
 		matModel = glm::mat4(1.0f);
-		DrawObject(::g_pPlayer->m_Mesh, 
+		DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh, 
 			matModel,
 			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
 			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
@@ -1177,7 +1208,8 @@ int main(int argv, char** argc)
 		// https://usbrandcolors.com/microsoft-colors/
 		glClearColor(0.0f, 164.0f / 255.0f, 239.0f / 255.0f, 1.0f);
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		glfwGetFramebufferSize(pWindow, &width, &height);
 		ratio = width / (float)height;
 

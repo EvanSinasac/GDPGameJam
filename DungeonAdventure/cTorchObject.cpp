@@ -10,6 +10,8 @@ cTorchObject::cTorchObject(cMesh* pMesh, unsigned int index)
 	baseLightAtten = 0.08f;
 	baseMeshAtten = 0.75f;
 	timer = 0.0f;
+
+	type = ENTITY_TYPE::OBJECT;
 }
 
 cTorchObject::~cTorchObject()

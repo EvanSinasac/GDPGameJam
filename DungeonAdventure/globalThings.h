@@ -16,8 +16,9 @@
 #include "ResourceManager.h"
 #include "Graph.h"
 #include "cFSMEntity.h"
-#include "cTorchObject.h"
-#include "cPlayerEntity.h"
+#include "iEntity.h"
+//#include "cTorchObject.h"
+//#include "cPlayerEntity.h"
 // 
 
 extern bool g_updateFBOResolution;
@@ -48,9 +49,13 @@ extern Graph* g_Graph;
 extern std::vector<cFSMEntity*> vec_pFSMEntities;
 extern float entitySpeedModifier;
 
-extern cPlayerEntity* g_pPlayer;
+//extern cPlayerEntity* g_pPlayer;
+extern iEntity* g_pPlayer;
 
-extern std::vector<cTorchObject*> vec_pTorches;
+//extern std::vector<cTorchObject*> vec_pTorches;
+extern std::vector<iEntity*> vec_pTorches;
+
+extern std::vector<iEntity*> vec_pAllEntities;
 // ************************************************
 //     ___                         
 //    / __|__ _ _ __  ___ _ _ __ _ 

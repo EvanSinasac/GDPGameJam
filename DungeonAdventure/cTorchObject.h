@@ -4,7 +4,7 @@
 
 #include "cMesh.h"
 
-class cTorchObject : iEntity
+class cTorchObject : public iEntity
 {
 public:
 	cTorchObject(cMesh* pMesh, unsigned int index);

@@ -25,7 +25,17 @@ public:
 		NORTH_WEST = 7,
 	};
 
+	enum class ENTITY_TYPE
+	{
+		PLAYER,
+		ENEMY,
+		TREASURE,
+		OBJECT,
+	};
+
 	virtual ~iEntity() {};
 
 	virtual void Update(float dt) = 0;
+
+	ENTITY_TYPE type;
 };

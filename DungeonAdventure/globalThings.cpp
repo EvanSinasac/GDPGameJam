@@ -17,16 +17,20 @@ Graph* g_Graph = new Graph();
 std::vector<cFSMEntity*> vec_pFSMEntities;
 float entitySpeedModifier = 1.0f;
 
-cPlayerEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
+//cPlayerEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
+iEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
 
-std::vector<cTorchObject*> vec_pTorches;
+//std::vector<cTorchObject*> vec_pTorches;
+std::vector<iEntity*> vec_pTorches;
+
+std::vector<iEntity*> vec_pAllEntities;
 
 //cFlyCamera* g_pFlyCamera = NULL;
 
 //glm::vec3 g_cameraEye = glm::vec3(0.0f, 0.0f, +4.0f);
 //glm::vec3 g_cameraAt = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraEye = glm::vec3(0.0f, 2.0f, -4.0f);
-glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 cameraTarget = glm::vec3(1.0f, 0.0f, 0.0f);
 glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 cVAOManager* g_pVAOManager = NULL;

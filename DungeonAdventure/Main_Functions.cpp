@@ -3,6 +3,10 @@
 #include <sstream>
 #include <iostream>
 
+#include "cPlayerEntity.h"
+
+void MakeNodeMeshes();
+
 void MakeFSMEntities(std::vector<glm::vec3> spawnPoints)
 {
 	for (unsigned int index = 0; index != spawnPoints.size(); index++)
@@ -481,6 +485,13 @@ bool loadTSVGrid()
 	// testing
 	//::g_Graph->PrintGraph();
 
+	MakeNodeMeshes();
+
+	return true;
+}	//end of loadTSVGrid
+
+void MakeNodeMeshes()
+{
 	for (unsigned int index = 0; index != ::g_Graph->nodes.size(); index++)
 	{
 		cMesh* nodeMesh = new cMesh();
@@ -590,9 +601,7 @@ bool loadTSVGrid()
 
 		::g_vec_pNodes.push_back(nodeMesh);
 	}
-
-	return true;
-}	//end of loadTSVGrid
+}
 
 
 // Don't think I'm using this keeping it for reference

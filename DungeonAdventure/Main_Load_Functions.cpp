@@ -3,6 +3,8 @@
 #include <iostream>
 #include "cDungeonMeshBuilder.h"
 
+#include "cTorchObject.h"
+
 // Modified from previous versions to take texture information
 bool loadWorldFile(unsigned int& numberOfTransparentObjects)
 {
@@ -47,6 +49,13 @@ bool loadWorldFile(unsigned int& numberOfTransparentObjects)
 	::cameraEye.y = std::stof(nextToken);
 	theFile >> nextToken;		//z position
 	::cameraEye.z = std::stof(nextToken);
+
+	theFile >> nextToken;						// initial camera target for observation mode
+	::cameraTarget.x = std::stof(nextToken);	// x
+	theFile >> nextToken;
+	::cameraTarget.y = std::stof(nextToken);	// y
+	theFile >> nextToken;
+	::cameraTarget.z = std::stof(nextToken);	// z
 
 	theFile >> nextToken;		//number of transparent objects
 	numberOfTransparentObjects = std::stoi(nextToken);
@@ -330,9 +339,11 @@ bool loadLightsFile()
 			cMesh* torchSet = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::LIGHT_FIXTURE, glm::vec3(1.0f));
 			torchSet->positionXYZ = glm::vec3(ogX, ogY, ogZ);
 			torchSet->orientationXYZ = glm::vec3(0.0f, glm::radians(rotation), 0.0f);
-			::vec_pTorches.push_back(new cTorchObject(torchSet, index));
+			iEntity* torchObject = new cTorchObject(torchSet, index);
+			::vec_pTorches.push_back(torchObject);
 			::g_vec_pMeshes.push_back(torchSet);
 
+			::vec_pAllEntities.push_back(torchObject);
 
 			cMesh* pointLightBall = new cMesh();
 			pointLightBall->meshName = "Isosphere_Smooth_Normals.ply";
@@ -470,6 +481,12 @@ void loadGameJamModels(std::vector<std::string>& modelLocations)
 	modelLocations.push_back("Engine_Exhaust_Imposter.ply");	// for the torch lights
 	modelLocations.push_back("Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply");
 
+	modelLocations.push_back("SM_Env_Consoles_01_xyz_n_rgba_uv.ply");
+	modelLocations.push_back("SM_Env_Consoles_Corner_01_xyz_n_rgba_uv.ply");
+
+	modelLocations.push_back("SM_Env_Construction_Wall_01_xyz_n_rgba_uv.ply");
+	modelLocations.push_back("SM_Env_Floor_01_xyz_n_rgba_uv.ply");
+
 	//modelLocations.push_back("SK_Anglerox_XYZ_N_RGBA_UV_converted_3.ply");
 	modelLocations.push_back("Pokemon.ply");
 
@@ -543,6 +560,11 @@ bool loadTextures()
 	//	std::cout << "uv_hollow did not finish ok" << std::endl;
 	//}
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("uv_hollow.bmp", true);
+
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("SpaceInteriors_Texture.bmp", true);
+	//loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("SpaceInteriors_Emmision.bmp", true);
+	//loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("WorldMap.bmp", true);
 
 
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Diffuse.bmp", true);

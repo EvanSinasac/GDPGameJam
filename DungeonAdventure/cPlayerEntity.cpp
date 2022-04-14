@@ -21,6 +21,9 @@ cPlayerEntity::cPlayerEntity()
 	this->m_Mesh->clearTextureRatiosToZero();
 	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_Mesh->textureRatios[1] = 1.0f;
+
+
+	type = ENTITY_TYPE::PLAYER;
 }
 cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* startNode)
 	: position(startPos)
@@ -90,6 +93,7 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	}
 
 	
+	type = ENTITY_TYPE::PLAYER;
 }
 cPlayerEntity::~cPlayerEntity()
 {
