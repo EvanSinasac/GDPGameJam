@@ -359,6 +359,7 @@ bool loadTSVGrid()
 						grid[x][y], true, false, false);
 
 					::g_pPlayer = new cPlayerEntity(newMesh->positionXYZ, vec3NORTH, ::g_Graph->nodes[::g_Graph->nodes.size() - 1]);
+					::vec_pAllEntities.push_back(::g_pPlayer);
 				}
 				else
 				{

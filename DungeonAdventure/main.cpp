@@ -277,6 +277,8 @@ int main(int argv, char** argc)
 	pShaderProc->mapUniformName_to_UniformLocation["eyeLocation"] = glGetUniformLocation(program, "eyeLocation");
 	pShaderProc->mapUniformName_to_UniformLocation["bUseAllLights"] = glGetUniformLocation(program, "bUseAllLights");
 
+	pShaderProc->mapUniformName_to_UniformLocation["stencilColour"] = glGetUniformLocation(program, "stencilColour");
+
 	//pShaderProc->mapUniformName_to_UniformLocation["wholeObjectSpecularColour"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
 	// .. and so on...
 	//pShaderProc->mapUniformName_to_UniformLocation["theLights[0].position"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
@@ -664,6 +666,9 @@ int main(int argv, char** argc)
 		// Turn on the depth buffer
 		glEnable(GL_DEPTH);         // Turns on the depth buffer
 		glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+		glEnable(GL_STENCIL_TEST);
+
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 		//glEnable(GL_BLEND);
 		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -691,6 +696,8 @@ int main(int argv, char** argc)
 				// Update the title text
 		glfwSetWindowTitle(pWindow, ::g_TitleText.c_str());
 
+		// *********************************************************
+		glStencilMask(0x00);	// DON'T Update the Stencil Mask while drawing floor and objects
 
 		// Debug sphere here
 
@@ -862,13 +869,88 @@ int main(int argv, char** argc)
 		//                                                                                      
 		//    
 
+
+		// I really hope drawing the player and objects I want to use the stencil buffer on last doesn't make them all flickery
+		if (::g_bStencilsOn)
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);	// enable the stencil buffer and update it for the player and non-torch entities
+			glStencilMask(0xFF);
+		}
+		// Draw the player and non-torch entities with stencil on if it's on
+
 		matModel = glm::mat4(1.0f);
-		DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh, 
+		DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh,
 			matModel,
 			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
 			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
 			program,
 			::g_pVAOManager);
+
+
+
+		// Before moving on to the second pass, is the stencil on?
+		if (::g_bStencilsOn)
+		{
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDisable(GL_DEPTH_TEST);
+			// I want to draw the stencils, go through the entities and any of type player, object or enemy need to be drawn with the stencil buffer
+			// by which I mean instead of making a new shader, I just use a texture operator and pass in the colour
+			for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+			{
+				//if (::vec_pAllEntities[index]->type != iEntity::ENTITY_TYPE::TORCH)	// draw a stencil around anything that isn't a torch entity
+				if (::vec_pAllEntities[index]->m_Mesh->bUseStencil)						// draw a stencil around anything that isn't a torch entity
+				{
+					glm::vec3 scale = ::vec_pAllEntities[index]->m_Mesh->scale;				// store the scale to reset after
+					int normalTexOp = ::vec_pAllEntities[index]->m_Mesh->textureOperator;	// store texture operator to reset after
+					::vec_pAllEntities[index]->m_Mesh->textureOperator = 20;				// set texture operator to 20 for the stencil
+
+					glm::vec4 stencilColour;												// decide on colour of stencil depending on type of entity
+					switch (::vec_pAllEntities[index]->type)
+					{
+					case iEntity::ENTITY_TYPE::PLAYER:
+						stencilColour = glm::vec4(0.0f, 0.3f, 0.7f, 1.0f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						break;
+					case iEntity::ENTITY_TYPE::ENEMY:
+						stencilColour = glm::vec4(0.8f, 0.2f, 0.0f, 1.0f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						break;
+					case iEntity::ENTITY_TYPE::OBJECT:
+						stencilColour = glm::vec4(0.2f, 0.8f, 0.0f, 1.0f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						break;
+					case iEntity::ENTITY_TYPE::TREASURE:
+						stencilColour = glm::vec4(1.0f, 1.0f, 0.6f, 1.0f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						break;
+					default:
+						stencilColour = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
+					}
+
+					// pass the colour to the shader
+					glUniform4f(pShaderProc->mapUniformName_to_UniformLocation["stencilColour"],
+						stencilColour.x, stencilColour.y, stencilColour.z, stencilColour.a);
+
+					matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+					DrawObject(::vec_pAllEntities[index]->m_Mesh,
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+
+					// reset the texture operator and scale
+					::vec_pAllEntities[index]->m_Mesh->textureOperator = normalTexOp;
+					::vec_pAllEntities[index]->m_Mesh->scale = scale;
+				}
+			}
+			// once all stencil objects are drawn, we can reset the stencil stuff
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glEnable(GL_DEPTH_TEST);
+		}	// now if we drawing the stencil outline there should be an outline around all my entities (minus the torches)
+
 
 		for (unsigned int index = 0; index != vec_pFSMEntities.size(); index++)
 		{
@@ -998,9 +1080,8 @@ int main(int argv, char** argc)
 
 		}//for (unsigned int index
 
-
 		
-
+		
 
 		// Draw Debug objects
 
@@ -1018,6 +1099,7 @@ int main(int argv, char** argc)
 		//                                                    |_|                     
 		// **********************************************************************
 
+		
 
 		if (::g_updateFBOResolution)
 		{

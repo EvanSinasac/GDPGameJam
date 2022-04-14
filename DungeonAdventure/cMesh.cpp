@@ -61,6 +61,8 @@ cMesh::cMesh()
 	this->bHasDiscardTexture;
 
 	this->bIsVisible = true;
+
+	this->bUseStencil = false;
 }
 
 void cMesh::setUniformScale(float uniformScale)

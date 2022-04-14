@@ -3,15 +3,15 @@
 #include <iostream>
 
 cTorchObject::cTorchObject(cMesh* pMesh, unsigned int index)
-	: m_Mesh(pMesh)
-	, lightIndex(index)
+	: lightIndex(index)
 {
 	baseLightAtten = 0.4f;
 	baseLightAtten = 0.08f;
 	baseMeshAtten = 0.75f;
 	timer = 0.0f;
 
-	type = ENTITY_TYPE::OBJECT;
+	type = ENTITY_TYPE::TORCH;
+	this->m_Mesh = pMesh;
 }
 
 cTorchObject::~cTorchObject()

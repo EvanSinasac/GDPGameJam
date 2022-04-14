@@ -17,7 +17,8 @@ bool g_MouseIsInsideWindow = false;
 void handleAsyncKeyboard(GLFWwindow* pWindow, double deltaTime)
 {
    // float cameraMoveSpeed = 50.0f * deltaTime;   //20.0f for space scene
-    float cameraMoveSpeed = 5.0f * deltaTime;   //20.0f for space scene
+    //float cameraMoveSpeed = 5.0f * deltaTime;   //20.0f for space scene
+    float cameraMoveSpeed = 20.0f * deltaTime;   //20.0f for space scene
     float lightMoveSpeed = 5.0f * deltaTime;
 
 

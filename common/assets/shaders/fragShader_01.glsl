@@ -181,11 +181,12 @@ out vec4 pixelOutputSpecular;			// = 4;		rgb, w = power
 const float G_BUFFER_OBJECT_NOT_LIT = 0.0f;
 const float G_BUFFER_LIT = 1.0f;
 
-
 in vec3 fTangentViewPos;
 in vec3 fTangentFragPos;
 in vec3 fTangentLightPos;
 in mat3 fTBN;
+
+uniform vec4 stencilColour;
 
 void main()
 {
@@ -856,6 +857,10 @@ if ( bIsSkyBox )
 
 			vertexDiffuseColour.a = 1.0f;
 
+		}
+		else if (textureOperator == 20)
+		{	// Stencil "Buffer"
+			vertexDiffuseColour = stencilColour;
 		}
 		else
 		{

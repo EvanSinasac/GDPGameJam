@@ -2,7 +2,7 @@
 
 #include "iEntity.h"
 
-#include "cMesh.h"
+
 
 class cTorchObject : public iEntity
 {
@@ -15,7 +15,7 @@ public:
 protected:
 
 private:
-	cMesh* m_Mesh;
+	//cMesh* m_Mesh;
 	unsigned int lightIndex;
 
 	float baseLightAtten;

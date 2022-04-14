@@ -9,6 +9,8 @@ bool g_ObservationMode = true;
 glm::vec3 lastCamPosition = glm::vec3(0.0f);
 glm::vec3 lastCamLookAt = glm::vec3(0.0f, 0.0f, 1.0f);
 
+bool g_bStencilsOn = false;
+
 cShaderManager::cShaderProgram* pShaderProc = NULL;
 
 ResourceManager gResourceManager;

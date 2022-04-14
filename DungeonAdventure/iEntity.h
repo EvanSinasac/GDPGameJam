@@ -1,5 +1,6 @@
 #pragma once
 #include "GLMCommon.h"
+#include "cMesh.h"
 
 static const glm::vec3 vec3NORTH = glm::vec3(0.0f, 0.0f, 2.5f);
 static const glm::vec3 vec3NORTH_EAST = glm::vec3(-2.5f, 0.0f, 2.5f);
@@ -31,6 +32,7 @@ public:
 		ENEMY,
 		TREASURE,
 		OBJECT,
+		TORCH,
 	};
 
 	virtual ~iEntity() {};
@@ -38,4 +40,5 @@ public:
 	virtual void Update(float dt) = 0;
 
 	ENTITY_TYPE type;
+	cMesh* m_Mesh;
 };

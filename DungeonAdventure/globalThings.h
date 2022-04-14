@@ -29,6 +29,8 @@ extern bool g_ObservationMode;
 extern glm::vec3 lastCamPosition;
 extern glm::vec3 lastCamLookAt;
 
+extern bool g_bStencilsOn;
+
 // These are all things that are "project global", 
 //	so need to be visible to many files and parts
 

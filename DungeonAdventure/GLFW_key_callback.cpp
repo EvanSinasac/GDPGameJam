@@ -92,6 +92,11 @@ bool bShowAllLights = false;
         }
     }
 
+    if (key == GLFW_KEY_V && action == GLFW_PRESS)
+    {
+        ::g_bStencilsOn = !::g_bStencilsOn;
+    }
+
     
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {

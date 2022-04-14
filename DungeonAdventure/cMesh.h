@@ -91,6 +91,8 @@ public:
 	// if true, the shader use a combination of discard and alpha transparency when drawing
 	bool bIsImposter;
 
+	bool bUseStencil;
+
 	unsigned int getUniqueID(void);
 
 	// All the "child" mesh objects

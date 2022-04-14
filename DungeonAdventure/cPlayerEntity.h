@@ -17,7 +17,7 @@ public:
 	void Move(std::string directionToMove);
 	void Rotate(std::string directionToRotate);
 
-	cMesh* m_Mesh;
+	//cMesh* m_Mesh;
 
 	glm::vec3 position;
 	glm::vec3 lookAt;

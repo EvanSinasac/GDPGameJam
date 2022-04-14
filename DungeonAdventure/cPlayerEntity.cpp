@@ -21,7 +21,7 @@ cPlayerEntity::cPlayerEntity()
 	this->m_Mesh->clearTextureRatiosToZero();
 	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_Mesh->textureRatios[1] = 1.0f;
-
+	this->m_Mesh->bUseStencil = true;
 
 	type = ENTITY_TYPE::PLAYER;
 }
@@ -42,9 +42,10 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	this->m_Mesh->clearTextureRatiosToZero();
 	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_Mesh->textureRatios[1] = 1.0f;
-
 	this->m_Mesh->bUseWholeObjectDiffuseColour = false;
 	this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(0.6f, 0.2f, 0.6f, 1.0f);
+	this->m_Mesh->bUseStencil = true;
+
 
 	if (lookAt == vec3NORTH)
 	{
