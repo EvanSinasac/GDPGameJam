@@ -910,22 +910,26 @@ int main(int argv, char** argc)
 					{
 					case iEntity::ENTITY_TYPE::PLAYER:
 						stencilColour = glm::vec4(0.0f, 0.3f, 0.7f, 1.0f);
-						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.1f, scale.y * 1.05f, scale.z * 1.1f);
 						break;
 					case iEntity::ENTITY_TYPE::ENEMY:
 						stencilColour = glm::vec4(0.8f, 0.2f, 0.0f, 1.0f);
-						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
 						break;
 					case iEntity::ENTITY_TYPE::OBJECT:
 						stencilColour = glm::vec4(0.2f, 0.8f, 0.0f, 1.0f);
-						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
 						break;
 					case iEntity::ENTITY_TYPE::TREASURE:
 						stencilColour = glm::vec4(1.0f, 1.0f, 0.6f, 1.0f);
-						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
 						break;
 					default:
 						stencilColour = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
+						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
 					}
 
 					// pass the colour to the shader
