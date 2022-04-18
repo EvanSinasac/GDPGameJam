@@ -124,7 +124,21 @@ uniform sampler2D screenTex4VertexSpecular;
 // On the 3rd pass (effects pass), we'll read from this ones
 uniform sampler2D texLightPassColourBuffer;
 
-uniform sampler2D tex2LightPassColourBuffer;
+
+uniform sampler2D tex2VertexMaterialColour;
+uniform sampler2D tex2VertexNormal;
+uniform sampler2D tex2VertexWorldPos;
+uniform sampler2D tex2VertexSpecular;
+
+uniform sampler2D tex2LightPassColourBuffer;	// don't seem to actually be using this so I'll use it for bloom
+uniform bool bloom;
+uniform bool useBloom;
+uniform bool horizontal;
+uniform float weight[5] = float[] ( 0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162 );
+uniform float exposure;
+
+uniform bool calcBloomBrightness;
+uniform sampler2D texBloomBrightness;
 
 uniform vec4 texture2DRatios0to3;
 uniform vec4 texture2DRatios4to7;
@@ -196,6 +210,79 @@ void main()
 	pixelOutputFragColour.rgba = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	//pixelOutputFragColour.a = wholeObjectAlphaTransparency;
 
+	// bloom
+		if (bloom && renderPassNumber != PASS_3_2D_EFFECTS_PASS)
+		{
+			vec2 UVlookup;
+			UVlookup.x = gl_FragCoord.x / screenWidthHeight.x;	// Width
+			UVlookup.y = gl_FragCoord.y / screenWidthHeight.y;	// Height
+			//vec2 tex_offsets = 1.0 / textureSize (texLightPassColourBuffer, 0);
+			vec3 result = pixelOutputFragColour.rgb * weight[0];
+//			if (horizontal)
+//			{
+//				for (int i = 1; i < 5; i++)
+//				{
+//					result += texture ( texBloomBrightness, vec2( UVlookup.x + offset * i, UVlookup.y )).rgb * weight[i];
+//					//result += texture ( texVertexMaterialColour, vec2( UVlookup.x + offset * i, UVlookup.y )).rgb * weight[i];
+//					//result += texture ( texLightPassColourBuffer, UVlookup + vec2(tex_offsets.x * i, 0.0)).rgb * weight[i];
+//					result += texture ( texBloomBrightness, vec2( UVlookup.x - offset * i, UVlookup.y )).rgb * weight[i];
+//					//result += texture ( texVertexMaterialColour, vec2( UVlookup.x - offset * i, UVlookup.y )).rgb * weight[i];
+//					//result += texture ( texLightPassColourBuffer, UVlookup - vec2(tex_offsets.x * i, 0.0)).rgb * weight[i];
+//				}
+//			}
+//			else
+//			{
+//				for (int i = 1; i < 5; i++)
+//				{
+//					result += texture ( texBloomBrightness, vec2( UVlookup.x, UVlookup.y + offset * i)).rgb * weight[i];
+//					//result += texture ( texVertexMaterialColour, vec2( UVlookup.x, UVlookup.y + offset * i)).rgb * weight[i];
+//					//result += texture ( texLightPassColourBuffer, UVlookup + vec2(tex_offsets.y * i, 0.0)).rgb * weight[i];
+//					result += texture ( texBloomBrightness, vec2( UVlookup.x, UVlookup.y - offset * i)).rgb * weight[i];
+//					//result += texture ( texVertexMaterialColour, vec2( UVlookup.x, UVlookup.y - offset * i)).rgb * weight[i];
+//					//result += texture ( texLightPassColourBuffer, UVlookup - vec2(tex_offsets.y * i, 0.0)).rgb * weight[i];
+//				}
+//			}
+
+			for (int i = 1; i < 5; i++)
+			{
+				result += texture( texBloomBrightness, vec2( UVlookup.x + offset / 2.0 * i, UVlookup.y )).rgb * weight[i];
+				result += texture( texBloomBrightness, vec2( UVlookup.x - offset / 2.0 * i, UVlookup.y )).rgb * weight[i];
+				result += texture( texBloomBrightness, vec2( UVlookup.x, UVlookup.y + offset / 2.0 * i)).rgb * weight[i];
+				result += texture( texBloomBrightness, vec2( UVlookup.x, UVlookup.y - offset / 2.0 * i)).rgb * weight[i];
+			}
+
+			pixelOutputFragColour = vec4(result, 1.0);
+
+
+			pixelOutputNormal = vec4(normalize(fNormal.xyz), 1.0f);
+			pixelOutputMaterialColour = vec4(pixelOutputFragColour.rgb, 1.0f);
+			pixelOutputWorldPos = vec4(fVertWorldLocation.xyz, 1.0f);
+			pixelOutputWorldPos.w = G_BUFFER_LIT;
+			pixelOutputSpecular = wholeObjectSpecularColour.rgba;			// = 4;	
+			return;
+		}
+
+	if ( calcBloomBrightness )
+	{	// https://learnopengl.com/Advanced-Lighting/Bloom
+		vec2 UVlookup;
+		UVlookup.x = gl_FragCoord.x / screenWidthHeight.x;	// Width
+		UVlookup.y = gl_FragCoord.y / screenWidthHeight.y;	// Height
+		pixelOutputFragColour.rgb = texture( texLightPassColourBuffer, UVlookup ).rgb;
+		pixelOutputFragColour.a = 1.0f;
+		float brightness = dot( pixelOutputFragColour.rgb, vec3( 0.2126, 0.7152, 0.0722 ));
+		//float brightness = ( pixelOutputFragColour.r + pixelOutputFragColour.g + pixelOutputFragColour.b ) / 3.0;
+		if ( brightness < 0.95 )
+		{
+			pixelOutputFragColour = vec4( 0.0, 0.0, 0.0, 1.0);
+		}
+
+		pixelOutputNormal = vec4(normalize(fNormal.xyz), 1.0f);
+		pixelOutputMaterialColour = vec4(pixelOutputFragColour.rgb, 1.0f);
+		pixelOutputWorldPos = vec4(fVertWorldLocation.xyz, 1.0f);
+		pixelOutputWorldPos.w = G_BUFFER_LIT;
+		pixelOutputSpecular = wholeObjectSpecularColour.rgba;			// = 4;	
+		return;
+	}
 	
 //    _____     ____   ____    _____   __   __              _          ____                  
 //   |___ / _  |___ \ |  _ \  | ____| / _| / _|  ___   ___ | |_  ___  |  _ \  __ _  ___  ___ 
@@ -346,7 +433,7 @@ void main()
 							( texture ( texWindow, UVlookup ).rgb * 0.25);
 		}
 		else if (twoDEffectOperator == 10)
-		{
+		{	// nothing?  puts the no texture texture over the screen.  (I don't remember writing this, but whatever I guess lol)
 			vec2 UV2lookup;
 			UV2lookup.x = gl_FragCoord.x / 10.0f;	// Width
 			UV2lookup.y = gl_FragCoord.y / 10.0f;	// Height
@@ -364,7 +451,30 @@ void main()
 		
 		pixelOutputFragColour.rgb = sampleColour.rgb;
 		pixelOutputFragColour.a = 1.0f;
-		
+
+		//vec3 fragColour = pixelOutputFragColour.rgb;
+
+		vec3 bloomColour = texture(tex2LightPassColourBuffer, UVlookup).rgb;
+
+		if (useBloom)
+		{
+		//vec3 bloomColour = texture (tex2LightPassColourBuffer, UVlookup ).rgb;
+		//vec3 bloomColour = texture (tex2VertexMaterialColour, UVlookup ).rgb;
+			//vec3 bloomColour = texture (tex2LightPassColourBuffer, UVlookup ).rgb;
+			//vec3 bloomColour = texture (texBloomBrightness, UVlookup ).rgb;
+			pixelOutputFragColour.rgb += bloomColour * 0.3;	// bloomWeight
+//			pixelOutputFragColour.rgb += texture (tex2LightPassColourBuffer, UVlookup ).rgb;
+//			vec3 result = vec3(1.0) - exp(-pixelOutputFragColour.rgb * exposure);
+//			result = pow(result, vec3(1.0 / 2.2));
+//			pixelOutputFragColour = vec4(result, 1.0);
+			//pixelOutputFragColour.rgb = texture (tex2LightPassColourBuffer, UVlookup).rgb; 
+			//pixelOutputFragColour.rgb = texture (texBloomBrightness, UVlookup).rgb; 
+		}
+
+		//pixelOutputFragColour.rgb = texture(tex2LightPassColourBuffer, UVlookup).rgb;
+		//pixelOutputFragColour.rgb = texture(tex2VertexMaterialColour, UVlookup).rgb;
+		//pixelOutputFragColour.rgb = texture(texBloomBrightness, UVlookup).rgb;
+
 		// Early exit
 		return;
 	}
@@ -410,8 +520,8 @@ void main()
 
 		//	vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
         //                              vec3 vertexWorldPos, vec4 vertexSpecular );
-		vertSpecular.rgb *= 0.0001f;
-		vertSpecular.rgb += vec3(1.0f);
+		//vertSpecular.rgb *= 0.0001f;
+		//vertSpecular.rgb += vec3(1.0f);
 		
 		vertNormal.xyz = normalize(vertNormal.xyz);
 
@@ -466,19 +576,19 @@ void main()
 //			pixelOutputFragColour.a = wholeObjectAlphaTransparency;
 //			return;
 
-			return;
+			//return;
 		}
-
-
-		pixelOutputFragColour = calcualteLightContrib( vertDiffuse.rgb,	
-		                                               vertNormal.xyz, 		
-		                                               vertWorldPosition.xyz,	
-		                                               vertSpecular.rgba );
-													   
+		else
+		{
+			pixelOutputFragColour = calcualteLightContrib( vertDiffuse.rgb,	
+														   vertNormal.xyz, 		
+														   vertWorldPosition.xyz,	
+														   vertSpecular.rgba );
+		}											   
 
 																
 		pixelOutputFragColour.a = 1.0f;
-		
+
 //		pixelOutputFragColour.rgb *= 0.0001f;	
 //		pixelOutputFragColour.rgb += vertNormal.rgb;
 												

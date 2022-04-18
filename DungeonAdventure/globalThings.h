@@ -23,6 +23,7 @@
 
 extern bool g_updateFBOResolution;
 extern int g_2DEffectOp;
+extern bool g_UseBloom;
 
 
 extern bool g_ObservationMode;

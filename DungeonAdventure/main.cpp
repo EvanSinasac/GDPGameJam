@@ -53,6 +53,8 @@ void DrawObject(
 	GLuint program,
 	cVAOManager* pVAOManager);
 
+void DrawScene1(GLuint program);
+
 bool loadWorldFile(unsigned int& numberOfTransparentObjects);
 bool loadLightsFile();
 
@@ -233,14 +235,24 @@ int main(int argv, char** argc)
 	pShaderProc->mapUniformName_to_UniformLocation["screenWidthHeight"] = glGetUniformLocation(program, "screenWidthHeight");
 
 	pShaderProc->mapUniformName_to_UniformLocation["texVertexMaterialColour"] = glGetUniformLocation(program, "texVertexMaterialColour");
-
 	pShaderProc->mapUniformName_to_UniformLocation["texVertexNormal"] = glGetUniformLocation(program, "texVertexNormal");
-
 	pShaderProc->mapUniformName_to_UniformLocation["texVertexWorldPos"] = glGetUniformLocation(program, "texVertexWorldPos");
-
 	pShaderProc->mapUniformName_to_UniformLocation["texVertexSpecular"] = glGetUniformLocation(program, "texVertexSpecular");
 
 	pShaderProc->mapUniformName_to_UniformLocation["texLightPassColourBuffer"] = glGetUniformLocation(program, "texLightPassColourBuffer");
+	
+	pShaderProc->mapUniformName_to_UniformLocation["tex2VertexMaterialColour"] = glGetUniformLocation(program, "tex2VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["tex2VertexNormal"] = glGetUniformLocation(program, "tex2VertexNormal");
+	pShaderProc->mapUniformName_to_UniformLocation["tex2VertexWorldPos"] = glGetUniformLocation(program, "tex2VertexWorldPos");
+	pShaderProc->mapUniformName_to_UniformLocation["tex2VertexSpecular"] = glGetUniformLocation(program, "tex2VertexSpecular");
+	pShaderProc->mapUniformName_to_UniformLocation["tex2LightPassColourBuffer"] = glGetUniformLocation(program, "tex2LightPassColourBuffer");
+	pShaderProc->mapUniformName_to_UniformLocation["horizontal"] = glGetUniformLocation(program, "horizontal");
+	pShaderProc->mapUniformName_to_UniformLocation["bloom"] = glGetUniformLocation(program, "bloom");
+	pShaderProc->mapUniformName_to_UniformLocation["useBloom"] = glGetUniformLocation(program, "useBloom");
+	pShaderProc->mapUniformName_to_UniformLocation["exposure"] = glGetUniformLocation(program, "exposure");
+
+	pShaderProc->mapUniformName_to_UniformLocation["calcBloomBrightness"] = glGetUniformLocation(program, "calcBloomBrightness");
+	pShaderProc->mapUniformName_to_UniformLocation["texBloomBrightness"] = glGetUniformLocation(program, "texBloomBrightness");
 
 	pShaderProc->mapUniformName_to_UniformLocation["texScope"] = glGetUniformLocation(program, "texScope");
 
@@ -579,7 +591,7 @@ int main(int argv, char** argc)
 	// Set this off screen texture buffer to some random size
 	std::string FBOerrorString;
 	   // if (::g_pFBO->init(1024, 1024, FBOerrorString))
-	    if (::g_pFBO->init(1200, 640, FBOerrorString))
+	if (::g_pFBO->init(1200, 640, FBOerrorString))
 	//    if (::g_pFBO->init( 8 * 1024, 8 * 1024, FBOerrorString))
 	//if (::g_pFBO->init(128, 64, FBOerrorString))
 	{
@@ -588,6 +600,40 @@ int main(int argv, char** argc)
 	else
 	{
 		std::cout << "FBO Error: " << FBOerrorString << std::endl;
+	}
+
+	cFBO* bloomFBO = new cFBO();
+	FBOerrorString = "";
+	if (bloomFBO->init(1200, 640, FBOerrorString))
+	{
+		std::cout << "Bloom FBO good" << std::endl;
+	}
+	else
+	{
+		std::cout << "Bloom FBO error: " << FBOerrorString << std::endl;
+	}
+
+
+	cFBO* pingFBO = new cFBO();
+	cFBO* pongFBO = new cFBO();
+
+	FBOerrorString = "";
+	if (pingFBO->init(1200, 640, FBOerrorString))
+	{
+		std::cout << "pingFBO good" << std::endl;
+	}
+	else
+	{
+		std::cout << "pingFBO error: " << FBOerrorString << std::endl;
+	}
+	FBOerrorString = "";
+	if (pongFBO->init(1200, 640, FBOerrorString))
+	{
+		std::cout << "pongFBO good" << std::endl;
+	}
+	else
+	{
+		std::cout << "pongFBO error: " << FBOerrorString << std::endl;
 	}
 
 	// Clear the OG back buffer once, BEFORE we render anything
@@ -643,8 +689,233 @@ int main(int argv, char** argc)
 			::vec_pFSMEntities[index]->Update(deltaTime);
 		}
 
+		if (::g_UseBloom)
+		{
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["useBloom"], (float)GL_TRUE);
+		}
+		else
+		{
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["useBloom"], (float)GL_FALSE);
+		}
 		// this was where I made the other FBO objects, deleted for AI
+		// alright, time to do this the way I know how
+		{
+			// bright bloom colour FBO
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_1_G_BUFFER_PASS);
+			glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO->ID);
 
+			glViewport(0, 0, bloomFBO->width, bloomFBO->height);
+			ratio = bloomFBO->width / (float)bloomFBO->height;
+
+			glEnable(GL_DEPTH);         // Turns on the depth buffer
+			glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+
+			bloomFBO->clearBuffers(true, true);
+
+			matProjection = glm::perspective(0.6f,	// FOV variable later
+				ratio,
+				0.1f,								// Near plane
+				1'000'000.0f);						// Far plane
+
+			matView = glm::mat4(1.0f);
+
+			if (!::g_ObservationMode)
+			{
+				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			//else
+			//{
+			matView = glm::lookAt(::cameraEye,
+				::cameraEye + ::cameraTarget,
+				upVector);
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"], 1, GL_FALSE, glm::value_ptr(matProjection));
+		
+			// don't really want to blur the skybox so let's just not draw it for the FBO
+			//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bIsSkyBox"], (GLfloat)GL_TRUE);
+
+			//glDisable(GL_DEPTH_TEST);     // Disable depth test (always write to colour buffer)
+			//glDepthMask(GL_FALSE);          // Disable write to depth buffer
+			//// Move the "skybox object" with the camera
+			//sphereSky->positionXYZ = ::cameraEye;
+			////DrawObject(sphereSky, glm::mat4(1.0f),
+			////	matModel_Location, matModelInverseTranspose_Location,
+			////	program, ::g_pVAOManager);
+
+			//DrawObject(sphereSky, glm::mat4(1.0f),
+			//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+			//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+			//	program,
+			//	::g_pVAOManager);
+
+			////glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_FALSE);
+			//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bIsSkyBox"], (GLfloat)GL_FALSE);
+			////
+			//glEnable(GL_DEPTH_TEST);
+			//glDepthMask(GL_TRUE);
+			//// *********************************************************************
+			
+			// Draw the scene using the calcBloomBrightness to create a texture that highlights the brightest parts of the scene
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["calcBloomBrightness"], (float)GL_TRUE);
+			DrawScene1(program);
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["calcBloomBrightness"], (float)GL_FALSE);
+		
+			matView = glm::mat4(1.0f);
+
+			if (!::g_ObservationMode)
+			{
+				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			//else
+			//{
+			matView = glm::lookAt(::cameraEye,
+				::cameraEye + ::cameraTarget,
+				upVector);
+
+			matProjection = glm::ortho(
+				0.0f,   // Left
+				1.0f / (float)width,  // Right
+				0.0f,   // Top
+				1.0f / (float)height, // Bottom
+				0.1f, // zNear  Eye is at 450, quad is at 500, so 50 units away
+				70.0f); // zFar
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matProjection"),
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint screenWidthHeight_locID = glGetUniformLocation(program, "screenWidthHeight");
+			glUniform2f(screenWidthHeight_locID, (float)bloomFBO->width, (float)bloomFBO->height);
+
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+
+			GLuint FSO_bloomVertexMaterialColour_TextureUnit = 17;
+			glActiveTexture(FSO_bloomVertexMaterialColour_TextureUnit + GL_TEXTURE0);
+			GLuint bloomVertexMaterialTextureNumber = bloomFBO->vertexMaterialColour_1_ID;
+			glBindTexture(GL_TEXTURE_2D, bloomVertexMaterialTextureNumber);
+			GLint FSQ_bloomVertexMaterialColour2SamplerID = glGetUniformLocation(program, "texBloomBrightness");
+			glUniform1i(FSQ_bloomVertexMaterialColour2SamplerID, FSO_bloomVertexMaterialColour_TextureUnit);
+
+			glCullFace(GL_FRONT);
+
+			// texture should now be bound, if there's any colours
+			// cewl it works, now I need to do the blur effect
+		}
+
+		{
+		// use the ping pong buffers to perform a Gaussian blur
+		// except that the way I'm doing it I don't really need to use both, so I'mma try to get away with just using one
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_1_G_BUFFER_PASS);
+			glBindFramebuffer(GL_FRAMEBUFFER, pingFBO->ID);
+
+			glViewport(0, 0, pingFBO->width, pingFBO->height);
+			ratio = pingFBO->width / (float)pingFBO->height;
+
+			glEnable(GL_DEPTH);         // Turns on the depth buffer
+			glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+			
+			pingFBO->clearBuffers(true, true);
+
+			matProjection = glm::perspective(0.6f,	// FOV variable later
+				ratio,
+				0.1f,								// Near plane
+				1'000'000.0f);						// Far plane
+
+			matView = glm::mat4(1.0f);
+			if (!::g_ObservationMode)
+			{
+				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			//else
+			//{
+			matView = glm::lookAt(::cameraEye,
+				::cameraEye + ::cameraTarget,
+				upVector);
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"], 1, GL_FALSE, glm::value_ptr(matProjection));
+
+			// Draw the scene 10 times using bloom and store the resulting texture in the fbo
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bloom"], (float)GL_TRUE);
+			//bool horizontal = true;
+			//unsigned int amount = 10;
+			//for (unsigned int index = 0; index < amount; index++)
+			//{
+				//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["horizontal"], horizontal ? (float)GL_TRUE : (float)GL_FALSE);
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["exposure"], 1.0f);
+				DrawScene1(program);
+
+				glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+				GLuint FSO_pingVertexMaterialColour_TextureUnit = 18;
+				glActiveTexture(FSO_pingVertexMaterialColour_TextureUnit + GL_TEXTURE0);
+				GLuint pingVertexMaterialTextureNumber = pingFBO->vertexMaterialColour_1_ID;
+				glBindTexture(GL_TEXTURE_2D, pingVertexMaterialTextureNumber);
+				GLint FSQ_pingVertexMaterialColour2SamplerID = glGetUniformLocation(program, "tex2LightPassColourBuffer");
+				glUniform1i(FSQ_pingVertexMaterialColour2SamplerID, FSO_pingVertexMaterialColour_TextureUnit);
+
+				//horizontal = !horizontal;
+			//}
+			
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bloom"], (float)GL_FALSE);
+
+			matView = glm::mat4(1.0f);
+
+			if (!::g_ObservationMode)
+			{
+				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			//else
+			//{
+			matView = glm::lookAt(::cameraEye,
+				::cameraEye + ::cameraTarget,
+				upVector);
+
+			matProjection = glm::ortho(
+				0.0f,   // Left
+				1.0f / (float)width,  // Right
+				0.0f,   // Top
+				1.0f / (float)height, // Bottom
+				0.1f, // zNear  Eye is at 450, quad is at 500, so 50 units away
+				70.0f); // zFar
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matProjection"),
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint screenWidthHeight_locID = glGetUniformLocation(program, "screenWidthHeight");
+			glUniform2f(screenWidthHeight_locID, (float)bloomFBO->width, (float)bloomFBO->height);
+
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+
+			GLuint FSO_bloomVertexMaterialColour_TextureUnit = 17;
+			glActiveTexture(FSO_bloomVertexMaterialColour_TextureUnit + GL_TEXTURE0);
+			GLuint bloomVertexMaterialTextureNumber = bloomFBO->vertexMaterialColour_1_ID;
+			glBindTexture(GL_TEXTURE_2D, bloomVertexMaterialTextureNumber);
+			GLint FSQ_bloomVertexMaterialColour2SamplerID = glGetUniformLocation(program, "texBloomBrightness");
+			glUniform1i(FSQ_bloomVertexMaterialColour2SamplerID, FSO_bloomVertexMaterialColour_TextureUnit);
+
+			glCullFace(GL_FRONT);
+			
+		}
 		
 		
 		// Set pass to #0
@@ -1113,6 +1384,21 @@ int main(int argv, char** argc)
 			{
 				std::cout << errorString << std::endl;
 			}
+			errorString = "";
+			if (!bloomFBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
+			errorString = "";
+			if (!pingFBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
+			errorString = "";
+			if (!pongFBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
 			::g_updateFBOResolution = false;
 		}
 
@@ -1230,7 +1516,7 @@ int main(int argv, char** argc)
 
 			GLuint FSO_texVertexSpecular_TextureUnit = 8;	    // I picked 8 just because
 			glActiveTexture(FSO_texVertexSpecular_TextureUnit + GL_TEXTURE0);
-			GLuint texVertexSpecularTextureNumber = ::g_pFBO->vertexWorldPos_3_ID;
+			GLuint texVertexSpecularTextureNumber = ::g_pFBO->vertexSpecular_4_ID;
 			glBindTexture(GL_TEXTURE_2D, texVertexSpecularTextureNumber);
 			// uniform sampler2D texVertexSpecular;
 			//GLint FSQ_VertexSpecularSamplerID = glGetUniformLocation(program, "texVertexSpecular");
@@ -1257,6 +1543,142 @@ int main(int argv, char** argc)
 				::g_pVAOManager);
 
 		}// ENDOF: 2nd (lighting pass)
+
+		// ok, the entire scene is drawn, now I want to create a brightness texture
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["calcBloomBrightness"], (float)GL_TRUE);
+
+		//glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO->ID);
+		//bloomFBO->clearBuffers(true, true);
+		////glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		//glCullFace(GL_FRONT);
+		//matModel = glm::mat4(1.0f);
+		//DrawObject(::g_pFullScreenQuad,
+		//	matModel,
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//	program,
+		//	::g_pVAOManager);
+
+		//GLuint FSO_bloomVertexMaterial_TextureUnit = 22;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//glActiveTexture(FSO_bloomVertexMaterial_TextureUnit + GL_TEXTURE0);
+		//GLuint bloomVertexMaterial_TextureNumber = bloomFBO->vertexMaterialColour_1_ID;
+		//glBindTexture(GL_TEXTURE_2D, bloomVertexMaterial_TextureNumber);
+		//glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["texBloomBrightness"], FSO_bloomVertexMaterial_TextureUnit);
+
+		//
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["calcBloomBrightness"], (float)GL_FALSE);
+
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bloom"], (float)GL_TRUE);
+		//if (::g_UseBloom)
+		//{	// world has been drawn and lighting has been calculated.  Now I need to calculate bloom
+
+		//	bool horizontal = true, first_iteration = true;
+		//	unsigned int amount = 10;
+		//	glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["exposure"], 1.0f);
+		//	for (unsigned int index = 0; index < amount; index++)
+		//	{
+		//		glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["horizontal"], horizontal ? (float)GL_TRUE : (float)GL_FALSE);
+		//		if (index % 2 == 0)
+		//		{
+		//			glBindFramebuffer(GL_FRAMEBUFFER, pingFBO->ID);
+
+		//			pingFBO->clearBuffers(true, true);
+
+		//			GLuint FSO_pingVertexMaterial_TextureUnit = 14;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pingVertexMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pingVertexMaterial_TextureNumber = pingFBO->vertexMaterialColour_1_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pingVertexMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexMaterialColour"], FSO_pingVertexMaterial_TextureUnit);
+
+		//			GLuint FSO_pingNormalMaterial_TextureUnit = 15;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pingNormalMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pingNormalMaterial_TextureNumber = pingFBO->vertexNormal_2_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pingNormalMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexNormal"], FSO_pingNormalMaterial_TextureUnit);
+
+		//			GLuint FSO_pingWorldPosMaterial_TextureUnit = 16;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pingWorldPosMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pingWorldPosMaterial_TextureNumber = pingFBO->vertexWorldPos_3_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pingWorldPosMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexWorldPos"], FSO_pingWorldPosMaterial_TextureUnit);
+
+		//			GLuint FSO_pingSpecularMaterial_TextureUnit = 17;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pingSpecularMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pingSpecularMaterial_TextureNumber = pingFBO->vertexSpecular_4_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pingSpecularMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexSpecular"], FSO_pingSpecularMaterial_TextureUnit);
+
+		//			glCullFace(GL_FRONT);
+		//			matModel = glm::mat4(1.0f);
+		//			DrawObject(::g_pFullScreenQuad,
+		//				matModel,
+		//				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//				program,
+		//				::g_pVAOManager);
+
+		//			// uniform sampler2D texLightPassColourBuffer;
+		//			//GLint FSQ_textureSamplerID = glGetUniformLocation(program, "tex2LightPassColourBuffer");
+		//			//glUniform1i(FSQ_textureSamplerID, FSQ_textureUnit);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2LightPassColourBuffer"], FSO_pingVertexMaterial_TextureUnit);
+
+
+		//			//glBindTexture(GL_TEXTURE_2D, pingFBO->colourTexture_0_ID);
+		//		}
+		//		else
+		//		{
+		//			glBindFramebuffer(GL_FRAMEBUFFER, pongFBO->ID);
+
+		//			pongFBO->clearBuffers(true, true);
+
+		//			GLuint FSO_pongVertexMaterial_TextureUnit = 18;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pongVertexMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pongVertexMaterial_TextureNumber = pongFBO->vertexMaterialColour_1_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pongVertexMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexMaterialColour"], FSO_pongVertexMaterial_TextureUnit);
+
+		//			GLuint FSO_pongNormalMaterial_TextureUnit = 19;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pongNormalMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pongNormalMaterial_TextureNumber = pongFBO->vertexNormal_2_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pongNormalMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexNormal"], FSO_pongNormalMaterial_TextureUnit);
+
+		//			GLuint FSO_pongWorldPosMaterial_TextureUnit = 20;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pongWorldPosMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pongWorldPosMaterial_TextureNumber = pongFBO->vertexWorldPos_3_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pongWorldPosMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexWorldPos"], FSO_pongWorldPosMaterial_TextureUnit);
+
+		//			GLuint FSO_pongSpecularMaterial_TextureUnit = 21;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		//			glActiveTexture(FSO_pongSpecularMaterial_TextureUnit + GL_TEXTURE0);
+		//			GLuint pongSpecularMaterial_TextureNumber = pongFBO->vertexSpecular_4_ID;
+		//			glBindTexture(GL_TEXTURE_2D, pongSpecularMaterial_TextureNumber);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2VertexSpecular"], FSO_pongSpecularMaterial_TextureUnit);
+
+		//			glCullFace(GL_FRONT);
+		//			matModel = glm::mat4(1.0f);
+		//			DrawObject(::g_pFullScreenQuad,
+		//				matModel,
+		//				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//				program,
+		//				::g_pVAOManager);
+
+		//			 //uniform sampler2D texLightPassColourBuffer;
+		//			//GLint FSQ_textureSamplerID = glGetUniformLocation(program, "tex2LightPassColourBuffer");
+		//			//glUniform1i(FSQ_textureSamplerID, FSQ_textureUnit);
+		//			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["tex2LightPassColourBuffer"], FSO_pongVertexMaterial_TextureUnit);
+
+		//			glBindTexture(GL_TEXTURE_2D, pongFBO->colourTexture_0_ID);
+		//		}
+
+		//		
+		//		horizontal = !horizontal;
+		//	}
+
+		//}
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bloom"], (float)GL_FALSE);
 
 		//    _____     ____   ____    _____   __   __              _          ____                  
 		//   |___ / _  |___ \ |  _ \  | ____| / _| / _|  ___   ___ | |_  ___  |  _ \  __ _  ___  ___ 
@@ -1320,7 +1742,7 @@ int main(int argv, char** argc)
 
 		// Set the FBO colour texture to be the texture source for this quad
 
-		GLuint FSQ_textureUnit = 7;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
+		GLuint FSQ_textureUnit = 9;	    // We picked 7 just because yolo (i.e. it doesn't matter, we just had to pick one)
 		glActiveTexture(FSQ_textureUnit + GL_TEXTURE0);
 		GLuint TextureNumber = ::g_pFBO->colourTexture_0_ID;
 		glBindTexture(GL_TEXTURE_2D, TextureNumber);
@@ -1332,7 +1754,7 @@ int main(int argv, char** argc)
 
 		if (::g_2DEffectOp == 8)
 		{
-			GLuint FSQ_textureUnit1 = 8;
+			GLuint FSQ_textureUnit1 = 10;
 			glActiveTexture(FSQ_textureUnit1 + GL_TEXTURE0);
 			GLuint TextureNumber1 = ::g_pTextureManager->getTextureIDFromName("Scope.bmp");
 			glBindTexture(GL_TEXTURE_2D, TextureNumber1);
@@ -1343,7 +1765,7 @@ int main(int argv, char** argc)
 		}
 		else if (::g_2DEffectOp == 9)
 		{
-			GLuint FSQ_textureUnit1 = 9;
+			GLuint FSQ_textureUnit1 = 11;
 			glActiveTexture(FSQ_textureUnit1 + GL_TEXTURE0);
 			GLuint TextureNumber1 = ::g_pTextureManager->getTextureIDFromName("Window.bmp");
 			glBindTexture(GL_TEXTURE_2D, TextureNumber1);
@@ -1403,6 +1825,8 @@ int main(int argv, char** argc)
 		//	matModelInverseTranspose_Location,
 		//	program,
 		//	::g_pVAOManager);
+
+		
 
 		DrawObject(::g_pFullScreenQuad,
 			matModel,

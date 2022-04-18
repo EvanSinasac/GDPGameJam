@@ -97,6 +97,11 @@ bool bShowAllLights = false;
         ::g_bStencilsOn = !::g_bStencilsOn;
     }
 
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        ::g_UseBloom = !::g_UseBloom;
+    }
+
     
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {

@@ -6,7 +6,7 @@ Camera(x,y,z) 50 10 50 1 0 0
 SM_Env_Consoles_01_xyz_n_rgba_uv.ply -115 72.5 82.5 0 -90 0 1 1 1 244 244 244 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null
 
 SM_Env_Consoles_Corner_01_xyz_n_rgba_uv.ply -120 72.5 72.5 0 -90 0 1 1 1 244 244 244 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null
-SM_Env_Consoles_Corner_01_xyz_n_rgba_uv.ply -120 72.5 87.55 0 -90 0 -1 1 1 244 244 244 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null
+SM_Env_Consoles_Corner_01_xyz_n_rgba_uv.ply -120 72.5 87.5 0 -90 0 -1 1 1 244 244 244 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null
 
 SM_Env_Floor_01_xyz_n_rgba_uv.ply -115 72.5 82.5 0 -90 0 1 1 1 255 255 255 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null
 SM_Env_Floor_01_xyz_n_rgba_uv.ply -115 72.5 87.5 0 -90 0 1 1 1 255 255 255 1 0 1 0 SpaceInteriors_Texture.bmp 1 null 0 null 0 null

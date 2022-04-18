@@ -3,6 +3,7 @@
 
 bool g_updateFBOResolution = false;
 int g_2DEffectOp = 0;
+bool g_UseBloom = false;
 
 
 bool g_ObservationMode = true;
