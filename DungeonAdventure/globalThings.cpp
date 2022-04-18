@@ -6,7 +6,10 @@ int g_2DEffectOp = 0;
 bool g_UseBloom = false;
 
 
+unsigned int g_Mode = 0;
 bool g_ObservationMode = true;
+extern bool g_FirstPersonMode = false;
+extern bool g_OverheadMode = false;
 glm::vec3 lastCamPosition = glm::vec3(0.0f);
 glm::vec3 lastCamLookAt = glm::vec3(0.0f, 0.0f, 1.0f);
 

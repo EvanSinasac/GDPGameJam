@@ -728,31 +728,31 @@ void DrawScene1(GLuint program)
 		}
 	}
 
-	for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
-	{
-		matModel = glm::mat4(1.0f);
-		if (!::g_ObservationMode)
-		{
-			if (glm::distance(::g_vec_pNodes[index]->positionXYZ, ::cameraEye) < 75.0f)
-			{
-				DrawObject(::g_vec_pNodes[index],
-					matModel,
-					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-					program,
-					::g_pVAOManager);
-			}
-		}
-		else
-		{
-			DrawObject(::g_vec_pNodes[index],
-				matModel,
-				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-				program,
-				::g_pVAOManager);
-		}
-	}
+	//for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
+	//{
+	//	matModel = glm::mat4(1.0f);
+	//	if (!::g_ObservationMode)
+	//	{
+	//		if (glm::distance(::g_vec_pNodes[index]->positionXYZ, ::cameraEye) < 75.0f)
+	//		{
+	//			DrawObject(::g_vec_pNodes[index],
+	//				matModel,
+	//				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//				program,
+	//				::g_pVAOManager);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		DrawObject(::g_vec_pNodes[index],
+	//			matModel,
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//			program,
+	//			::g_pVAOManager);
+	//	}
+	//}
 
 	// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
 	// so, there's an extra model without the model itself being loaded on the list of meshes that gets drawn last

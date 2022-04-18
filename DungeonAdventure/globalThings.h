@@ -25,8 +25,10 @@ extern bool g_updateFBOResolution;
 extern int g_2DEffectOp;
 extern bool g_UseBloom;
 
-
+extern unsigned int g_Mode;
 extern bool g_ObservationMode;
+extern bool g_FirstPersonMode;
+extern bool g_OverheadMode;
 extern glm::vec3 lastCamPosition;
 extern glm::vec3 lastCamLookAt;
 

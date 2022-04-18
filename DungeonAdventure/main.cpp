@@ -832,13 +832,31 @@ int main(int argv, char** argc)
 				1'000'000.0f);						// Far plane
 
 			matView = glm::mat4(1.0f);
-			if (!::g_ObservationMode)
+			//if (!::g_ObservationMode)
+			//{
+			//	glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+			//	::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+			//		((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+			//		((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+			//	::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			//}
+			if (::g_FirstPersonMode)
 			{
 				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
 				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
 					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
 					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
 				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			else if (::g_OverheadMode)
+			{
+				glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+				normLookAt.y = -100.0f;
+				normLookAt = glm::normalize(normLookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+					((cPlayerEntity*)::g_pPlayer)->position.z);
+				::cameraTarget = normLookAt;
 			}
 			//else
 			//{
@@ -876,13 +894,31 @@ int main(int argv, char** argc)
 
 			matView = glm::mat4(1.0f);
 
-			if (!::g_ObservationMode)
+			//if (!::g_ObservationMode)
+			//{
+			//	glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
+			//	::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
+			//		((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
+			//		((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
+			//	::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			//}
+			 if (::g_FirstPersonMode)
 			{
 				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
 				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
 					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
 					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
 				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			else if (::g_OverheadMode)
+			{
+				glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+				normLookAt.y = -100.0f;
+				normLookAt = glm::normalize(normLookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+					((cPlayerEntity*)::g_pPlayer)->position.z);
+				::cameraTarget = normLookAt;
 			}
 			//else
 			//{
@@ -999,13 +1035,23 @@ int main(int argv, char** argc)
 
 		matView = glm::mat4(1.0f);
 
-		if (!::g_ObservationMode)
+		if (::g_FirstPersonMode)
 		{
 			glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
 			::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
 				((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
 				((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
 			::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+		}
+		else if (::g_OverheadMode)
+		{
+			glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			normLookAt.y = -100.0f;
+			normLookAt = glm::normalize(normLookAt);
+			::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+				((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+				((cPlayerEntity*)::g_pPlayer)->position.z);
+			::cameraTarget = normLookAt;
 		}
 		//else
 		//{
@@ -1881,8 +1927,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = ypos;
 		firstMouse = false;
 	}
-	//if (::g_ObservationMode)
-	//{
+	if (::g_ObservationMode)
+	{
 		//find the offset of where the mouse positions have moved
 		float xOffset = xpos - lastX;
 		float yOffset = lastY - ypos;
@@ -1906,7 +1952,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		direction.y = sin(glm::radians(::cameraPitch));
 		direction.z = sin(glm::radians(::cameraYaw)) * cos(glm::radians(::cameraPitch));
 		::cameraTarget = glm::normalize(direction);
-	//}
+	}
 } //fly ::camera
 
 // GRAPHICS 2 Midterm

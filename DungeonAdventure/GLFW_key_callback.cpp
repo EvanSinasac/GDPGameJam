@@ -128,20 +128,54 @@ bool bShowAllLights = false;
 
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
     {
-        ::g_ObservationMode = !::g_ObservationMode;
-        if (::g_ObservationMode)
+        ::g_Mode++;
+        if (::g_Mode > 2)
         {
+            ::g_Mode = 0;
+        }
+        switch (::g_Mode)
+        {
+        case 0:
+            ::g_ObservationMode = true;
+            ::g_FirstPersonMode = false;
+            ::g_OverheadMode = false;
             ::cameraEye = ::lastCamPosition;
             ::cameraTarget = ::lastCamLookAt;
-        }
-        else
-        {
+            break;
+        case 1:
+            ::g_ObservationMode = false;
+            ::g_FirstPersonMode = true;
+            ::g_OverheadMode = false;
             ::lastCamPosition = ::cameraEye;
             ::lastCamLookAt = ::cameraTarget;
             // set cameraEye and cameraTarget to player position
             ::cameraEye = ((cPlayerEntity*)::g_pPlayer)->position;
             ::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+            break;
+        case 2:
+            ::g_ObservationMode = false;
+            ::g_FirstPersonMode = false;
+            ::g_OverheadMode = true;
+            // set cameraEye and cameraTarget to above
+            ::cameraEye = ((cPlayerEntity*)::g_pPlayer)->position + glm::vec3(0.0f, 15.0f, 0.0f);
+            ::cameraTarget = glm::vec3(0.0f, -1.0f, 0.0f);
+            break;
+        default:
+            break;
         }
+        //if (::g_ObservationMode)
+        //{
+        //    ::cameraEye = ::lastCamPosition;
+        //    ::cameraTarget = ::lastCamLookAt;
+        //}
+        //else
+        //{
+        //    ::lastCamPosition = ::cameraEye;
+        //    ::lastCamLookAt = ::cameraTarget;
+        //    // set cameraEye and cameraTarget to player position
+        //    ::cameraEye = ((cPlayerEntity*)::g_pPlayer)->position;
+        //    ::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+        //}
     }
 
     if (key == GLFW_KEY_0 && action == GLFW_PRESS)
