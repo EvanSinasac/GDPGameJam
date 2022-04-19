@@ -6,7 +6,7 @@ Graph::Graph()
 
 }
 
-void Graph::CreateNode(unsigned int id, Vertex position, bool bHasGoal)
+Node* Graph::CreateNode(unsigned int id, glm::vec3 position, bool bHasGoal)
 {
 	Node* node = new Node();
 	node->id = id;
@@ -20,9 +20,10 @@ void Graph::CreateNode(unsigned int id, Vertex position, bool bHasGoal)
 	node->isHomeBase = false;
 
 	this->nodes.push_back(node);
+	return node;
 }
 
-void Graph::CreateNode(unsigned int id, Vertex position, std::string typ, bool isHomeBase, bool bHasGoal, bool bIsExit)
+Node* Graph::CreateNode(unsigned int id, glm::vec3 position, std::string typ, bool isHomeBase, bool bHasGoal, bool bIsExit)
 {
 	Node* node = new Node();
 	node->id = id;
@@ -37,6 +38,7 @@ void Graph::CreateNode(unsigned int id, Vertex position, std::string typ, bool i
 	node->isExit = bIsExit;
 
 	this->nodes.push_back(node);
+	return node;
 }
 
 void Graph::AddEdge(Node* origin, Node* destination, float weight, bool bUndirected)

@@ -148,6 +148,7 @@
     <ClCompile Include="..\common\glad.c" />
     <ClCompile Include="BMPImage.cpp" />
     <ClCompile Include="cDungeonMeshBuilder.cpp" />
+    <ClCompile Include="cEntityBuilder.cpp" />
     <ClCompile Include="cFBO\cFBO.cpp" />
     <ClCompile Include="cFSMEntity.cpp" />
     <ClCompile Include="cGLFWKeyboadModifiers.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cTorchObject.cpp" />
     <ClCompile Include="cVAOManager.cpp" />
+    <ClCompile Include="cWanderEnemy.cpp" />
     <ClCompile Include="DrawObject_function.cpp" />
     <ClCompile Include="FSMState.cpp" />
     <ClCompile Include="FSMSystem.cpp" />
@@ -178,8 +180,12 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ReturnState.cpp" />
     <ClCompile Include="SearchState.cpp" />
+    <ClCompile Include="sFSMState.cpp" />
+    <ClCompile Include="sFSMSystem.cpp" />
     <ClCompile Include="Shutdown.cpp" />
+    <ClCompile Include="sIdleState.cpp" />
     <ClCompile Include="StartUp.cpp" />
+    <ClCompile Include="sWanderState.cpp" />
     <ClCompile Include="TextureMapping\C24BitBMPpixel.cpp" />
     <ClCompile Include="TextureMapping\cBasicTextureManager.cpp" />
     <ClCompile Include="TextureMapping\CTextureFromBMP.cpp" />
@@ -187,6 +193,7 @@
   <ItemGroup>
     <ClInclude Include="BMPImage.h" />
     <ClInclude Include="cDungeonMeshBuilder.h" />
+    <ClInclude Include="cEntityBuilder.h" />
     <ClInclude Include="cFBO\cFBO.h" />
     <ClInclude Include="cFSMEntity.h" />
     <ClInclude Include="cLightHelper.h" />
@@ -198,6 +205,7 @@
     <ClInclude Include="cShaderManager.h" />
     <ClInclude Include="cTorchObject.h" />
     <ClInclude Include="cVAOManager.h" />
+    <ClInclude Include="cWanderEnemy.h" />
     <ClInclude Include="FSMState.h" />
     <ClInclude Include="FSMSystem.h" />
     <ClInclude Include="GatherState.h" />
@@ -213,11 +221,15 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ReturnState.h" />
     <ClInclude Include="SearchState.h" />
+    <ClInclude Include="sFSMState.h" />
+    <ClInclude Include="sFSMSystem.h" />
+    <ClInclude Include="sIdleState.h" />
     <ClInclude Include="sVertex_types.h" />
     <ClInclude Include="TextureMapping\C24BitBMPpixel.h" />
     <ClInclude Include="TextureMapping\cBasicTextureManager.h" />
     <ClInclude Include="TextureMapping\CTextureFromBMP.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="sWanderState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\common\assets\lights.txt" />

@@ -1,5 +1,6 @@
 #include "globalThings.h"
 #include "cDungeonMeshBuilder.h"
+#include "cEntityBuilder.h"
 #include <sstream>
 #include <iostream>
 
@@ -16,7 +17,18 @@ void MakeFSMEntities(std::vector<glm::vec3> spawnPoints)
 	}
 }
 
-bool loadTSVGrid()
+void SpawnEntities(std::vector<Node*> spawnPoints)
+{
+	cEntityBuilder entityBuilder;
+	for (unsigned int index = 0; index != spawnPoints.size(); index++)
+	{
+		if (spawnPoints[index]->type == "E")
+			::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WANDER_ENEMY,
+				spawnPoints[index]->position, spawnPoints[index]));
+	}
+}
+
+bool loadTSVGrid(std::vector<Node*> spawnPoints)
 {
 	cDungeonMeshBuilder main_DungeonBuilder;
 	float scale = 1.0f;			// not sure if I need this, I don't think I do
@@ -92,6 +104,9 @@ bool loadTSVGrid()
 	// SD/SDD - down stairs
 	// SU/SUU - up stairs
 	// - - wall
+	// E - enemy spawn
+	// O - object (furniture) spawn
+	// T - treasure spawn
 
 	//cDungeonMeshBuilder dungeonBuilder;
 
@@ -293,7 +308,10 @@ bool loadTSVGrid()
 				}
 				::g_vec_pMeshes.push_back(newMesh);
 			}	// end of stairs
-			else if (grid[x][y] == "F")		// regular floor, check and place walls if necessarry
+			else if (	grid[x][y] == "F" || 
+						grid[x][y] == "E" ||
+						grid[x][y] == "T" ||
+						grid[x][y] == "O")		// regular floor, check and place walls if necessarry. spawnpoints will be handled as well
 			{
 				newMesh = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
 
@@ -363,8 +381,10 @@ bool loadTSVGrid()
 				}
 				else
 				{
-					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
+					Node* temp = ::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
 						grid[x][y], false, false, false);
+					if (grid[x][y] == "E" || grid[x][y] == "T" || grid[x][y] == "O")
+						spawnPoints.push_back(temp);
 				}
 				//else if (grid[x][y] == "FS")
 				//{
@@ -487,6 +507,8 @@ bool loadTSVGrid()
 	//::g_Graph->PrintGraph();
 
 	MakeNodeMeshes();
+
+	SpawnEntities(spawnPoints);
 
 	return true;
 }	//end of loadTSVGrid
@@ -616,6 +638,19 @@ void DrawObject(
 void DrawScene1(GLuint program)
 {
 	glm::mat4 matModel = glm::mat4(1.0f);
+	for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+	{
+		matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+		if (::vec_pAllEntities[index]->type != iEntity::ENTITY_TYPE::PLAYER)
+		{
+			DrawObject(::vec_pAllEntities[index]->m_Mesh,
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
+	}
 	//if (::g_bStencilsOn)
 	//{
 	//	glStencilFunc(GL_ALWAYS, 1, 0xFF);	// enable the stencil buffer and update it for the player and non-torch entities

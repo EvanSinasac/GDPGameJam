@@ -42,7 +42,8 @@ unsigned int numberOfTransparentObjects = 0;
 std::vector<std::string> modelLocations;
 
 //std::vector<cFSMEntity*> vec_pFSMEntities;
-std::vector<glm::vec3> spawnPoints;
+//std::vector<glm::vec3> spawnPoints;
+std::vector<Node*> spawnPoints;
 
 //Function signature for DrawObject()
 void DrawObject(
@@ -68,7 +69,9 @@ bool loadDefaultSkyBox();
 //void MakeGraphAndMeshes();
 void MakeFSMEntities(std::vector<glm::vec3> spawnPoints);
 
-bool loadTSVGrid();			// modified version from Graphics 1 Final
+//void SpawnEntities(std::vector<Node*> spawnPoints);
+
+bool loadTSVGrid(std::vector<Node*> spawnPoints);			// modified version from Graphics 1 Final
 
 // AI Project 3
 //char GetColourCharacter(unsigned char r, unsigned char g, unsigned char b);
@@ -400,7 +403,7 @@ int main(int argv, char** argc)
 	//                                                                                                 
 	//        
 
-	if (loadTSVGrid())
+	if (loadTSVGrid(spawnPoints))
 	{
 		std::cout << "loadTSVGrid finished OK" << std::endl;
 	}
@@ -615,7 +618,7 @@ int main(int argv, char** argc)
 
 
 	cFBO* pingFBO = new cFBO();
-	cFBO* pongFBO = new cFBO();
+	//cFBO* pongFBO = new cFBO();
 
 	FBOerrorString = "";
 	if (pingFBO->init(1200, 640, FBOerrorString))
@@ -627,14 +630,14 @@ int main(int argv, char** argc)
 		std::cout << "pingFBO error: " << FBOerrorString << std::endl;
 	}
 	FBOerrorString = "";
-	if (pongFBO->init(1200, 640, FBOerrorString))
-	{
-		std::cout << "pongFBO good" << std::endl;
-	}
-	else
-	{
-		std::cout << "pongFBO error: " << FBOerrorString << std::endl;
-	}
+	//if (pongFBO->init(1200, 640, FBOerrorString))
+	//{
+	//	std::cout << "pongFBO good" << std::endl;
+	//}
+	//else
+	//{
+	//	std::cout << "pongFBO error: " << FBOerrorString << std::endl;
+	//}
 
 	// Clear the OG back buffer once, BEFORE we render anything
 	float ratio;
@@ -681,7 +684,12 @@ int main(int argv, char** argc)
 		deltaTime = (deltaTime > MAX_DELTA_TIME ? MAX_DELTA_TIME : deltaTime);
 		previousTime = currentTime;
 
-		::g_pPlayer->Update(deltaTime);
+		//::g_pPlayer->Update(deltaTime);
+
+		for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+		{
+			::vec_pAllEntities[index]->Update(deltaTime);
+		}
 
 		//testEntity->Update(deltaTime);
 		for (unsigned int index = 0; index != ::vec_pFSMEntities.size(); index++)
@@ -719,13 +727,23 @@ int main(int argv, char** argc)
 
 			matView = glm::mat4(1.0f);
 
-			if (!::g_ObservationMode)
+			if (::g_FirstPersonMode)
 			{
 				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
 				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
 					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
 					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
 				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			else if (::g_OverheadMode)
+			{
+				glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+				normLookAt.y = -100.0f;
+				normLookAt = glm::normalize(normLookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+					((cPlayerEntity*)::g_pPlayer)->position.z);
+				::cameraTarget = normLookAt;
 			}
 			//else
 			//{
@@ -769,13 +787,23 @@ int main(int argv, char** argc)
 		
 			matView = glm::mat4(1.0f);
 
-			if (!::g_ObservationMode)
+			if (::g_FirstPersonMode)
 			{
 				glm::vec3 normLookAt = glm::normalize(((cPlayerEntity*)::g_pPlayer)->lookAt);
 				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x + normLookAt.x,
 					((cPlayerEntity*)::g_pPlayer)->position.y + 1.5f,
 					((cPlayerEntity*)::g_pPlayer)->position.z + normLookAt.z);
 				::cameraTarget = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			}
+			else if (::g_OverheadMode)
+			{
+				glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+				normLookAt.y = -100.0f;
+				normLookAt = glm::normalize(normLookAt);
+				::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+					((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+					((cPlayerEntity*)::g_pPlayer)->position.z);
+				::cameraTarget = normLookAt;
 			}
 			//else
 			//{
@@ -876,7 +904,7 @@ int main(int argv, char** argc)
 			//for (unsigned int index = 0; index < amount; index++)
 			//{
 				//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["horizontal"], horizontal ? (float)GL_TRUE : (float)GL_FALSE);
-			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["exposure"], 1.0f);
+			//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["exposure"], 0.1f);
 				DrawScene1(program);
 
 				glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
@@ -1195,13 +1223,24 @@ int main(int argv, char** argc)
 		}
 		// Draw the player and non-torch entities with stencil on if it's on
 
-		matModel = glm::mat4(1.0f);
-		DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh,
-			matModel,
-			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-			program,
-			::g_pVAOManager);
+		//matModel = glm::mat4(1.0f);
+		//DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh,
+		//	matModel,
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//	program,
+		//	::g_pVAOManager);
+
+		for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+		{
+			matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+			DrawObject(::vec_pAllEntities[index]->m_Mesh,
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
 
 
 
@@ -1221,7 +1260,8 @@ int main(int argv, char** argc)
 					glm::vec3 scale = ::vec_pAllEntities[index]->m_Mesh->scale;				// store the scale to reset after
 					int normalTexOp = ::vec_pAllEntities[index]->m_Mesh->textureOperator;	// store texture operator to reset after
 					::vec_pAllEntities[index]->m_Mesh->textureOperator = 20;				// set texture operator to 20 for the stencil
-
+					bool initalDiffuseColour = ::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour;
+					::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour = false;
 					glm::vec4 stencilColour;												// decide on colour of stencil depending on type of entity
 					switch (::vec_pAllEntities[index]->type)
 					{
@@ -1230,9 +1270,9 @@ int main(int argv, char** argc)
 						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.1f, scale.y * 1.05f, scale.z * 1.1f);
 						break;
 					case iEntity::ENTITY_TYPE::ENEMY:
-						stencilColour = glm::vec4(0.8f, 0.2f, 0.0f, 1.0f);
+						stencilColour = glm::vec4(1.0f, 0.2f, 0.0f, 1.0f);
 						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
-						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.05f, scale.y * 1.01f, scale.z * 1.05f);
 						break;
 					case iEntity::ENTITY_TYPE::OBJECT:
 						stencilColour = glm::vec4(0.2f, 0.8f, 0.0f, 1.0f);
@@ -1264,6 +1304,7 @@ int main(int argv, char** argc)
 					// reset the texture operator and scale
 					::vec_pAllEntities[index]->m_Mesh->textureOperator = normalTexOp;
 					::vec_pAllEntities[index]->m_Mesh->scale = scale;
+					::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour = initalDiffuseColour;
 				}
 			}
 			// once all stencil objects are drawn, we can reset the stencil stuff
@@ -1440,11 +1481,11 @@ int main(int argv, char** argc)
 			{
 				std::cout << errorString << std::endl;
 			}
-			errorString = "";
-			if (!pongFBO->reset(width, height, errorString))
-			{
-				std::cout << errorString << std::endl;
-			}
+			//errorString = "";
+			//if (!pongFBO->reset(width, height, errorString))
+			//{
+			//	std::cout << errorString << std::endl;
+			//}
 			::g_updateFBOResolution = false;
 		}
 

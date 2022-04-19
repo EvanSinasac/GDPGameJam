@@ -3,6 +3,7 @@
 #include "Vertex.h"
 #include <vector>
 #include <string>
+#include "GLMCommon.h"
 
 using namespace std;
 
@@ -14,7 +15,8 @@ struct Node
 	bool hasGoal;
 	float costSoFar;
 	float hDistance;
-	Vertex position;					// position in our game world.  Used for calculating distances
+	//Vertex position;					// position in our game world.  Used for calculating distances
+	glm::vec3 position;
 	struct Node* parent;				// parent Node that we can use to follow back to the root node
 	vector<pair<Node*, float>> edges;	// Edges pointing to our neighbouring nodes <neighbour, edgeWeight>
 	//char type;
@@ -29,8 +31,8 @@ public:
 	vector<Node*> nodes;				// All the nodes belonging to this graph
 
 	Graph();
-	void CreateNode(unsigned int id, Vertex position, bool bHasGoal = false);
-	void CreateNode(unsigned int id, Vertex position, std::string typ, bool isHomeBase = false, bool bHasGoal = false, bool bIsExit = false);
+	Node* CreateNode(unsigned int id, glm::vec3 position, bool bHasGoal = false);
+	Node* CreateNode(unsigned int id, glm::vec3 position, std::string typ, bool isHomeBase = false, bool bHasGoal = false, bool bIsExit = false);
 	void AddEdge(Node* origin, Node* destination, float weight, bool bUndirected = true);
 	void PrintGraph();
 

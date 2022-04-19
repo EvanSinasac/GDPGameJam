@@ -25,9 +25,6 @@
     <Filter Include="Global">
       <UniqueIdentifier>{15bc539b-46b5-4d7a-bc16-2d6b53b00441}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Finite State Machine\States">
-      <UniqueIdentifier>{19981df7-71b0-4a68-91bd-8a585db56f93}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Graph Node Search">
       <UniqueIdentifier>{d723d3c0-fea3-47cb-bfa7-7d00e037aa67}</UniqueIdentifier>
     </Filter>
@@ -67,6 +64,15 @@
     <Filter Include="Entities %28Objects%29\Entities">
       <UniqueIdentifier>{228a1b4e-60e5-4bf7-b88e-fdc3431475de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Finite State Machine\States %28A.I. Project, very specific%29">
+      <UniqueIdentifier>{19981df7-71b0-4a68-91bd-8a585db56f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities %28Objects%29\Entities\Enemy FSM System">
+      <UniqueIdentifier>{2404c4e9-04bb-432e-9213-1e10463e1e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities %28Objects%29\Entities\Enemy FSM System\sStates">
+      <UniqueIdentifier>{513dc7a6-a6a3-4a01-89ec-cb7a6404cf64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BMPImage.cpp">
@@ -79,19 +85,19 @@
       <Filter>FBO %28Frame Buffer Object%29</Filter>
     </ClCompile>
     <ClCompile Include="FSMState.cpp">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClCompile>
     <ClCompile Include="GatherState.cpp">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClCompile>
     <ClCompile Include="IdleState.cpp">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClCompile>
     <ClCompile Include="ReturnState.cpp">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClCompile>
     <ClCompile Include="SearchState.cpp">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClCompile>
     <ClCompile Include="cFSMEntity.cpp">
       <Filter>Finite State Machine</Filter>
@@ -183,6 +189,24 @@
     <ClCompile Include="cPlayerEntity.cpp">
       <Filter>Entities %28Objects%29\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="sFSMSystem.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System</Filter>
+    </ClCompile>
+    <ClCompile Include="sFSMState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="sIdleState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="sWanderState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="cWanderEnemy.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System</Filter>
+    </ClCompile>
+    <ClCompile Include="cEntityBuilder.cpp">
+      <Filter>Builders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -195,19 +219,19 @@
       <Filter>FBO %28Frame Buffer Object%29</Filter>
     </ClInclude>
     <ClInclude Include="FSMState.h">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClInclude>
     <ClInclude Include="GatherState.h">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClInclude>
     <ClInclude Include="IdleState.h">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClInclude>
     <ClInclude Include="ReturnState.h">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClInclude>
     <ClInclude Include="SearchState.h">
-      <Filter>Finite State Machine\States</Filter>
+      <Filter>Finite State Machine\States %28A.I. Project, very specific%29</Filter>
     </ClInclude>
     <ClInclude Include="cFSMEntity.h">
       <Filter>Finite State Machine</Filter>
@@ -283,6 +307,24 @@
     </ClInclude>
     <ClInclude Include="cPlayerEntity.h">
       <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="cWanderEnemy.h">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="sFSMSystem.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System</Filter>
+    </ClInclude>
+    <ClInclude Include="sFSMState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="sIdleState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="sWanderState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="cEntityBuilder.h">
+      <Filter>Builders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
