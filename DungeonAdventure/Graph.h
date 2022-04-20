@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Vertex.h"
+//#include "Vertex.h"
 #include <vector>
 #include <string>
 #include "GLMCommon.h"
+#include "cFootprints.h"
 
 using namespace std;
 
@@ -26,6 +27,8 @@ struct Node
 
 	bool isOccupied;
 	int occupiedBy;
+
+	cFootprints* m_Footprints;
 };
 
 class Graph

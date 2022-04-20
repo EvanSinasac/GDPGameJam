@@ -571,6 +571,8 @@ bool loadTextures()
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Normal.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
 
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Dinosaur-Footprints-clipart-2.bmp", true);
+
 	ss << "DFK Textures\\";
 	::g_pTextureManager->SetBasePath(ss.str());
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_basecolor.bmp", true);

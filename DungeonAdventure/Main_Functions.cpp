@@ -373,6 +373,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 				newMesh->positionXYZ.z = 0.0f + (2.5f * y);
 				newMesh->orientationXYZ = glm::vec3(0.0f);
 
+				
+
 				// temp erase
 				//newMesh->orientationXYZ.z = glm::radians(45.0f);
 
@@ -416,6 +418,13 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 				//}
 
 				nodeID++;
+
+				if (newMesh != nullptr)
+				{
+					cMesh* floor = main_DungeonBuilder.MakeMesh(cDungeonMeshBuilder::TypeOfMesh::FLOOR, glm::vec3(scale));
+					floor->positionXYZ = newMesh->positionXYZ;
+					g_vec_pFloorsForAlpha.push_back(floor);
+				}
 			}	// end of floor
 		}	// end of for x
 	}	// end of for y
@@ -530,9 +539,10 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 	// testing
 	//::g_Graph->PrintGraph();
 
+	SpawnEntities(spawnPoints);
+
 	MakeNodeMeshes();
 
-	SpawnEntities(spawnPoints);
 
 	return true;
 }	//end of loadTSVGrid
@@ -651,6 +661,8 @@ void MakeNodeMeshes()
 		}
 
 		::g_vec_pNodes.push_back(nodeMesh);
+		::vec_pAllEntities.push_back(::g_Graph->nodes[index]->m_Footprints);
+		::g_vec_pFootprintMeshes.push_back(::g_Graph->nodes[index]->m_Footprints->m_Mesh);
 	}
 }
 

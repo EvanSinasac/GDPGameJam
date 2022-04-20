@@ -111,6 +111,8 @@ extern std::string g_TitleText;	// = "";
 
 // List of objects to draw
 extern std::vector< cMesh* > g_vec_pMeshes;
+extern std::vector< cMesh* > g_vec_pFootprintMeshes;
+extern std::vector< cMesh* > g_vec_pFloorsForAlpha;
 extern std::vector<cMesh*> g_vec_pPointLights;
 extern bool drawLightBalls;
 

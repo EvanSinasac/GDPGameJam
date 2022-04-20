@@ -52,6 +52,8 @@ unsigned int g_currentLightIndex = 0;
 
 // List of objects to draw
 std::vector< cMesh* > g_vec_pMeshes;
+std::vector< cMesh* > g_vec_pFootprintMeshes;
+std::vector< cMesh* > g_vec_pFloorsForAlpha;
 std::vector< cMesh* > g_vec_pPointLights;
 bool drawLightBalls = false;
 

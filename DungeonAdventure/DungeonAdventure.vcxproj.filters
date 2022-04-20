@@ -219,6 +219,9 @@
     <ClCompile Include="cListeningEnemy.cpp">
       <Filter>Entities %28Objects%29\Entities</Filter>
     </ClCompile>
+    <ClCompile Include="cFootprints.cpp">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -348,6 +351,9 @@
       <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
     </ClInclude>
     <ClInclude Include="cListeningEnemy.h">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="cFootprints.h">
       <Filter>Entities %28Objects%29\Entities</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,6 +33,7 @@ public:
 		TREASURE,
 		OBJECT,
 		TORCH,
+		FOOTPRINTS,
 	};
 
 	virtual ~iEntity() {};

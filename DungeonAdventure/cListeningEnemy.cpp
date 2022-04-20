@@ -202,6 +202,40 @@ void cListeningEnemy::Move(std::string directionToMove)
 					this->position = glm::vec3(pos.x, this->position.y, pos.z);
 					this->m_CurrNode->isOccupied = false;
 					this->m_CurrNode->occupiedBy = -1;
+
+					this->m_CurrNode->m_Footprints->Activate();
+					this->m_CurrNode->m_Footprints->SetTextures(0);
+					switch (direction)
+					{
+					case (int)DIRECTIONS::NORTH:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-45.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::NORTH_EAST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-90.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::EAST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-135.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::SOUTH_EAST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-180.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::SOUTH:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-225.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::SOUTH_WEST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-270.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::WEST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-315.0f), 0.0f));
+						break;
+					case(int)DIRECTIONS::NORTH_WEST:
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f));
+						break;
+					default:
+						//std::cout << "Direction is somehow invalid (the switch statement didn't work)" << std::endl;
+						break;
+					}
+
 					this->m_CurrNode = neighbour.first;
 					this->m_CurrNode->isOccupied = true;
 					this->m_CurrNode->occupiedBy = (int)this->type;

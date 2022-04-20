@@ -85,6 +85,8 @@ static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 int main(int argv, char** argc)
 {
+	cMesh* dunceMesh = new cMesh();
+	dunceMesh->meshName = "nothing.ply";
 	gNumResources = 0;
 
 	//cFSMEntity* testEntity = new cFSMEntity();
@@ -1214,7 +1216,6 @@ int main(int argv, char** argc)
 		//                                                                                      
 		//    
 
-
 		// I really hope drawing the player and objects I want to use the stencil buffer on last doesn't make them all flickery
 		if (::g_bStencilsOn)
 		{
@@ -1234,14 +1235,16 @@ int main(int argv, char** argc)
 		for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
 		{
 			matModel = glm::mat4(1.0f);										// draw the stencil around the entity
-			DrawObject(::vec_pAllEntities[index]->m_Mesh,
-				matModel,
-				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-				program,
-				::g_pVAOManager);
+			if (!::vec_pAllEntities[index]->m_Mesh->bHasDiscardTexture)
+			{
+				DrawObject(::vec_pAllEntities[index]->m_Mesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
 		}
-
 
 
 		// Before moving on to the second pass, is the stencil on?
@@ -1312,6 +1315,7 @@ int main(int argv, char** argc)
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glEnable(GL_DEPTH_TEST);
 		}	// now if we drawing the stencil outline there should be an outline around all my entities (minus the torches)
+		
 
 
 		for (unsigned int index = 0; index != vec_pFSMEntities.size(); index++)
@@ -1366,7 +1370,34 @@ int main(int argv, char** argc)
 					::g_pVAOManager);
 			}
 		}
-		
+
+		// Turn it on
+				//glUniform1f(bDiscardTransparencyWindowsON_LocID, (GLfloat)GL_TRUE);
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_TRUE);
+		//for (unsigned int index = 0; index != ::g_vec_pFootprintMeshes.size(); index++)
+		//{
+		//	cMesh* pCurrentMesh = ::g_vec_pFootprintMeshes[index];
+		//	matModel = glm::mat4(1.0f);
+		//	if (::g_ObservationMode || glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 75.0f)
+		//	{
+		//		GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName(pCurrentMesh->discardTexture);
+		//		GLuint textureUnit = 32;
+		//		glActiveTexture(textureUnit + GL_TEXTURE0);
+		//		glBindTexture(GL_TEXTURE_2D, discardTextureNumber);
+		//		glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["discardTexture"], textureUnit);
+
+		//		DrawObject(pCurrentMesh,
+		//			matModel,
+		//			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//			program,
+		//			::g_pVAOManager);
+		//	}
+		//}	
+		//// Turn it off
+		//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_FALSE);
+
+
 		// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
 		// so, there's an extra model without the model itself being loaded on the list of meshes that gets drawn last
 		// viola, no more jittery black squares or missing vertices, cause it's not loaded to be drawn anyways lol
@@ -1442,10 +1473,54 @@ int main(int argv, char** argc)
 
 		}//for (unsigned int index
 
-		
+		// don't need to sort the footprints since we'll basically never look at them through each other
+		for (unsigned int index = 0; index != ::g_vec_pFootprintMeshes.size(); index++)
+		{
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_TRUE);
+			GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName(::g_vec_pFootprintMeshes[index]->discardTexture);
+			GLuint textureUnit = 32;
+			glActiveTexture(textureUnit + GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, discardTextureNumber);
+			glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["discardTexture"], textureUnit);
+
+			matModel = glm::mat4(1.0f);
+			DrawObject(::g_vec_pFootprintMeshes[index],
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_FALSE);
+		}
 		
 
+		//matModel = glm::mat4(1.0f);
+		//DrawObject(dunceMesh,
+		//	matModel,
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+		//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+		//	program,
+		//	::g_pVAOManager);
+
 		// Draw Debug objects
+
+		for (unsigned int index = 0; index != ::g_vec_pFloorsForAlpha.size(); index++)
+		{
+			// So the code is a little easier...
+			cMesh* pCurrentMesh = ::g_vec_pFloorsForAlpha[index];
+
+			matModel = glm::mat4(1.0f);  // "Identity" ("do nothing", like x1)
+			//mat4x4_identity(m);
+
+			DrawObject(pCurrentMesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+
+		}//for (unsigned int index
 
 		// Scene is drawn
 		// **********************************************************************

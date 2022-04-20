@@ -150,6 +150,7 @@
     <ClCompile Include="cDungeonMeshBuilder.cpp" />
     <ClCompile Include="cEntityBuilder.cpp" />
     <ClCompile Include="cFBO\cFBO.cpp" />
+    <ClCompile Include="cFootprints.cpp" />
     <ClCompile Include="cFSMEntity.cpp" />
     <ClCompile Include="cGLFWKeyboadModifiers.cpp" />
     <ClCompile Include="cLightHelper.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="cDungeonMeshBuilder.h" />
     <ClInclude Include="cEntityBuilder.h" />
     <ClInclude Include="cFBO\cFBO.h" />
+    <ClInclude Include="cFootprints.h" />
     <ClInclude Include="cFSMEntity.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />

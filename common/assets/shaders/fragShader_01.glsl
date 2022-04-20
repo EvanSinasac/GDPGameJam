@@ -746,16 +746,18 @@ if ( bIsSkyBox )
 	//
 	
 	if (twoDEffectOperator == 8)
+		discard;
 	//	{
 	//		if (discardSample > 0.1f)
 	//		{
 				// temporary reversal to try something
-				discard;
+				//discard;
 	//		}
 	//	}
 	//	else
 	//	{
-			if ( discardSample < 0.1f )
+			//if ( discardSample < 0.1f )
+			if ( discardSample > 0.99f )
 			{	// "black enough"
 				// DON'T even draw the pixel here
 				// The fragment shader simply stops here
@@ -1184,7 +1186,8 @@ if ( bIsSkyBox )
 
 	// Output the other things for the G-Buffer:
 	pixelOutputNormal = vec4(normalize(fNormal.xyz), 1.0f);
-	pixelOutputMaterialColour = vec4(vertexDiffuseColour.rgb, 1.0f);
+	//pixelOutputMaterialColour = vec4(vertexDiffuseColour.rgb, 1.0f);
+	pixelOutputMaterialColour = vec4(vertexDiffuseColour.rgb, wholeObjectAlphaTransparency);
 	pixelOutputWorldPos = vec4(fVertWorldLocation.xyz, 1.0f);
 	pixelOutputWorldPos.w = G_BUFFER_LIT;
 	pixelOutputSpecular = wholeObjectSpecularColour.rgba;			// = 4;	
