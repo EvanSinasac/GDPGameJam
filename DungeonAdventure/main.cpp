@@ -1294,12 +1294,12 @@ int main(int argv, char** argc)
 					case iEntity::ENTITY_TYPE::OBJECT:
 						stencilColour = glm::vec4(0.2f, 0.8f, 0.0f, 1.0f);
 						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
-						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
+						::vec_pAllEntities[index]->m_Mesh->scale *= 1.1f;
 						break;
 					case iEntity::ENTITY_TYPE::TREASURE:
 						stencilColour = glm::vec4(1.0f, 1.0f, 0.6f, 1.0f);
 						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
-						::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
+						::vec_pAllEntities[index]->m_Mesh->scale *= 1.1f;
 						break;
 					default:
 						stencilColour = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);

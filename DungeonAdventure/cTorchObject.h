@@ -8,7 +8,7 @@ class cTorchObject : public iEntity
 {
 public:
 	cTorchObject(cMesh* pMesh, unsigned int index);
-	~cTorchObject();
+	virtual ~cTorchObject();
 
 	virtual void Update(float deltaTime);
 

@@ -222,6 +222,30 @@
     <ClCompile Include="cFootprints.cpp">
       <Filter>Entities %28Objects%29\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="cBedObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cBookshelfObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cChairObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cCrystal01Object.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cCrystal02Object.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cTableObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cWardrobeObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="cTreasureObject.cpp">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -354,6 +378,30 @@
       <Filter>Entities %28Objects%29\Entities</Filter>
     </ClInclude>
     <ClInclude Include="cFootprints.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cBedObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cBookshelfObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cChairObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cCrystal01Object.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cCrystal02Object.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cTableObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cWardrobeObject.h">
+      <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="cTreasureObject.h">
       <Filter>Entities %28Objects%29\Objects</Filter>
     </ClInclude>
   </ItemGroup>

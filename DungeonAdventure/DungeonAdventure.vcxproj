@@ -147,6 +147,11 @@
   <ItemGroup>
     <ClCompile Include="..\common\glad.c" />
     <ClCompile Include="BMPImage.cpp" />
+    <ClCompile Include="cBedObject.cpp" />
+    <ClCompile Include="cBookshelfObject.cpp" />
+    <ClCompile Include="cChairObject.cpp" />
+    <ClCompile Include="cCrystal01Object.cpp" />
+    <ClCompile Include="cCrystal02Object.cpp" />
     <ClCompile Include="cDungeonMeshBuilder.cpp" />
     <ClCompile Include="cEntityBuilder.cpp" />
     <ClCompile Include="cFBO\cFBO.cpp" />
@@ -162,9 +167,12 @@
     <ClCompile Include="cPlayerEntity.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
+    <ClCompile Include="cTableObject.cpp" />
     <ClCompile Include="cTorchObject.cpp" />
+    <ClCompile Include="cTreasureObject.cpp" />
     <ClCompile Include="cVAOManager.cpp" />
     <ClCompile Include="cWanderEnemy.cpp" />
+    <ClCompile Include="cWardrobeObject.cpp" />
     <ClCompile Include="DrawObject_function.cpp" />
     <ClCompile Include="FSMState.cpp" />
     <ClCompile Include="FSMSystem.cpp" />
@@ -197,6 +205,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h" />
+    <ClInclude Include="cBedObject.h" />
+    <ClInclude Include="cBookshelfObject.h" />
+    <ClInclude Include="cChairObject.h" />
+    <ClInclude Include="cCrystal01Object.h" />
+    <ClInclude Include="cCrystal02Object.h" />
     <ClInclude Include="cDungeonMeshBuilder.h" />
     <ClInclude Include="cEntityBuilder.h" />
     <ClInclude Include="cFBO\cFBO.h" />
@@ -210,9 +223,12 @@
     <ClInclude Include="cMesh.h" />
     <ClInclude Include="cPlayerEntity.h" />
     <ClInclude Include="cShaderManager.h" />
+    <ClInclude Include="cTableObject.h" />
     <ClInclude Include="cTorchObject.h" />
+    <ClInclude Include="cTreasureObject.h" />
     <ClInclude Include="cVAOManager.h" />
     <ClInclude Include="cWanderEnemy.h" />
+    <ClInclude Include="cWardrobeObject.h" />
     <ClInclude Include="FSMState.h" />
     <ClInclude Include="FSMSystem.h" />
     <ClInclude Include="GatherState.h" />

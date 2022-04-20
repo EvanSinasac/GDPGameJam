@@ -12,6 +12,14 @@ public:
 		PLAYER = 0,
 		WANDER_ENEMY = 1,
 		LISTEN_ENEMY = 2,
+		BED = 3,
+		BOOKSHELF = 4,
+		CHAIR = 5,
+		CRYSTAL_1 = 6,
+		CRYSTAL_2 = 7,
+		TABLE = 8,
+		WARDROBE = 9,
+		TREASURE = 10,
 	};
 
 	cEntityBuilder();

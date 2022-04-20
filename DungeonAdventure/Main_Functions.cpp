@@ -42,12 +42,64 @@ void SpawnEntities(std::vector<Node*> spawnPoints)
 			
 		if (spawnPoints[index]->type == "O")	// spawn some furniture
 		{
-
+			int random = rand() % 7;
+			bool wallNorth = false, wallSouth = false, wallEast = false, wallWest = false;
+			//BED = 3,
+			//BOOKSHELF = 4,
+			//CHAIR = 5,
+			//CRYSTAL_1 = 6,
+			//CRYSTAL_2 = 7,
+			//TABLE = 8,
+			//WARDROBE = 9,
+			//TREASURE = 10,
+			switch (random)
+			{
+			case 0:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::BED,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 1:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::BOOKSHELF,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 2:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::CHAIR,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 3:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::CRYSTAL_1,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 4:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::CRYSTAL_2,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 5:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::TABLE,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 6:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WARDROBE,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			default:
+				break;
+			}
+			/*for (unsigned int indexA = 0; indexA != spawnPoints[index]->edges.size(); indexA++)
+			{
+				std::cout << spawnPoints[index]->edges[indexA].first->id << " at: "
+					<< spawnPoints[index]->edges[indexA].first->position.x << " "
+					<< spawnPoints[index]->edges[indexA].first->position.y << " "
+					<< spawnPoints[index]->edges[indexA].first->position.z << std::endl;
+			}*/
+			float randomRotation = rand() % 360;
+			::vec_pAllEntities[::vec_pAllEntities.size() - 1]->m_Mesh->orientationXYZ = glm::vec3(0.0f, glm::radians(randomRotation), 0.0f);
 		}
 
 		if (spawnPoints[index]->type == "T")	// spawn some treasure
 		{
-
+			::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::TREASURE,
+				spawnPoints[index]->position, spawnPoints[index]));
 		}
 	}
 }
@@ -429,6 +481,10 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 		}	// end of for x
 	}	// end of for y
 
+	//SpawnEntities(spawnPoints);		// SpawnEntities will set nodes with objects and enemies to isOccupied = true
+	// Nodes that are occupied by Objects will not be traversable, but can be crossed diagonally
+	// Or, better yet, every O in the graph will guarenteed be a spawn, so just check for "-" or "O"
+
 	// alright, the graph is filled out, let's make edges
 	for (unsigned int indexA = 0; indexA != ::g_Graph->nodes.size() - 1; indexA++)
 	{
@@ -438,7 +494,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 
 		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
 		//if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
-		if (::g_Graph->nodes[indexA]->type != "-")	// tsv file, - is wall
+		if (::g_Graph->nodes[indexA]->type != "-" /*&&
+			::g_Graph->nodes[indexA]->type != "O"*/)	// tsv file, - is wall
 		{
 			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
 			{
@@ -450,7 +507,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 				{
 					// there are no nodes in the walls or non-traversable locations, so all horizontal and vertical 
 					// nodes are safe to traverse
-					if (::g_Graph->nodes[indexB]->type != "-")
+					if (::g_Graph->nodes[indexB]->type != "-" &&
+						::g_Graph->nodes[indexB]->type != "O")
 					{
 						// node is white, red, green, blue or yellow, make an edge
 						::g_Graph->AddEdge(::g_Graph->nodes[indexA],
@@ -480,7 +538,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 
 		// if the node at indexA is not traversable, then we don't want to make any edges out of it anyways 
 		//if (::g_Graph->nodes[indexA]->type != '_' && ::g_Graph->nodes[indexA]->type != 'x')
-		if (::g_Graph->nodes[indexA]->type != "-")	// tsv file, - is wall
+		if (::g_Graph->nodes[indexA]->type != "-" &&
+			::g_Graph->nodes[indexA]->type != "O")	// tsv file, - is wall
 		{
 			for (unsigned int indexB = indexA + 1; indexB != ::g_Graph->nodes.size(); indexB++)
 			{
@@ -494,7 +553,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 					// whoops, just because we can go diagonal, doesn't mean we should
 					// wait... if I don't make nodes in the walls, I can't check the "nodes" above and below
 					// a current spot for the diagonals...
-					if (::g_Graph->nodes[indexB]->type != "-")
+					if (::g_Graph->nodes[indexB]->type != "-" &&
+						::g_Graph->nodes[indexB]->type != "O")
 					{
 						// node is white, red, green, blue or yellow, make an edge
 						// alright, this takes a bit more storage to make nodes in the walls, but this way
@@ -522,7 +582,7 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 						}
 						if (tempHori != nullptr && tempVerti != nullptr)
 						{
-							if (tempHori->type != "-" && tempVerti->type != "-")
+							if (tempHori->type != "-" && tempVerti->type != "-")	// can cross objects diagonally
 							{
 								::g_Graph->AddEdge(::g_Graph->nodes[indexA],
 									::g_Graph->nodes[indexB],
@@ -539,7 +599,7 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 	// testing
 	//::g_Graph->PrintGraph();
 
-	SpawnEntities(spawnPoints);
+	SpawnEntities(spawnPoints);		// SpawnEntities will set nodes with objects and enemies to isOccupied = true
 
 	MakeNodeMeshes();
 
@@ -562,9 +622,17 @@ void MakeNodeMeshes()
 		{
 			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.8f, 0.2f, 1.0f);
 		}
-		else if (::g_Graph->nodes[index]->type == "T" || ::g_Graph->nodes[index]->type == "E" || ::g_Graph->nodes[index]->type == "O")
+		else if (::g_Graph->nodes[index]->type == "E")
 		{
 			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.69f, 0.4f, 1.0f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->type == "T")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.4f, 0.69f, 0.3f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->type == "O")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(1.0f, 0.2f, 0.69f, 1.0f);
 		}
 		else if (::g_Graph->nodes[index]->type == "D"
 			|| ::g_Graph->nodes[index]->type == "DS"

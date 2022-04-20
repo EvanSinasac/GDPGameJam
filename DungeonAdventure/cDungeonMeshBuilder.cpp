@@ -18,6 +18,21 @@ cMesh* cDungeonMeshBuilder::MakeMesh(TypeOfMesh type, glm::vec3 scale)
 {
 	cMesh* meshToBuild = nullptr;
 	bool dLight = false;					// TODO: This is true just for testing
+
+	//FLOOR = 0,
+	//WALL = 1,
+	//DOOR = 2,
+	//SECRETDOOR = 3,
+	//PORTCULLIS = 4,
+	//STAIRS = 5,
+	//LIGHT_FIXTURE = 6,
+	//BOOKSHELF = 7,
+	//CHAIR = 8,
+	//CRYSTAL_1 = 9,
+	//CRYSTAL_2 = 10,
+	//TABLE = 11,
+	//CHEST = 12,
+
 	if (type == TypeOfMesh::DOOR)
 	{
 		cMesh* doorWallMesh = new cMesh();

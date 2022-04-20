@@ -115,6 +115,11 @@ bool bShowAllLights = false;
         ::g_UseBloom = !::g_UseBloom;
     }
 
+    if (key == GLFW_KEY_L && action == GLFW_PRESS)
+    {
+        ::g_DrawAllHighResModels = !::g_DrawAllHighResModels;
+    }
+
     
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {

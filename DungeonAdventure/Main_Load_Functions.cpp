@@ -470,6 +470,13 @@ void loadGameJamModels(std::vector<std::string>& modelLocations)
 	modelLocations.push_back("dfk_stairs_wood_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("dfk_wall_1_bevel_door_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("dfk_wall_1_XYZ_N_RGBA_N_transformed.ply");
+	modelLocations.push_back("dfk_bookshelf_XYZ_N_RGBA_UV.ply");
+	modelLocations.push_back("dfk_chairs_XYZ_N_RGBA_UV.ply");
+	modelLocations.push_back("dfk_crystal_01_XYZ_N_RGBA_UV_transformed.ply");
+	modelLocations.push_back("dfk_crystal_02_XYZ_N_RGBA_UV_transformed.ply");
+	modelLocations.push_back("dfk_table_large_XYZ_N_RGBA_UV_transformed.ply");
+	modelLocations.push_back("dfk_wardrobe_01_XYZ_N_RGBA_UV.ply");
+	modelLocations.push_back("dfk_chest_02_closed_XYZ_N_RGBA_UV_transformed.ply");
 
 	modelLocations.push_back("dfk_torch_holder_XYZ_N_RGBA_UV_transformed.ply");
 	modelLocations.push_back("dfk_torch_XYZ_N_RGBA_UV_transformed.ply");
@@ -611,6 +618,38 @@ bool loadTextures()
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_basecolor.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_normal.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_candleholders_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bookshelf_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bookshelf_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bookshelf_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_braziers_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_braziers_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_braziers_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_chair_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_chair_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_chair_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_table_large_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_table_large_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_table_large_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wardrobe_01_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wardrobe_01_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_wardrobe_01_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_small_containers_blue_basecolor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_small_containers_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_small_containers_SmMetAO.bmp", true);
+
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_blue_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_red_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_green_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_yellow_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_white_albedo.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_normal.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_crystal_SmMetAO.bmp", true);
 
 	
 	return loadedAll;
