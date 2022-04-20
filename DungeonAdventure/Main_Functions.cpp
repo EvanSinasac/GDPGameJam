@@ -22,9 +22,33 @@ void SpawnEntities(std::vector<Node*> spawnPoints)
 	cEntityBuilder entityBuilder;
 	for (unsigned int index = 0; index != spawnPoints.size(); index++)
 	{
-		if (spawnPoints[index]->type == "E")
-			::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WANDER_ENEMY,
-				spawnPoints[index]->position, spawnPoints[index]));
+		if (spawnPoints[index]->type == "E")	// spawn an enemy
+		{
+			int random = rand() % 2;
+			switch (random)
+			{
+			case 0:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WANDER_ENEMY,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			case 1:
+				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::LISTEN_ENEMY,
+					spawnPoints[index]->position, spawnPoints[index]));
+				break;
+			default:
+				break;
+			}
+		}
+			
+		if (spawnPoints[index]->type == "O")	// spawn some furniture
+		{
+
+		}
+
+		if (spawnPoints[index]->type == "T")	// spawn some treasure
+		{
+
+		}
 	}
 }
 
@@ -527,6 +551,10 @@ void MakeNodeMeshes()
 		if (::g_Graph->nodes[index]->type == "F")
 		{
 			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.8f, 0.2f, 1.0f);
+		}
+		else if (::g_Graph->nodes[index]->type == "T" || ::g_Graph->nodes[index]->type == "E" || ::g_Graph->nodes[index]->type == "O")
+		{
+			nodeMesh->wholeObjectDiffuseRGBA = glm::vec4(0.69f, 0.4f, 1.0f, 1.0f);
 		}
 		else if (::g_Graph->nodes[index]->type == "D"
 			|| ::g_Graph->nodes[index]->type == "DS"

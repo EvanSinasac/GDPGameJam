@@ -201,11 +201,23 @@
     <ClCompile Include="sWanderState.cpp">
       <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
     </ClCompile>
-    <ClCompile Include="cWanderEnemy.cpp">
-      <Filter>Entities %28Objects%29\Entities\Enemy FSM System</Filter>
-    </ClCompile>
     <ClCompile Include="cEntityBuilder.cpp">
       <Filter>Builders</Filter>
+    </ClCompile>
+    <ClCompile Include="cWanderEnemy.cpp">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="sEnclosedWanderState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="sApproachState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="sAttackState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
+    <ClCompile Include="cListeningEnemy.cpp">
+      <Filter>Entities %28Objects%29\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,9 +320,6 @@
     <ClInclude Include="cPlayerEntity.h">
       <Filter>Entities %28Objects%29\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="cWanderEnemy.h">
-      <Filter>Entities %28Objects%29\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="sFSMSystem.h">
       <Filter>Entities %28Objects%29\Entities\Enemy FSM System</Filter>
     </ClInclude>
@@ -325,6 +334,21 @@
     </ClInclude>
     <ClInclude Include="cEntityBuilder.h">
       <Filter>Builders</Filter>
+    </ClInclude>
+    <ClInclude Include="cWanderEnemy.h">
+      <Filter>Entities %28Objects%29\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="sEnclosedWanderState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="sAttackState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="sApproachState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="cListeningEnemy.h">
+      <Filter>Entities %28Objects%29\Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -23,6 +23,9 @@ struct Node
 	std::string type;
 	bool isHomeBase;
 	bool isExit;
+
+	bool isOccupied;
+	int occupiedBy;
 };
 
 class Graph

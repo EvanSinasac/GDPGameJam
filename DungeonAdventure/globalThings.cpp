@@ -23,6 +23,7 @@ Graph* g_Graph = new Graph();
 std::vector<cFSMEntity*> vec_pFSMEntities;
 float entitySpeedModifier = 1.0f;
 
+
 //cPlayerEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
 iEntity* g_pPlayer = NULL;         // make the player once I know where the spawnpoint for them is
 

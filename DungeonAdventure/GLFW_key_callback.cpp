@@ -229,7 +229,11 @@ bool bShowAllLights = false;
     }
     else if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS)
     {
-        ::entitySpeedModifier = 3.0f;
+        ::entitySpeedModifier = 5.0f;
+    }
+    else if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS)
+    {
+        ::entitySpeedModifier = 10.0f;
     }
 
     //    // Shift down?

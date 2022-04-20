@@ -81,6 +81,45 @@ Node* BFS(Graph* graph, Node* rootNode)
 	return NULL;	// no goal has been found
 }
 
+// Breadth First Search for player within enclosed area between door nodes
+Node* BFS_LookForPlayerWithinEnclosedArea(Graph* graph, Node* rootNode)
+{
+	graph->ResetGraph();
+	rootNode->visited = true;
+	queue<Node*> openQueue;
+	openQueue.push(rootNode);		// the root will never contain the player but we still need to start with it so we don't re-search it
+
+	while (!openQueue.empty())
+	{
+		Node* currNode = openQueue.front();
+		openQueue.pop();
+
+		//cout << currNode->id << endl;
+
+		//if (currNode->hasGoal)	// check if the node contains our goal
+		if (currNode->isOccupied && currNode->occupiedBy == 0)	// occupied by player
+		{
+			return currNode;
+		}
+
+
+		// we check all the neighbouring nodes and add any that have not been added to the queue yet
+		for (pair <Node*, float>& neighbhour : currNode->edges)
+		{
+			//if (!neighbhour.first->visited)
+			if (neighbhour.first->visited == false &&
+				!(neighbhour.first->type == "D" || neighbhour.first->type == "DP" || neighbhour.first->type == "DS"))	// go up to door nodes
+			{
+				neighbhour.first->visited = true;
+				neighbhour.first->parent = currNode;
+				openQueue.push(neighbhour.first);
+			}
+		}
+	}
+
+	return NULL;	// no goal has been found
+}
+
 Node* GetLowestCostNode(list<Node*> openList)
 {
 	float minCost = FLT_MAX;

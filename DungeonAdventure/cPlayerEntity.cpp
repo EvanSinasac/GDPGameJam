@@ -95,6 +95,10 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 
 	
 	type = ENTITY_TYPE::PLAYER;
+
+
+	this->m_CurrNode->isOccupied = true;
+	this->m_CurrNode->occupiedBy = (int)this->type;
 }
 cPlayerEntity::~cPlayerEntity()
 {
@@ -115,10 +119,14 @@ void cPlayerEntity::Move(std::string directionToMove)
 			glm::vec3 pos = glm::vec3(neighbour.first->position.x, neighbour.first->position.y, neighbour.first->position.z);
 			if (glm::distance(pos, this->position + this->lookAt) <= 0.75f)
 			{
-				if (neighbour.first->type != "-")
+				if (neighbour.first->type != "-" && !neighbour.first->isOccupied)
 				{
 					this->position = glm::vec3(pos.x, this->position.y, pos.z);
+					this->m_CurrNode->isOccupied = false;
+					this->m_CurrNode->occupiedBy = -1;
 					this->m_CurrNode = neighbour.first;
+					this->m_CurrNode->isOccupied = true;
+					this->m_CurrNode->occupiedBy = (int)this->type;
 				}
 				break;
 			}
@@ -131,10 +139,14 @@ void cPlayerEntity::Move(std::string directionToMove)
 			glm::vec3 pos = glm::vec3(neighbour.first->position.x, neighbour.first->position.y, neighbour.first->position.z);
 			if (glm::distance(pos, this->position - this->lookAt) <= 0.75f)
 			{
-				if (neighbour.first->type != "-")
+				if (neighbour.first->type != "-" && !neighbour.first->isOccupied)
 				{
 					this->position = glm::vec3(pos.x, this->position.y, pos.z);
+					this->m_CurrNode->isOccupied = false;
+					this->m_CurrNode->occupiedBy = -1;
 					this->m_CurrNode = neighbour.first;
+					this->m_CurrNode->isOccupied = true;
+					this->m_CurrNode->occupiedBy = (int)this->type;
 				}
 				break;
 			}

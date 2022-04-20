@@ -19,6 +19,9 @@ Node* Graph::CreateNode(unsigned int id, glm::vec3 position, bool bHasGoal)
 	node->type = "-";
 	node->isHomeBase = false;
 
+	node->isOccupied = false;
+	node->occupiedBy = -1;
+
 	this->nodes.push_back(node);
 	return node;
 }
@@ -36,6 +39,9 @@ Node* Graph::CreateNode(unsigned int id, glm::vec3 position, std::string typ, bo
 	node->type = typ;
 	node->isHomeBase = isHomeBase;
 	node->isExit = bIsExit;
+
+	node->isOccupied = false;
+	node->occupiedBy = -1;
 
 	this->nodes.push_back(node);
 	return node;

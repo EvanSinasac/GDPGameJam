@@ -154,6 +154,7 @@
     <ClCompile Include="cGLFWKeyboadModifiers.cpp" />
     <ClCompile Include="cLightHelper.cpp" />
     <ClCompile Include="cLightManager.cpp" />
+    <ClCompile Include="cListeningEnemy.cpp" />
     <ClCompile Include="cMediator.cpp" />
     <ClCompile Include="cMediator_Imp.cpp" />
     <ClCompile Include="cMesh.cpp" />
@@ -179,7 +180,10 @@
     <ClCompile Include="Main_Load_Functions.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ReturnState.cpp" />
+    <ClCompile Include="sApproachState.cpp" />
+    <ClCompile Include="sAttackState.cpp" />
     <ClCompile Include="SearchState.cpp" />
+    <ClCompile Include="sEnclosedWanderState.cpp" />
     <ClCompile Include="sFSMState.cpp" />
     <ClCompile Include="sFSMSystem.cpp" />
     <ClCompile Include="Shutdown.cpp" />
@@ -198,6 +202,7 @@
     <ClInclude Include="cFSMEntity.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />
+    <ClInclude Include="cListeningEnemy.h" />
     <ClInclude Include="cMediator.h" />
     <ClInclude Include="cMediator_Imp.h" />
     <ClInclude Include="cMesh.h" />
@@ -220,7 +225,10 @@
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ReturnState.h" />
+    <ClInclude Include="sApproachState.h" />
+    <ClInclude Include="sAttackState.h" />
     <ClInclude Include="SearchState.h" />
+    <ClInclude Include="sEnclosedWanderState.h" />
     <ClInclude Include="sFSMState.h" />
     <ClInclude Include="sFSMSystem.h" />
     <ClInclude Include="sIdleState.h" />

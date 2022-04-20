@@ -11,6 +11,7 @@ public:
 	{
 		PLAYER = 0,
 		WANDER_ENEMY = 1,
+		LISTEN_ENEMY = 2,
 	};
 
 	cEntityBuilder();

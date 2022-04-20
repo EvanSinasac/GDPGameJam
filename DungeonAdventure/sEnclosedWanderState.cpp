@@ -1,30 +1,48 @@
-#include "sWanderState.h"
+#include "sEnclosedWanderState.h"
 #include "iEntity.h"
 #include "globalThings.h"
 
-sWanderState::sWanderState()
-	: sFSMState("Wander State")
+#include <iostream>
+
+Node* BFS_LookForPlayerWithinEnclosedArea(Graph* graph, Node* rootNode);
+
+sEnclosedWanderState::sEnclosedWanderState()
+	: sFSMState("Enclosed Wander State")
 {
 	timeToNextAction = 0.0f;
 	nextNode = nullptr;
 	stage = 0;
 	dirToRotate = 0;
 }
-sWanderState::~sWanderState()
+sEnclosedWanderState::~sEnclosedWanderState()
 {
 
 }
 
-std::string sWanderState::Update(float dt, Node* currentNode, glm::vec3 lookDirection, int direction)
+std::string sEnclosedWanderState::Update(float dt, Node* currentNode, glm::vec3 lookDirection, int direction)
 {
+	Node* playerNode = BFS_LookForPlayerWithinEnclosedArea(::g_Graph, currentNode);
+	if (playerNode != NULL)
+	{
+		this->mCurrentCondition = 1;
+		return "EnteringApproach";
+	}
 	timeToNextAction += dt * ::entitySpeedModifier;
-	if (timeToNextAction >= 0.5f)
+	if (timeToNextAction >= 1.0f)
 	{
 		if (stage == 0)						// choose direction to move to
 		{
 			//if (nextNode == nullptr || nextNode == currentNode)
-				OnEnterState(currentNode);
-			stage = 1;
+			OnEnterState(currentNode);
+			if (nextNode->type == "D" || nextNode->type == "DP" || nextNode->type == "DS")
+			{
+				stage = 0;
+				std::cout << "DOOR" << std::endl;
+			}	
+			else
+			{
+				stage = 1;
+			}
 			timeToNextAction = 0.0f;
 			return "DirectionChosen";
 		}
@@ -82,7 +100,7 @@ std::string sWanderState::Update(float dt, Node* currentNode, glm::vec3 lookDire
 				else
 					dirToRotate = 1;
 			}
-			
+
 			if (dirToRotate == 1)
 			{
 				return "Rotate1";
@@ -112,13 +130,20 @@ std::string sWanderState::Update(float dt, Node* currentNode, glm::vec3 lookDire
 		return "nothing";
 	}
 }
-void sWanderState::OnEnterState(Node* currentNode)
+void sEnclosedWanderState::OnEnterState(Node* currentNode)
 {
 	unsigned int index = rand() % currentNode->edges.size();
 	nextNode = currentNode->edges[index].first;
 	stage = 0;
-}
-void sWanderState::OnExitState()
-{
 
+	//std::cout << "Enclosed Wander State Entered" << std::endl;
+	this->mCurrentCondition = 0;
+}
+void sEnclosedWanderState::OnExitState()
+{
+	stage = 0;
+	dirToRotate = 0;
+	nextNode = nullptr;
+
+	std::cout << "Enclosed Wander State Entered" << std::endl;
 }
