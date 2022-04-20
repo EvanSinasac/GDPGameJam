@@ -24,6 +24,17 @@ cPlayerEntity::cPlayerEntity()
 	this->m_Mesh->bUseStencil = true;
 
 	type = ENTITY_TYPE::PLAYER;
+
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "Isosphere_Smooth_Normals.ply";
+	this->m_LowResMesh->positionXYZ = this->position;
+	this->m_LowResMesh->setUniformScale(0.5f);
+	this->m_LowResMesh->bDontLight = true;
+	this->m_LowResMesh->friendlyName = "Player";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->textureNames[1] = "uv_hollow.bmp";
+	this->m_LowResMesh->textureRatios[1] = 1.0f;
+	this->m_LowResMesh->bUseStencil = true;
 }
 cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* startNode)
 	: position(startPos)
@@ -99,6 +110,17 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 
 	this->m_CurrNode->isOccupied = true;
 	this->m_CurrNode->occupiedBy = (int)this->type;
+
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "Isosphere_Smooth_Normals.ply";
+	this->m_LowResMesh->positionXYZ = this->position;
+	this->m_LowResMesh->setUniformScale(0.5f);
+	this->m_LowResMesh->bDontLight = true;
+	this->m_LowResMesh->friendlyName = "Player";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->textureNames[1] = "uv_hollow.bmp";
+	this->m_LowResMesh->textureRatios[1] = 1.0f;
+	this->m_LowResMesh->bUseStencil = true;
 }
 cPlayerEntity::~cPlayerEntity()
 {
@@ -108,6 +130,7 @@ cPlayerEntity::~cPlayerEntity()
 void cPlayerEntity::Update(float dt)
 {
 	this->m_Mesh->positionXYZ = this->position;
+	this->m_LowResMesh->positionXYZ = glm::vec3(this->position.x, 0.5f, this->position.z);
 }
 
 void cPlayerEntity::Move(std::string directionToMove)

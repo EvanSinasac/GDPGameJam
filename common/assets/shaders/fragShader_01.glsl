@@ -745,25 +745,22 @@ if ( bIsSkyBox )
 		//
 	//
 	
-	if (twoDEffectOperator == 8)
-		discard;
-	//	{
-	//		if (discardSample > 0.1f)
-	//		{
-				// temporary reversal to try something
-				//discard;
-	//		}
-	//	}
-	//	else
-	//	{
-			//if ( discardSample < 0.1f )
-			if ( discardSample > 0.99f )
+		if (textureOperator == 1)
+		{
+			if ( discardSample > 0.99f )	// reversed, discarding white
 			{	// "black enough"
 				// DON'T even draw the pixel here
 				// The fragment shader simply stops here
 				discard;
 			}
-		//}
+		}
+		else if (textureOperator == 2)
+		{
+			if (discardSample > 0.7)
+			{
+				discard;
+			}
+		}
 
 		// For the mod ship, this "teal" colour is used for the window
 		if ((vec3DisSample.r > 0.55 && vec3DisSample.r < 0.65) && 

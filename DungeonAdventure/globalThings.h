@@ -29,6 +29,7 @@ extern unsigned int g_Mode;
 extern bool g_ObservationMode;
 extern bool g_FirstPersonMode;
 extern bool g_OverheadMode;
+extern bool g_DrawAllHighResModels;
 extern glm::vec3 lastCamPosition;
 extern glm::vec3 lastCamLookAt;
 

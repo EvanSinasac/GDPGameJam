@@ -1046,10 +1046,10 @@ int main(int argv, char** argc)
 
 		// So there's gunna be a LOT more lights then just the two.
 		// and also, don't need to call sRand every frame
-		for (unsigned int index = 0; index != ::vec_pTorches.size(); index++)
-		{
-			::vec_pTorches[index]->Update(deltaTime);
-		}
+		//for (unsigned int index = 0; index != ::vec_pTorches.size(); index++)
+		//{
+		//	::vec_pTorches[index]->Update(deltaTime);
+		//}
 
 		// Copy the light information into the shader to draw the scene
 		::g_pTheLights->CopyLightInfoToShader();
@@ -1237,12 +1237,26 @@ int main(int argv, char** argc)
 			matModel = glm::mat4(1.0f);										// draw the stencil around the entity
 			if (!::vec_pAllEntities[index]->m_Mesh->bHasDiscardTexture)
 			{
-				DrawObject(::vec_pAllEntities[index]->m_Mesh,
-					matModel,
-					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-					program,
-					::g_pVAOManager);
+				if (::g_DrawAllHighResModels || 
+					glm::distance(::vec_pAllEntities[index]->m_Mesh->positionXYZ, ::cameraEye) < 30.0f || 
+					::vec_pAllEntities[index]->m_LowResMesh == nullptr)
+				{
+					DrawObject(::vec_pAllEntities[index]->m_Mesh,
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+				}
+				else
+				{
+					DrawObject(::vec_pAllEntities[index]->m_LowResMesh,
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+				}
 			}
 		}
 
@@ -1460,6 +1474,11 @@ int main(int argv, char** argc)
 				//{
 					// this is a pretty huge speed up, by not drawing objects that are outside of the vision anyways, but it's not really LOD
 					// so I gotta find some real low poly models and make entities that can switch between the models instead of just doing the current mesh
+				// TODO: idk, honestly, maybe I don't need to do the distance thing for the LOD since the floor and wall meshes are actually very low polygon count anyways
+				// it's really the doors and entities that are the worst, and I've already implemented the low res models for the entities
+				//if (::g_DrawAllHighResModels ||
+				//	glm::distance(::vec_pAllEntities[index]->m_Mesh->positionXYZ, ::cameraEye) < 40.0f)
+				//{
 					DrawObject(pCurrentMesh,
 						matModel,
 						pShaderProc->mapUniformName_to_UniformLocation["matModel"],

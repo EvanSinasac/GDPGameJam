@@ -678,19 +678,19 @@ void DrawObject(
 void DrawScene1(GLuint program)
 {
 	glm::mat4 matModel = glm::mat4(1.0f);
-	for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
-	{
-		matModel = glm::mat4(1.0f);										// draw the stencil around the entity
-		if (::vec_pAllEntities[index]->type != iEntity::ENTITY_TYPE::PLAYER)
-		{
-			DrawObject(::vec_pAllEntities[index]->m_Mesh,
-				matModel,
-				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
-				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
-				program,
-				::g_pVAOManager);
-		}
-	}
+	//for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+	//{
+	//	matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+	//	if (::vec_pAllEntities[index]->type != iEntity::ENTITY_TYPE::PLAYER)
+	//	{
+	//		DrawObject(::vec_pAllEntities[index]->m_Mesh,
+	//			matModel,
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//			program,
+	//			::g_pVAOManager);
+	//	}
+	//}
 	//if (::g_bStencilsOn)
 	//{
 	//	glStencilFunc(GL_ALWAYS, 1, 0xFF);	// enable the stencil buffer and update it for the player and non-torch entities

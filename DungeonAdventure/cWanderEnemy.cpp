@@ -27,6 +27,18 @@ cWanderEnemy::cWanderEnemy()
 	this->m_Mesh->bUseWholeObjectDiffuseColour = true;
 	this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(rand() % 255 / 255.0f, 0.5f, rand() % 255 / 255.0f, 1.0f);		// guarenteed at least some green colour
 
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "dalek2005_XYZ_N_RGBA_UV_low_res.ply";
+	this->m_LowResMesh->positionXYZ = this->m_Mesh->positionXYZ;
+	this->m_LowResMesh->setUniformScale(0.03f);
+	this->m_LowResMesh->bDontLight = true;
+	this->m_LowResMesh->friendlyName = "Wander Enemy";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->bUseStencil = true;
+	this->m_LowResMesh->bUseWholeObjectDiffuseColour = true;
+	this->m_LowResMesh->wholeObjectDiffuseRGBA = this->m_Mesh->wholeObjectDiffuseRGBA;		// guarenteed at least some green colour
+
+
 	type = ENTITY_TYPE::ENEMY;
 
 	this->m_FSMSystem = new sFSMSystem();
@@ -59,6 +71,18 @@ cWanderEnemy::cWanderEnemy(glm::vec3 startPos, glm::vec3 startLookAt, Node* star
 	this->m_Mesh->bUseStencil = true;
 	this->m_Mesh->bUseWholeObjectDiffuseColour = true;
 	this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(rand() % 255 / 255.0f, 0.5f, rand() % 255 / 255.0f, 1.0f);		// guarenteed at least some green colour
+
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "dalek2005_XYZ_N_RGBA_UV_low_res.ply";
+	this->m_LowResMesh->positionXYZ = this->m_Mesh->positionXYZ;
+	this->m_LowResMesh->setUniformScale(0.03f);
+	this->m_LowResMesh->bDontLight = false;
+	this->m_LowResMesh->friendlyName = "Wander Enemy";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->bUseStencil = true;
+	this->m_LowResMesh->bUseWholeObjectDiffuseColour = true;
+	this->m_LowResMesh->wholeObjectDiffuseRGBA = this->m_Mesh->wholeObjectDiffuseRGBA;		// guarenteed at least some green colour
+
 
 	if (lookAt == vec3NORTH)
 	{
@@ -145,6 +169,7 @@ void cWanderEnemy::Update(float dt)
 	}
 
 	this->m_Mesh->positionXYZ = glm::vec3(this->position.x, 0.0f, this->position.z);
+	this->m_LowResMesh->positionXYZ = this->m_Mesh->positionXYZ;	// could update rotation but by not it helps show that it's changing meshes
 }
 
 void cWanderEnemy::Move(std::string directionToMove)
@@ -167,28 +192,28 @@ void cWanderEnemy::Move(std::string directionToMove)
 					switch (direction)
 					{
 					case (int)DIRECTIONS::NORTH:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-45.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f));
 						break;
 					case(int)DIRECTIONS::NORTH_EAST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-90.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-45.0f), 0.0f));
 						break;
 					case(int)DIRECTIONS::EAST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-135.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(90.0f), 0.0f));
 						break;
 					case(int)DIRECTIONS::SOUTH_EAST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-180.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(45.0f), 0.0f));
 						break;
 					case(int)DIRECTIONS::SOUTH:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-225.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f));
 						break;
 					case(int)DIRECTIONS::SOUTH_WEST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-270.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-45.0f), 0.0f));
 						break;
 					case(int)DIRECTIONS::WEST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(-315.0f), 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(90.0f), 0.0f));
 						break;
 					case(int)DIRECTIONS::NORTH_WEST:
-						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f));
+						this->m_CurrNode->m_Footprints->SetOrientation(glm::vec3(glm::radians(90.0f), glm::radians(45.0f), 0.0f));
 						break;
 					default:
 						//std::cout << "Direction is somehow invalid (the switch statement didn't work)" << std::endl;

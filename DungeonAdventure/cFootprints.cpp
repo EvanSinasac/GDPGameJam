@@ -14,6 +14,8 @@ cFootprints::cFootprints()
 
 	this->m_Mesh->bUseStencil = false;
 
+	this->m_LowResMesh = this->m_Mesh;
+
 	this->type = iEntity::ENTITY_TYPE::FOOTPRINTS;
 
 	active = false;
@@ -32,6 +34,8 @@ cFootprints::cFootprints(glm::vec3 startPos)
 	//this->m_Mesh->discardTexture = "Dinosaur-Footprints-clipart-2.bmp";
 	this->m_Mesh->bIsVisible = false;
 	this->m_Mesh->bUseStencil = false;
+
+	this->m_LowResMesh = this->m_Mesh;
 
 	this->type = iEntity::ENTITY_TYPE::FOOTPRINTS;
 
@@ -75,12 +79,14 @@ void cFootprints::SetTextures(int typeOfTexture)
 		this->m_Mesh->textureRatios[0] = 1.0f;
 		this->m_Mesh->bHasDiscardTexture = true;
 		this->m_Mesh->discardTexture = "Dinosaur-Footprints-clipart-2.bmp";
+		this->m_Mesh->textureOperator = 1;
 		break;
 	case 1:
-		this->m_Mesh->textureNames[0] = "Dinosaur-Footprints-clipart-2.bmp";	//
+		this->m_Mesh->textureNames[0] = "treads.bmp";	//
 		this->m_Mesh->textureRatios[0] = 1.0f;
 		this->m_Mesh->bHasDiscardTexture = true;
-		this->m_Mesh->discardTexture = "Dinosaur-Footprints-clipart-2.bmp";
+		this->m_Mesh->discardTexture = "treads.bmp";
+		this->m_Mesh->textureOperator = 2;
 		break;
 	default:
 		break;

@@ -36,6 +36,18 @@ cListeningEnemy::cListeningEnemy()
 	//this->m_Mesh->bUseWholeObjectDiffuseColour = true;
 	//this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(rand() % 255 / 255.0f, 0.5f, rand() % 255 / 255.0f, 1.0f);		// guarenteed at least some green colour
 
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "Isosphere_Smooth_Normals.ply";
+	this->m_LowResMesh->positionXYZ = this->position;
+	this->m_LowResMesh->setUniformScale(0.5f);
+	this->m_LowResMesh->bDontLight = true;
+	this->m_LowResMesh->friendlyName = "Listening Enemy";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->textureNames[1] = "Final_Pokemon_Diffuse.bmp";
+	this->m_LowResMesh->textureRatios[1] = 1.0f;
+	this->m_LowResMesh->bUseStencil = true; 
+
+
 	type = ENTITY_TYPE::ENEMY;
 
 	this->m_FSMSystem = new sFSMSystem();
@@ -85,6 +97,17 @@ cListeningEnemy::cListeningEnemy(glm::vec3 startPos, glm::vec3 startLookAt, Node
 	this->m_Mesh->bUseStencil = true;
 	//this->m_Mesh->bUseWholeObjectDiffuseColour = true;
 	//this->m_Mesh->wholeObjectDiffuseRGBA = glm::vec4(rand() % 255 / 255.0f, 0.5f, rand() % 255 / 255.0f, 1.0f);		// guarenteed at least some green colour
+	
+	this->m_LowResMesh = new cMesh();
+	this->m_LowResMesh->meshName = "Isosphere_Smooth_Normals.ply";
+	this->m_LowResMesh->positionXYZ = this->position;
+	this->m_LowResMesh->setUniformScale(0.5f);
+	this->m_LowResMesh->bDontLight = true;
+	this->m_LowResMesh->friendlyName = "Listening Enemy";
+	this->m_LowResMesh->clearTextureRatiosToZero();
+	this->m_LowResMesh->textureNames[1] = "Final_Pokemon_Diffuse.bmp";
+	this->m_LowResMesh->textureRatios[1] = 1.0f;
+	this->m_LowResMesh->bUseStencil = true;
 
 	if (lookAt == vec3NORTH)
 	{
@@ -186,6 +209,7 @@ void cListeningEnemy::Update(float dt)
 	}
 
 	this->m_Mesh->positionXYZ = glm::vec3(this->position.x, 0.0f, this->position.z);
+	this->m_LowResMesh->positionXYZ = glm::vec3(this->m_Mesh->positionXYZ.x, 0.5f, this->m_Mesh->positionXYZ.z);
 }
 
 void cListeningEnemy::Move(std::string directionToMove)

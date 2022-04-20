@@ -64,6 +64,19 @@ bool bShowAllLights = false;
         {
             ::vec_pFSMEntities[index]->m_Mesh->bIsWireframe = !::vec_pFSMEntities[index]->m_Mesh->bIsWireframe;
         }
+        for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+        {
+            ::vec_pAllEntities[index]->m_Mesh->bIsWireframe = !::vec_pAllEntities[index]->m_Mesh->bIsWireframe;
+            ::vec_pAllEntities[index]->m_LowResMesh->bIsWireframe = !::vec_pAllEntities[index]->m_LowResMesh->bIsWireframe;
+            for (unsigned int indexA = 0; indexA != ::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes.size(); indexA++)
+            {
+                ::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes[indexA]->bIsWireframe = !::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes[indexA]->bIsWireframe;
+                for (unsigned int indexB = 0; indexB != ::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes[indexA]->vec_pChildMeshes.size(); indexB++)
+                {
+                    ::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes[indexA]->vec_pChildMeshes[indexB]->bIsWireframe = !::vec_pAllEntities[index]->m_Mesh->vec_pChildMeshes[indexA]->vec_pChildMeshes[indexB]->bIsWireframe;
+                }
+            }
+        }
     }
 
     if (key == GLFW_KEY_B && action == GLFW_PRESS)

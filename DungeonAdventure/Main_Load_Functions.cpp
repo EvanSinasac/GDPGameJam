@@ -340,8 +340,8 @@ bool loadLightsFile()
 			torchSet->positionXYZ = glm::vec3(ogX, ogY, ogZ);
 			torchSet->orientationXYZ = glm::vec3(0.0f, glm::radians(rotation), 0.0f);
 			iEntity* torchObject = new cTorchObject(torchSet, index);
-			::vec_pTorches.push_back(torchObject);
-			::g_vec_pMeshes.push_back(torchSet);
+			//::vec_pTorches.push_back(torchObject);
+			//::g_vec_pMeshes.push_back(torchSet);
 
 			::vec_pAllEntities.push_back(torchObject);
 
@@ -363,11 +363,6 @@ bool loadLightsFile()
 	//::g_currentLightIndex = index;
 
 	theFile.close();
-
-	for (unsigned int indexA = 0; indexA != index; indexA++)
-	{
-
-	}
 
 	return true;
 
@@ -492,6 +487,7 @@ void loadGameJamModels(std::vector<std::string>& modelLocations)
 
 
 	modelLocations.push_back("dalek2005_XYZ_N_RGBA_UV_hi_res.ply");
+	modelLocations.push_back("dalek2005_XYZ_N_RGBA_UV_low_res.ply");
 	modelLocations.push_back("hollowknight_XYZ_N_RGBA_UV.ply");
 }
 
@@ -572,6 +568,7 @@ bool loadTextures()
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Final_Pokemon_Ambient_Occlusion.bmp", true);
 
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Dinosaur-Footprints-clipart-2.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("treads.bmp", true);
 
 	ss << "DFK Textures\\";
 	::g_pTextureManager->SetBasePath(ss.str());

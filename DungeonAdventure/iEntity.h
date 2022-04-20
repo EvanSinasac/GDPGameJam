@@ -42,4 +42,7 @@ public:
 
 	ENTITY_TYPE type;
 	cMesh* m_Mesh;
+
+	cMesh* m_LowResMesh;
+	//cMesh* m_HiResMesh;
 };

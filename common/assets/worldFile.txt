@@ -43,7 +43,7 @@ Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply 0 1 0 0 270 0 1 1 1 0 0 255 1
 Quad_1_sided_aligned_on_XY_plane.ply 0 0 0 0 0 0 1 1 1 255 0 0 1 1 0 0 null 0 null 0 null 0 null
 Quad_1_sided_aligned_on_XY_plane.ply 0 1 0 0 0 0 1 1 1 255 0 0 1 0 0 0 null 0 null 0 null 0 null
 
-Quad_1_sided_aligned_on_XY_plane.ply 5 0.1 2.5 90 0 0 2.5 2.5 1 255 0 0 1 0 0 0 Dinosaur-Footprints-clipart-2.bmp 1 null 0 null 0 Dinosaur-Footprints-clipart-2.bmp
+Quad_1_sided_aligned_on_XY_plane.ply 5 0.1 2.5 90 90 0 2.5 2.5 1 255 0 0 1 0 0 2 treads.bmp 1 null 0 null 0 treads.bmp
 
 dfk_stairs_wood_XYZ_N_RGBA_UV_transformed.ply -5 0 5 0 0 0 1 1 1 255 255 255 1 0 1 4 dfk_stairs_01_basecolor.bmp 1 dfk_stairs_01_normal.bmp 1 dfk_stairs_01_SmMetAO.bmp 0.3 null
 
