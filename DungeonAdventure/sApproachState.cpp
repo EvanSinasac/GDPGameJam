@@ -9,6 +9,7 @@ sApproachState::sApproachState()
 {
 	timeToNextAction = 0.0f;
 	dirToRotate = 0;
+	this->mCurrentCondition = 0;
 }
 sApproachState::~sApproachState()
 {

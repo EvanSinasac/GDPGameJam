@@ -47,8 +47,8 @@ cListeningEnemy::cListeningEnemy()
 	this->m_LowResMesh->textureRatios[1] = 1.0f;
 	this->m_LowResMesh->bUseStencil = true; 
 
-
 	type = ENTITY_TYPE::ENEMY;
+
 
 	this->m_FSMSystem = new sFSMSystem();
 	this->m_IdleState = new sIdleState();

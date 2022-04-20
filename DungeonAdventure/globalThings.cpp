@@ -20,6 +20,7 @@ cShaderManager::cShaderProgram* pShaderProc = NULL;
 
 ResourceManager gResourceManager;
 Graph* g_Graph = new Graph();
+Node* g_exitNode = nullptr;
 
 std::vector<cFSMEntity*> vec_pFSMEntities;
 float entitySpeedModifier = 1.0f;

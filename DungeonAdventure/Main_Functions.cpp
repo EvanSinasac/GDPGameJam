@@ -446,6 +446,8 @@ bool loadTSVGrid(std::vector<Node*> spawnPoints)
 					//newNode->isExit = true;
 					::g_Graph->CreateNode(nodeID, glm::vec3(newMesh->positionXYZ.x, newMesh->positionXYZ.y + 0.75f, newMesh->positionXYZ.z),
 						grid[x][y], false, false, true);
+					::g_exitNode = ::g_Graph->nodes[::g_Graph->nodes.size() - 1];
+					std::cout << "Exit Node: " << ::g_exitNode->id << " bIsExit: " << ::g_exitNode->isExit << std::endl;
 				}
 				else if (grid[x][y + 1] == "SU" || grid[x][y - 1] == "SU")
 				{

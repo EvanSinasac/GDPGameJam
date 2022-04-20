@@ -256,7 +256,8 @@ Node* AStar(Graph* graph, Node* rootNode, Node* goal)
 		//{
 		//	return currNode;
 		//}
-		if (currNode->isHomeBase)
+		//if (currNode->isHomeBase)
+		if (currNode->isExit)
 		{
 			return currNode;
 		}
@@ -264,7 +265,7 @@ Node* AStar(Graph* graph, Node* rootNode, Node* goal)
 		// Go through each neighbouring node of current node
 		for (pair<Node*, float>neighbour : currNode->edges)
 		{
-			if (neighbour.first->visited == false)
+			if (neighbour.first->visited == false /*&& !neighbour.first->isOccupied*/)
 			{
 				float weightSoFar = currNode->costSoFar + neighbour.second;
 				if (weightSoFar < neighbour.first->costSoFar)

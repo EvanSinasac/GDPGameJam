@@ -193,6 +193,7 @@
     <ClCompile Include="sAttackState.cpp" />
     <ClCompile Include="SearchState.cpp" />
     <ClCompile Include="sEnclosedWanderState.cpp" />
+    <ClCompile Include="sExitMazeState.cpp" />
     <ClCompile Include="sFSMState.cpp" />
     <ClCompile Include="sFSMSystem.cpp" />
     <ClCompile Include="Shutdown.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="sAttackState.h" />
     <ClInclude Include="SearchState.h" />
     <ClInclude Include="sEnclosedWanderState.h" />
+    <ClInclude Include="sExitMazeState.h" />
     <ClInclude Include="sFSMState.h" />
     <ClInclude Include="sFSMSystem.h" />
     <ClInclude Include="sIdleState.h" />

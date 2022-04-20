@@ -246,6 +246,9 @@
     <ClCompile Include="cTreasureObject.cpp">
       <Filter>Entities %28Objects%29\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="sExitMazeState.cpp">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="cTreasureObject.h">
       <Filter>Entities %28Objects%29\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="sExitMazeState.h">
+      <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

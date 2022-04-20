@@ -120,22 +120,32 @@ bool bShowAllLights = false;
         ::g_DrawAllHighResModels = !::g_DrawAllHighResModels;
     }
 
+    if (key == GLFW_KEY_K && action == GLFW_PRESS)
+    {
+        if (!((cPlayerEntity*)::g_pPlayer)->cheating)
+            ((cPlayerEntity*)::g_pPlayer)->StartCheating();
+    }
+
     
     if (key == GLFW_KEY_UP && action == GLFW_PRESS)
     {
-        ((cPlayerEntity*)::g_pPlayer)->Move("FORWARD");
+        if (!((cPlayerEntity*)::g_pPlayer)->cheating)
+            ((cPlayerEntity*)::g_pPlayer)->Move("FORWARD");
     }
     if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
     {
-        ((cPlayerEntity*)::g_pPlayer)->Move("BACKWARDS");
+        if (!((cPlayerEntity*)::g_pPlayer)->cheating)
+            ((cPlayerEntity*)::g_pPlayer)->Move("BACKWARDS");
     }
     if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
     {
-        ((cPlayerEntity*)::g_pPlayer)->Rotate("LEFT");
+        if (!((cPlayerEntity*)::g_pPlayer)->cheating)
+            ((cPlayerEntity*)::g_pPlayer)->Rotate("LEFT");
     }
     if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
     {
-        ((cPlayerEntity*)::g_pPlayer)->Rotate("RIGHT");
+        if (!((cPlayerEntity*)::g_pPlayer)->cheating)
+            ((cPlayerEntity*)::g_pPlayer)->Rotate("RIGHT");
     }
     
     

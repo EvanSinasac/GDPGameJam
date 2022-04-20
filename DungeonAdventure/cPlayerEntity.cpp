@@ -1,6 +1,9 @@
 #include "cPlayerEntity.h"
 #include <iostream>
 
+#include "sIdleState.h"
+#include "sExitMazeState.h"
+
 cPlayerEntity::cPlayerEntity()
 {
 	this->position = glm::vec3(0.0f);
@@ -35,6 +38,20 @@ cPlayerEntity::cPlayerEntity()
 	this->m_LowResMesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_LowResMesh->textureRatios[1] = 1.0f;
 	this->m_LowResMesh->bUseStencil = true;
+
+
+	this->m_FSMSystem = new sFSMSystem();
+	this->m_IdleState = new sIdleState();
+	this->m_SearchState = new sExitMazeState();
+
+	// setup transitions
+	this->m_IdleState->AddTransition(1, this->m_SearchState);
+	
+	this->m_FSMSystem->AddState(this->m_IdleState);
+	this->m_FSMSystem->AddState(this->m_SearchState);
+
+	cheating = false;
+
 }
 cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* startNode)
 	: position(startPos)
@@ -121,6 +138,19 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	this->m_LowResMesh->textureNames[1] = "uv_hollow.bmp";
 	this->m_LowResMesh->textureRatios[1] = 1.0f;
 	this->m_LowResMesh->bUseStencil = true;
+
+
+	this->m_FSMSystem = new sFSMSystem();
+	this->m_IdleState = new sIdleState();
+	this->m_SearchState = new sExitMazeState();
+
+	// setup transitions
+	this->m_IdleState->AddTransition(1, this->m_SearchState);
+
+	this->m_FSMSystem->AddState(this->m_IdleState);
+	this->m_FSMSystem->AddState(this->m_SearchState);
+
+	cheating = false;
 }
 cPlayerEntity::~cPlayerEntity()
 {
@@ -129,8 +159,33 @@ cPlayerEntity::~cPlayerEntity()
 
 void cPlayerEntity::Update(float dt)
 {
+	if (cheating)
+	{
+		std::string stateMessage = this->m_FSMSystem->Update(dt, m_CurrNode, lookAt, direction);
+		//std::cout << stateMessage << std::endl;
+		if (stateMessage == "Rotate1")
+		{
+			Rotate("LEFT");
+		}
+		else if (stateMessage == "Rotate-1")
+		{
+			Rotate("RIGHT");
+		}
+		else if (stateMessage == "Move")
+		{
+			Move("FORWARD");
+		}
+		else if (stateMessage == "EndCheating")
+		{
+			cheating = false;
+			this->m_FSMSystem->Reset();
+		}
+	}
+
+
 	this->m_Mesh->positionXYZ = this->position;
 	this->m_LowResMesh->positionXYZ = glm::vec3(this->position.x, 0.5f, this->position.z);
+	
 }
 
 void cPlayerEntity::Move(std::string directionToMove)
@@ -242,4 +297,10 @@ void cPlayerEntity::Rotate(std::string directionToRotate)
 		std::cout << "Direction is somehow invalid (the switch statement didn't work)" << std::endl;
 		break;
 	}
+}
+
+void cPlayerEntity::StartCheating()
+{
+	cheating = true;
+	this->m_FSMSystem->Start();
 }

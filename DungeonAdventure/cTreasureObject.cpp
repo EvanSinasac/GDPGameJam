@@ -25,7 +25,7 @@ cTreasureObject::cTreasureObject(glm::vec3 startPosition, Node* startNode)
 	this->m_LowResMesh = new cMesh();
 	this->m_LowResMesh->meshName = "Isosphere_Smooth_Normals.ply";
 	this->m_LowResMesh->positionXYZ = startPosition;
-	this->m_LowResMesh->setUniformScale(1.0f);
+	this->m_LowResMesh->setUniformScale(0.4f);
 	this->m_LowResMesh->bDontLight = false;
 	this->m_LowResMesh->bUseStencil = true;
 	this->m_LowResMesh->clearTextureRatiosToZero();

@@ -51,6 +51,7 @@ extern bool g_turnDebugNormalsOn;
 
 extern ResourceManager gResourceManager;
 extern Graph* g_Graph;
+extern Node* g_exitNode;
 
 extern std::vector<cFSMEntity*> vec_pFSMEntities;
 extern float entitySpeedModifier;
