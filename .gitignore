@@ -348,3 +348,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+DungeonAdventure_Distribution
+DungeonAdventure_Distribution.zip
+DungeonAdventure_Installer.exe

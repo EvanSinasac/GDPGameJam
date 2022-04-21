@@ -194,8 +194,8 @@ void SetUpTextures(cMesh* pCurrentMesh, GLuint shaderProgram)
         float howMuch_cubeMap_02 = 0.0f;
         float howMuch_cubeMap_03 = 0.0f;
 
-       // howMuch_cubeMap_00 = fabs( (float)glm::cos(glfwGetTime() / 10.0) );
-        //howMuch_cubeMap_01 = 1.0f - howMuch_cubeMap_00;
+        howMuch_cubeMap_00 = fabs( (float)glm::cos(glfwGetTime() / 10.0) );
+        howMuch_cubeMap_01 = 1.0f - howMuch_cubeMap_00;
 
         glUniform4f(
             pShaderProc->mapUniformName_to_UniformLocation["cubeMap_Ratios0to3"],       //cubeMap_Ratios0to3_LocID,

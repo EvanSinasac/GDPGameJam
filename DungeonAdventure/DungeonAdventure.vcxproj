@@ -298,4 +298,41 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <!-- Begin distribution stuff -->
+  <PropertyGroup>
+    <DistributionFolderName>DungeonAdventure_Distribution</DistributionFolderName>
+    <AssetsFolder>$(SolutionDir)common/assets</AssetsFolder>
+    <DistributionPath>$(SolutionDir)$(DistributionFolderName)</DistributionPath>
+  </PropertyGroup>
+    <ItemGroup>
+      <!-- the executable -->
+      <DistributionCopyFiles Include="$(ProjectDir)..\$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)"/>
+      <!--DistributionCopyFiles Include="$(ProjectDir)Config.json"/-->
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      <!-- the dynamic library dependencies -->
+      <DistributionCopyFiles Include="$(OutDir)assimp-vc142-mt.dll"/>
+      <DistributionCopyFiles Include="$(OutDir)FreeImage.dll"/>
+      <DistributionCopyFiles Include="$(OutDir)glfw3.dll"/>
+      <DistributionCopyFiles Include="$(OutDir)glew32.dll"/>
+      <DistributionCopyFiles Include="$(OutDir)fmod.dll"/>
+      <DistributionCopyFiles Include="$(OutDir)freetype.dll"/>
+      <DistributionCopyFiles Include="$(SolutionDir)ReadMe.txt"/>
+    </ItemGroup>
+    <!-- Option 2 for copying asset subfolders -->
+    <ItemGroup>
+      <DistributionAssetCopyFiles Include="$(AssetsFolder)\**\*.*"/>
+    </ItemGroup>
+    <Target Name="CreateDistributionFolder">
+      <Message Text="Creating the distribution folder"/>
+      <MakeDir Directories="$(DistributionPath)"/>
+    </Target>
+    <Target Name="AfterBuild" DependsOnTargets="CreateDistributionFolder">
+      <Message Text="Copying files into the distribution folder"/>
+      <Copy SourceFiles="@(DistributionCopyFiles)" DestinationFolder="$(DistributionPath)\Bin"/>
+      <Message Text="Copying Asset folder and contents recursively into the distribution folder"/>
+      <Copy SourceFiles="@(DistributionAssetCopyFiles)" DestinationFolder="$(DistributionPath)\Assets\%(RecursiveDir)"/>
+      <Message Text="Creating distribution zip folder"/>
+      <Exec Command='"$(SolutionDir)7z.exe" a "$(SolutionDir)$(DistributionFolderName).zip" "$(DistributionPath)"'/>
+    </Target>
 </Project>
