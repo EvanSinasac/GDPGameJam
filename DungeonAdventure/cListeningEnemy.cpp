@@ -47,7 +47,7 @@ cListeningEnemy::cListeningEnemy()
 	this->m_LowResMesh->textureRatios[1] = 1.0f;
 	this->m_LowResMesh->bUseStencil = true; 
 
-	type = ENTITY_TYPE::ENEMY;
+	type = ENTITY_TYPE::ENEMY_LISTEN;
 
 
 	this->m_FSMSystem = new sFSMSystem();
@@ -156,7 +156,7 @@ cListeningEnemy::cListeningEnemy(glm::vec3 startPos, glm::vec3 startLookAt, Node
 	}
 
 
-	type = ENTITY_TYPE::ENEMY;
+	type = ENTITY_TYPE::ENEMY_LISTEN;
 	this->m_CurrNode->isOccupied = true;
 	this->m_CurrNode->occupiedBy = (int)this->type;
 

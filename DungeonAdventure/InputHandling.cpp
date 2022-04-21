@@ -17,9 +17,9 @@ bool g_MouseIsInsideWindow = false;
 void handleAsyncKeyboard(GLFWwindow* pWindow, double deltaTime)
 {
    // float cameraMoveSpeed = 50.0f * deltaTime;   //20.0f for space scene
-    //float cameraMoveSpeed = 5.0f * deltaTime;   //20.0f for space scene
-    float cameraMoveSpeed = 20.0f * deltaTime;   //20.0f for space scene
-    float lightMoveSpeed = 5.0f * deltaTime;
+    float cameraMoveSpeed = 5.0f * deltaTime;   //20.0f for space scene
+    //float cameraMoveSpeed = 20.0f * deltaTime;   //20.0f for space scene
+    //float lightMoveSpeed = 5.0f * deltaTime;
 
 
     if (cGFLWKeyboardModifiers::areAllModsUp(pWindow))
@@ -115,8 +115,8 @@ void handleAsyncKeyboard(GLFWwindow* pWindow, double deltaTime)
     if (cGFLWKeyboardModifiers::isModifierDown(pWindow, true, false, false))
     {
         // Move the spotlight up and down
-        if (glfwGetKey(pWindow, GLFW_KEY_UP) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.y += lightMoveSpeed; }
-        if (glfwGetKey(pWindow, GLFW_KEY_DOWN) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.y -= lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_UP) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.y += lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_DOWN) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.y -= lightMoveSpeed; }
     }//if ( cGFLWKeyboardModifiers::...
 
 
@@ -124,10 +124,10 @@ void handleAsyncKeyboard(GLFWwindow* pWindow, double deltaTime)
     if (cGFLWKeyboardModifiers::isModifierDown(pWindow, false, true, false))
     {
         // Move the spotlight around
-        if (glfwGetKey(pWindow, GLFW_KEY_UP) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.z += lightMoveSpeed; }
-        if (glfwGetKey(pWindow, GLFW_KEY_DOWN) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.z -= lightMoveSpeed; }
-        if (glfwGetKey(pWindow, GLFW_KEY_LEFT) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.x += lightMoveSpeed; }
-        if (glfwGetKey(pWindow, GLFW_KEY_RIGHT) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.x -= lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_UP) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.z += lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_DOWN) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.z -= lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_LEFT) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.x += lightMoveSpeed; }
+        //if (glfwGetKey(pWindow, GLFW_KEY_RIGHT) == GLFW_PRESS) { ::g_pTheLights->theLights[::g_selectedLight].position.x -= lightMoveSpeed; }
     }//if ( cGFLWKeyboardModifiers::...
 
     return;

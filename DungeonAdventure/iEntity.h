@@ -29,7 +29,8 @@ public:
 	enum class ENTITY_TYPE
 	{
 		PLAYER,
-		ENEMY,
+		ENEMY_LISTEN,
+		ENEMY_WANDER,
 		TREASURE,
 		OBJECT,
 		TORCH,

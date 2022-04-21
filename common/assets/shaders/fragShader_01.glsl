@@ -952,7 +952,7 @@ if ( bIsSkyBox )
 		else if (textureOperator == 12)
 		{	// FBO textures
 			vertexDiffuseColour.rgb = 	
-					(texture( screenTex3VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
+					(texture( screenTex3VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.y);
 					///(texture( tex2VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
 
 			vertexDiffuseColour.a = 1.0f;
@@ -961,7 +961,18 @@ if ( bIsSkyBox )
 		else if (textureOperator == 13)
 		{	// FBO textures
 			vertexDiffuseColour.rgb = 	
-					(texture( screenTex4VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
+					(texture( screenTex4VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.y);
+					///(texture( tex2VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
+
+			vertexDiffuseColour.a = 1.0f;
+
+		}
+		else if (textureOperator == 14)
+		{	// FBO textures
+			vertexDiffuseColour.rgb = ( 	
+					( texture ( screenTex1VertexMaterialColour,  vec2(fUVx2.x, fUVx2.y + flickerOffset.x) ) * texture2DRatios0to3.y) +
+					( texture ( texture_04, vec2(fUVx2.x + cam1StaticOffset.x, fUVx2.y + cam1StaticOffset.x) ) * texture2DRatios4to7.x)
+					).rgb;
 					///(texture( tex2VertexMaterialColour, fUVx2.xy ).rgb * texture2DRatios0to3.x);
 
 			vertexDiffuseColour.a = 1.0f;

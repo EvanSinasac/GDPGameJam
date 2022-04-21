@@ -33,6 +33,7 @@ iEntity* g_pPlayer = NULL;         // make the player once I know where the spaw
 std::vector<iEntity*> vec_pTorches;
 
 std::vector<iEntity*> vec_pAllEntities;
+std::vector<iEntity*> vec_pEnemies;
 
 //cFlyCamera* g_pFlyCamera = NULL;
 

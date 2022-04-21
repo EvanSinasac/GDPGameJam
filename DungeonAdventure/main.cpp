@@ -1,10 +1,7 @@
 // Evan Sinasac - 1081418
 // Game Jam
 // Description:
-//			Honestly, not entirely certain what I'm making with this.  I've been thinking about what we've done in class
-//			over the last year and the things I'm most interested in were Graphics and A.I.  So, I decided to go back
-//			to some of our old projects for inspiration, and make a sort of dungeon crawler, or simulate one (not sure yet)
-//			And I'll try to add in some Physics and Animation stuff where I can
+//			Welcome to Dungeon Adventure!  A dungeon crawling experience with a focus on graphics effects
 
 #include "GLCommon.h"
 #include "GLMCommon.h"
@@ -22,6 +19,8 @@
 #include <fstream>
 
 #include "cPlayerEntity.h"
+//#include "cListeningEnemy.h"
+//#include "cWanderEnemy.h"
 
 
 float lastX = 600.0f;
@@ -41,6 +40,45 @@ unsigned int numberOfTransparentObjects = 0;
 
 std::vector<std::string> modelLocations;
 
+cMesh* cam1Quad = NULL;
+cMesh* cam2Quad = NULL;
+cMesh* cam3Quad = NULL;
+cMesh* cam4Quad = NULL;
+
+float cam1StaticTimer = 0.0f;
+float cam1FlickerTimer = 0.0f;
+float cam2StaticTimer = 0.0f;
+float cam2FlickerTimer = 0.0f;
+
+float cam1Timer = 0.0f;
+float cam2Timer = 0.0f;
+float cam3Timer = 0.0f;
+float cam4Timer = 0.0f;
+
+float cam1TimeToStatic = 0.0f;
+float cam1TimeToFlicker = 0.0f;
+float cam2TimeToStatic = 0.0f;
+float cam2TimeToFlicker = 0.0f;
+
+float cam1Tim = 4.0f;
+float cam2Tim = 5.0f;
+float cam3Tim = 3.0f;
+float cam4Tim = 4.0f;
+
+glm::vec2 flickerOffset = glm::vec2(0.0f);
+
+glm::vec2 cam1StaticOffset = glm::vec2(0.0f);
+glm::vec2 cam2StaticOffset = glm::vec2(0.0f);
+
+
+int cam3Angle = 2;
+int cam4Angle = 3;
+
+bool cam1Staticing = false;
+bool cam1Flickering = false;
+bool cam2Staticing = false;
+bool cam2Flickering = false;
+
 //std::vector<cFSMEntity*> vec_pFSMEntities;
 //std::vector<glm::vec3> spawnPoints;
 std::vector<Node*> spawnPoints;
@@ -55,6 +93,7 @@ void DrawObject(
 	cVAOManager* pVAOManager);
 
 void DrawScene1(GLuint program);
+void DrawSceneWithDistanceLimit(GLuint program, glm::vec3 viewPos);
 
 bool loadWorldFile(unsigned int& numberOfTransparentObjects);
 bool loadLightsFile();
@@ -296,6 +335,26 @@ int main(int argv, char** argc)
 
 	pShaderProc->mapUniformName_to_UniformLocation["stencilColour"] = glGetUniformLocation(program, "stencilColour");
 
+
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex1VertexMaterialColour"] = glGetUniformLocation(program, "screenTex1VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex1VertexNormal"] = glGetUniformLocation(program, "screenTex1VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex1VertexWorldPos"] = glGetUniformLocation(program, "screenTex1VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex1VertexSpecular"] = glGetUniformLocation(program, "screenTex1VertexMaterialColour");
+
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex2VertexMaterialColour"] = glGetUniformLocation(program, "screenTex2VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex2VertexNormal"] = glGetUniformLocation(program, "screenTex2VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex2VertexWorldPos"] = glGetUniformLocation(program, "screenTex2VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex2VertexSpecular"] = glGetUniformLocation(program, "screenTex2VertexMaterialColour");
+
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex3VertexMaterialColour"] = glGetUniformLocation(program, "screenTex3VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex3VertexNormal"] = glGetUniformLocation(program, "screenTex3VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex3VertexWorldPos"] = glGetUniformLocation(program, "screenTex3VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex3VertexSpecular"] = glGetUniformLocation(program, "screenTex3VertexMaterialColour");
+
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex4VertexMaterialColour"] = glGetUniformLocation(program, "screenTex4VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex4VertexNormal"] = glGetUniformLocation(program, "screenTex4VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex4VertexWorldPos"] = glGetUniformLocation(program, "screenTex4VertexMaterialColour");
+	pShaderProc->mapUniformName_to_UniformLocation["screenTex4VertexSpecular"] = glGetUniformLocation(program, "screenTex4VertexMaterialColour");
 	//pShaderProc->mapUniformName_to_UniformLocation["wholeObjectSpecularColour"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
 	// .. and so on...
 	//pShaderProc->mapUniformName_to_UniformLocation["theLights[0].position"] = glGetUniformLocation(program, "wholeObjectSpecularColour");
@@ -425,6 +484,77 @@ int main(int argv, char** argc)
 		std::cout << "loadWorldFile did not finish OK, aborting" << std::endl;
 		return -1;
 	}
+
+	// cam 1 follows player and occasionally flickers
+	cam1Quad = new cMesh();
+	cam1Quad->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
+	cam1Quad->friendlyName = "Camera One";
+	cam1Quad->positionXYZ = glm::vec3(-114.95f, 74.3f, 78.0f);
+	cam1Quad->orientationXYZ = glm::vec3(0.0f, glm::radians(-90.0f), 0.0f);
+	cam1Quad->setUniformScale(1.0f);
+	cam1Quad->bIsWireframe = false;
+	cam1Quad->bDontLight = true;
+	cam1Quad->bUseObjectDebugColour = false;
+	cam1Quad->bUseWholeObjectDiffuseColour = false;
+	cam1Quad->clearTextureRatiosToZero();
+	cam1Quad->textureOperator = 14;
+	cam1Quad->textureRatios[1] = 0.8f;
+	cam1Quad->textureNames[4] = "static.bmp";
+
+	// cam 2 is random other textures that flicker and switch between them
+	cam2Quad = new cMesh();
+	cam2Quad->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
+	cam2Quad->friendlyName = "Camera Two";
+	cam2Quad->positionXYZ = glm::vec3(-114.95f, 74.3f, 82.0f);
+	cam2Quad->orientationXYZ = glm::vec3(0.0f, glm::radians(-90.0f), 0.0f);
+	cam2Quad->setUniformScale(1.0f);
+	cam2Quad->bIsWireframe = false;
+	cam2Quad->bDontLight = true;
+	cam2Quad->bUseObjectDebugColour = false;
+	cam2Quad->bUseWholeObjectDiffuseColour = false;
+	cam2Quad->textureOperator = 11;
+	cam2Quad->clearTextureRatiosToZero();
+	cam2Quad->textureNames[1] = "metroid.bmp";
+	cam2Quad->textureNames[2] = "metroidDreadSpider.bmp";
+	cam2Quad->textureNames[3] = "metroidVisor.bmp";
+	cam2Quad->textureNames[4] = "static.bmp";
+	cam2Quad->textureRatios[1] = 0.8f;
+	cam2Quad->textureRatios[2] = 0.0f;
+	cam2Quad->textureRatios[3] = 0.0f;
+	cam2Quad->textureRatios[4] = 0.0f;
+
+	cam3Quad = new cMesh();
+	cam3Quad->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
+	cam3Quad->friendlyName = "Camera Three";
+	cam3Quad->positionXYZ = glm::vec3(-117.5f, 74.3f, 75.5f);
+	cam3Quad->orientationXYZ = glm::vec3(0.0f);
+	cam3Quad->setUniformScale(1.0f);
+	cam3Quad->bIsWireframe = false;
+	cam3Quad->bDontLight = true;
+	cam3Quad->bUseObjectDebugColour = false;
+	cam3Quad->bUseWholeObjectDiffuseColour = false;
+	cam3Quad->clearTextureRatiosToZero();
+	cam3Quad->textureOperator = 12;
+	cam3Quad->textureRatios[1] = 1.0f;
+
+	cam4Quad = new cMesh();
+	cam4Quad->meshName = "Quad_1_sided_aligned_on_XY_plane.ply";
+	cam4Quad->friendlyName = "Camera Four";
+	cam4Quad->positionXYZ = glm::vec3(-117.5f, 74.3f, 84.5f);
+	cam4Quad->orientationXYZ = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);
+	cam4Quad->setUniformScale(1.0f);
+	cam4Quad->bIsWireframe = false;
+	cam4Quad->bDontLight = true;
+	cam4Quad->bUseObjectDebugColour = false;
+	cam4Quad->bUseWholeObjectDiffuseColour = false;
+	cam4Quad->clearTextureRatiosToZero();
+	cam4Quad->textureOperator = 13;
+	cam4Quad->textureRatios[1] = 1.0f;
+
+	::g_vec_pMeshes.push_back(cam1Quad);
+	::g_vec_pMeshes.push_back(cam2Quad);
+	::g_vec_pMeshes.push_back(cam3Quad);
+	::g_vec_pMeshes.push_back(cam4Quad);
 
 	// Normally this would be in a builder or something, but I'm still using my old WorldFile.txt
 	// So I'm doing it a little HACKy way
@@ -641,6 +771,40 @@ int main(int argv, char** argc)
 	//	std::cout << "pongFBO error: " << FBOerrorString << std::endl;
 	//}
 
+	// FBOs for Observation Room
+	cFBO* screen1FBO = new cFBO();
+	FBOerrorString = "";
+	if (screen1FBO->init(1200, 640, FBOerrorString))				// Screen 1 will be for following the player
+	{
+		std::cout << "Screen 1 FBO is all good!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Something wrong with Screen 1 FBO: " << FBOerrorString << std::endl;
+	}
+
+	cFBO* screen2FBO = new cFBO();
+	FBOerrorString = "";
+	if (screen2FBO->init(1200, 640, FBOerrorString))
+	{
+		std::cout << "Screen 2 FBO is all good!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Something wrong with Screen 2 FBO: " << FBOerrorString << std::endl;
+	}
+
+	cFBO* screen3FBO = new cFBO();
+	FBOerrorString = "";
+	if (screen3FBO->init(1200, 640, FBOerrorString))
+	{
+		std::cout << "Screen 3 FBO is all good!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Something wrong with Screen 3 FBO: " << FBOerrorString << std::endl;
+	}
+
 	// Clear the OG back buffer once, BEFORE we render anything
 	float ratio;
 	int width, height;
@@ -686,6 +850,16 @@ int main(int argv, char** argc)
 		deltaTime = (deltaTime > MAX_DELTA_TIME ? MAX_DELTA_TIME : deltaTime);
 		previousTime = currentTime;
 
+		cam1FlickerTimer += (float)deltaTime;
+		cam1StaticTimer += (float)deltaTime;
+		cam2FlickerTimer += (float)deltaTime;
+		cam2StaticTimer += (float)deltaTime;
+
+		cam1Timer += (float)deltaTime;
+		cam2Timer += (float)deltaTime;
+		cam3Timer += (float)deltaTime;
+		cam4Timer += (float)deltaTime;
+
 		//::g_pPlayer->Update(deltaTime);
 
 		for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
@@ -699,6 +873,616 @@ int main(int argv, char** argc)
 			::vec_pFSMEntities[index]->Update(deltaTime);
 		}
 
+		// cam 1 and 2 texture change	// camera 1 no longer changes textures, but still flickers
+		//if (cam1Timer >= cam1Tim)
+		//{
+		//	cam1Timer = 0.0f;
+		//	cam1Tim = rand() % 10 + 1;
+		//	int whichTex = rand() % 3 + 1;
+		//	//::g_pStationAngle1Quad->clearTextureRatiosToZero();
+		//	//::g_pStationAngle1Quad->textureRatios[whichTex] = 0.8f;
+		//}
+
+		if (cam2Timer >= cam2Tim)
+		{
+			cam2Timer = 0.0f;
+			cam2Tim = rand() % 10 + 1;
+			int whichTex = rand() % 3 + 1;
+			cam2Quad->clearTextureRatiosToZero();
+			cam2Quad->textureRatios[whichTex] = 0.8f;
+		}
+
+		// timer checks
+		if (cam1FlickerTimer >= cam1TimeToFlicker)
+		{
+			cam1Flickering = !cam1Flickering;
+			cam1FlickerTimer = 0.0f;
+			cam1TimeToFlicker = rand() % 6 + 1;
+		}
+		if (cam1StaticTimer >= cam1TimeToStatic)
+		{
+			cam1Staticing = !cam1Staticing;
+			cam1StaticTimer = 0.0f;
+			cam1TimeToStatic = rand() % 6 + 1;
+		}
+		if (cam2FlickerTimer >= cam2TimeToFlicker)
+		{
+			cam2Flickering = !cam2Flickering;
+			cam2FlickerTimer = 0.0f;
+			cam2TimeToFlicker = rand() % 6 + 1;
+		}
+		if (cam2StaticTimer >= cam2TimeToStatic)
+		{
+			cam2Staticing = !cam2Staticing;
+			cam2StaticTimer = 0.0f;
+			cam2TimeToStatic = rand() % 6 + 1;
+		}
+
+		// cam 1 flickering
+		if (cam1Flickering)
+		{
+			if (flickerOffset.x != 0.0f)
+			{
+				flickerOffset.x -= deltaTime;
+				if (flickerOffset.x < 0.0f)
+					flickerOffset.x = 0.0f;
+			}
+			else
+			{
+				flickerOffset.x = (rand() % 7 + 1) / 10.0f;
+			}
+		}
+		else
+		{
+			flickerOffset.x = 0.0f;
+		}
+
+		// cam 2 flickering
+		if (cam2Flickering)
+		{
+			if (flickerOffset.y != 0.0f)
+			{
+				flickerOffset.y -= deltaTime;
+				if (flickerOffset.y < 0.0f)
+					flickerOffset.y = 0.0f;
+			}
+			else
+			{
+				flickerOffset.y = (rand() % 7 + 1) / 10.0f;
+			}
+		}
+		else
+		{
+			flickerOffset.y = 0.0f;
+		}
+
+		// cam 1 static
+		if (cam1Staticing)
+		{
+			cam1Quad->textureRatios[4] = 0.5f;
+			cam1StaticOffset.x = (rand() % 10 + 1) / 10.0f;
+			cam1StaticOffset.y = (rand() % 10 + 1) / 10.0f;
+		}
+		else
+		{
+			cam1Quad->textureRatios[4] = 0.0f;
+		}
+
+		// cam 2 static
+		if (cam2Staticing)
+		{
+			cam2Quad->textureRatios[4] = 0.5f;
+			cam2StaticOffset.x = (rand() % 10 + 1) / 10.0f;
+			cam2StaticOffset.y = (rand() % 10 + 1) / 10.0f;
+		}
+		else
+		{
+			cam2Quad->textureRatios[4] = 0.0f;
+		}
+
+		// ok, so now I have to send the new values over
+		GLuint flickerOffset_Location = glGetUniformLocation(program, "flickerOffset");
+		glUniform2f(flickerOffset_Location, flickerOffset.x, flickerOffset.y);
+
+		GLuint cam1StaticOffset_Location = glGetUniformLocation(program, "cam1StaticOffset");
+		glUniform2f(cam1StaticOffset_Location, cam1StaticOffset.x, cam1StaticOffset.y);
+
+		GLuint cam2StaticOffset_Location = glGetUniformLocation(program, "cam2StaticOffset");
+		glUniform2f(cam2StaticOffset_Location, cam2StaticOffset.x, cam2StaticOffset.y);
+
+		{ // fbo for camera 1 (screen 1)- follow the player in overhead and draw everything within 20ish units and look from above the entity at it
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_1_G_BUFFER_PASS);
+			// 1st pass
+			glBindFramebuffer(GL_FRAMEBUFFER, screen1FBO->ID);
+
+
+			glViewport(0, 0, screen1FBO->width, screen1FBO->height);
+			ratio = screen1FBO->width / (float)screen1FBO->height;
+
+			glEnable(GL_DEPTH);         // Turns on the depth buffer
+			glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+
+
+			screen1FBO->clearBuffers(true, true);
+
+			// I need to update this eventually to be variables we can change
+			matProjection = glm::perspective(0.6f,	// FOV variable later
+				ratio,
+				0.1f,								// Near plane
+				1'000'000.0f);						// Far plane
+
+			matView = glm::mat4(1.0f);
+
+			cPlayerEntity* tempPlayer = ((cPlayerEntity*)::g_pPlayer);
+
+			glm::vec3 normLookAt = tempPlayer->lookAt;
+			normLookAt.y = -100.0f;
+			normLookAt = glm::normalize(normLookAt);
+			glm::vec3 eye = glm::vec3(tempPlayer->position.x,
+				tempPlayer->position.y + 15.0f,
+				tempPlayer->position.z);
+			glm::vec3 target = normLookAt;
+
+			matView = glm::lookAt(eye,
+				eye + target,
+				upVector);
+
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matView"],
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"],
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint bIsSkyBox_LocID = glGetUniformLocation(program, "bIsSkyBox");
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_TRUE);
+
+			glDisable(GL_DEPTH_TEST);     // Disable depth test (always write to colour buffer)
+			glDepthMask(GL_FALSE);          // Disable write to depth buffer
+			// Move the "skybox object" with the camera
+			sphereSky->positionXYZ = eye;
+			DrawObject(sphereSky,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_FALSE);
+			//
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			// *********************************************************************
+			// Draw the scene
+			glUniform4f(pShaderProc->getUniformID_From_Name("eyeLocation"),
+				eye.x, eye.y, eye.z, 1.0f);
+
+			DrawSceneWithDistanceLimit(program, eye);
+
+			// the scene I want to render to the quad is drawn, so I guess bind the values and textures?
+
+			// but I guess still do the 2nd and third pass for lighting and effects
+			glViewport(0, 0, screen1FBO->width, screen1FBO->height);
+			ratio = screen1FBO->width / (float)screen1FBO->height;
+
+			glm::vec3 eyeAngle1Quad = cam1Quad->positionXYZ - glm::vec3(100.0f, 0.0f, 0.0f);
+			glm::vec3 atAngle1Quad = cam1Quad->positionXYZ;
+			matView = glm::lookAt(eyeAngle1Quad,
+				atAngle1Quad,
+				glm::vec3(0.0f, 1.0f, 0.0f));
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			matProjection = glm::ortho(
+				0.0f,   // Left
+				1.0f / (float)width,  // Right
+				0.0f,   // Top
+				1.0f / (float)height, // Bottom
+				0.1f, // zNear  Eye is at 450, quad is at 500, so 50 units away
+				70.0f); // zFar
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matProjection"),
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint screenWidthHeight_locID = glGetUniformLocation(program, "screenWidthHeight");
+			glUniform2f(screenWidthHeight_locID, (float)screen1FBO->width, (float)screen1FBO->height);
+
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+
+			GLuint FSO_screenTex1VertexMaterialColour_TextureUnit = 50;	    // I picked 5 just because
+			glActiveTexture(FSO_screenTex1VertexMaterialColour_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex1VertexMaterialColourTextureNumber = screen1FBO->vertexMaterialColour_1_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex1VertexMaterialColourTextureNumber);
+			// uniform sampler2D texVertexMaterialColour;
+			GLint FSQ_screenTex1VertexMaterialColour2SamplerSamplerID = glGetUniformLocation(program, "screenTex1VertexMaterialColour");
+			glUniform1i(FSQ_screenTex1VertexMaterialColour2SamplerSamplerID, FSO_screenTex1VertexMaterialColour_TextureUnit);
+
+			GLuint FSO_screenTex1VertexNormal_TextureUnit = 51;	    // I picked 6 just because
+			glActiveTexture(FSO_screenTex1VertexNormal_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex1VertexNormalTextureNumber = screen1FBO->vertexNormal_2_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex1VertexNormalTextureNumber);
+			// uniform sampler2D texVertexNormal;
+			GLint FSQ_screenTex1VertexNormalSamplerID = glGetUniformLocation(program, "screenTex1VertexNormal");
+			glUniform1i(FSQ_screenTex1VertexNormalSamplerID, FSO_screenTex1VertexNormal_TextureUnit);
+
+			GLuint FSO_screenTex1VertexWorldPos_TextureUnit = 52;	    // I picked 7 just because
+			glActiveTexture(FSO_screenTex1VertexWorldPos_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex1VertexWorldPosTextureNumber = screen1FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex1VertexWorldPosTextureNumber);
+			// uniform sampler2D texVertexWorldPos;
+			GLint FSQ_screenTex1VertexWorldPosSamplerID = glGetUniformLocation(program, "screenTex1VertexWorldPos");
+			glUniform1i(FSQ_screenTex1VertexWorldPosSamplerID, FSO_screenTex1VertexWorldPos_TextureUnit);
+
+			GLuint FSO_screenTex1VertexSpecular_TextureUnit = 53;	    // I picked 8 just because
+			glActiveTexture(FSO_screenTex1VertexSpecular_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex1VertexSpecularTextureNumber = screen1FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex1VertexSpecularTextureNumber);
+			// uniform sampler2D texVertexSpecular;
+			GLint FSQ_screenTex1VertexSpecularSamplerID = glGetUniformLocation(program, "screenTex1VertexSpecular");
+			glUniform1i(FSQ_screenTex1VertexSpecularSamplerID, FSO_screenTex1VertexSpecular_TextureUnit);
+
+			glCullFace(GL_FRONT);
+
+			DrawObject(cam1Quad,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			// ok, so now they should be bound, so when I draw the quad, I should be able to access
+			// the textures
+		}
+
+
+
+		{ // fbo for camera 4 (screen 3)- choose one of the enemies, draw everything within 20ish units and look from above the entity at it
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_1_G_BUFFER_PASS);
+			// 1st pass
+			glBindFramebuffer(GL_FRAMEBUFFER, screen3FBO->ID);
+
+
+			glViewport(0, 0, screen3FBO->width, screen3FBO->height);
+			ratio = screen3FBO->width / (float)screen3FBO->height;
+
+			glEnable(GL_DEPTH);         // Turns on the depth buffer
+			glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+
+
+			screen3FBO->clearBuffers(true, true);
+
+			// I need to update this eventually to be variables we can change
+			matProjection = glm::perspective(0.6f,	// FOV variable later
+				ratio,
+				0.1f,								// Near plane
+				1'000'000.0f);						// Far plane
+
+			if (cam4Timer >= cam4Tim)
+			{
+				cam4Timer = 0.0f;
+				cam4Angle = rand() % ::vec_pEnemies.size();
+				cam4Tim = rand() % 6 + 3;
+			}
+
+			matView = glm::mat4(1.0f);
+
+			//glm::vec3 normLookAt;
+			//glm::vec3 eye;
+			//
+			//if (::vec_pEnemies[cam4Angle]->type == iEntity::ENTITY_TYPE::ENEMY_LISTEN)
+			//{
+			//	cListeningEnemy* tempEnemy = ((cListeningEnemy*)::vec_pEnemies[cam4Angle]);
+			//	normLookAt = tempEnemy->lookAt;
+			//	normLookAt = glm::normalize(normLookAt);
+			//	eye = glm::vec3(tempEnemy->position.x, tempEnemy->position.y + 15.0f, tempEnemy->position.z);
+			//}
+			//else
+			//{
+			//	cWanderEnemy* tempEnemy = ((cWanderEnemy*)::vec_pEnemies[cam4Angle]);
+			//	normLookAt = tempEnemy->lookAt;
+			//	normLookAt = glm::normalize(normLookAt);
+			//	eye = glm::vec3(tempEnemy->position.x, tempEnemy->position.y + 15.0f, tempEnemy->position.z);
+			//}
+			glm::vec3 normLookAt = ((cPlayerEntity*)::vec_pEnemies[cam4Angle])->lookAt;	// idk if this will work, but all the enemy entities and the player have the lookAt vec3
+			normLookAt.y = -100.0f;
+			normLookAt = glm::normalize(normLookAt);
+			glm::vec3 eye = glm::vec3(((cPlayerEntity*)::vec_pEnemies[cam4Angle])->position.x,
+				((cPlayerEntity*)::vec_pEnemies[cam4Angle])->position.y + 15.0f,
+				((cPlayerEntity*)::vec_pEnemies[cam4Angle])->position.z);
+			//glm::vec3 target = normLookAt;
+
+			matView = glm::lookAt(eye,
+				eye + normLookAt,
+				upVector);
+
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matView"],
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"],
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint bIsSkyBox_LocID = glGetUniformLocation(program, "bIsSkyBox");
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_TRUE);
+
+			glDisable(GL_DEPTH_TEST);     // Disable depth test (always write to colour buffer)
+			glDepthMask(GL_FALSE);          // Disable write to depth buffer
+			// Move the "skybox object" with the camera
+			sphereSky->positionXYZ = eye;
+			DrawObject(sphereSky,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_FALSE);
+			//
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			// *********************************************************************
+
+			// draw the scene
+			glUniform4f(pShaderProc->getUniformID_From_Name("eyeLocation"),
+				eye.x, eye.y, eye.z, 1.0f);
+			DrawSceneWithDistanceLimit(program, eye);
+
+			// the scene I want to render to the quad is drawn, so I guess bind the values and textures?
+
+			// but I guess still do the 2nd and third pass for lighting and effects
+			glViewport(0, 0, screen3FBO->width, screen3FBO->height);
+			ratio = screen3FBO->width / (float)screen3FBO->height;
+
+			glm::vec3 eyeAngle4Quad = cam4Quad->positionXYZ - glm::vec3(100.0f, 0.0f, 0.0f);
+			glm::vec3 atAngle4Quad = cam4Quad->positionXYZ;
+			matView = glm::lookAt(eyeAngle4Quad,
+				atAngle4Quad,
+				glm::vec3(0.0f, 1.0f, 0.0f));
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			matProjection = glm::ortho(
+				0.0f,   // Left
+				1.0f / (float)width,  // Right
+				0.0f,   // Top
+				1.0f / (float)height, // Bottom
+				0.1f, // zNear  Eye is at 450, quad is at 500, so 50 units away
+				70.0f); // zFar
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matProjection"),
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint screenWidthHeight_locID = glGetUniformLocation(program, "screenWidthHeight");
+			glUniform2f(screenWidthHeight_locID, (float)screen3FBO->width, (float)screen3FBO->height);
+
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+
+			GLuint FSO_screenTex4VertexMaterialColour_TextureUnit = 54;	    // I picked 5 just because
+			glActiveTexture(FSO_screenTex4VertexMaterialColour_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex4VertexMaterialColourTextureNumber = screen3FBO->vertexMaterialColour_1_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex4VertexMaterialColourTextureNumber);
+			// uniform sampler2D texVertexMaterialColour;
+			GLint FSQ_screenTex4VertexMaterialColour2SamplerSamplerID = glGetUniformLocation(program, "screenTex4VertexMaterialColour");
+			glUniform1i(FSQ_screenTex4VertexMaterialColour2SamplerSamplerID, FSO_screenTex4VertexMaterialColour_TextureUnit);
+
+			GLuint FSO_screenTex4VertexNormal_TextureUnit = 55;	    // I picked 6 just because
+			glActiveTexture(FSO_screenTex4VertexNormal_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex4VertexNormalTextureNumber = screen3FBO->vertexNormal_2_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex4VertexNormalTextureNumber);
+			// uniform sampler2D texVertexNormal;
+			GLint FSQ_screenTex4VertexNormalSamplerID = glGetUniformLocation(program, "screenTex4VertexNormal");
+			glUniform1i(FSQ_screenTex4VertexNormalSamplerID, FSO_screenTex4VertexNormal_TextureUnit);
+
+			GLuint FSO_screenTex4VertexWorldPos_TextureUnit = 56;	    // I picked 7 just because
+			glActiveTexture(FSO_screenTex4VertexWorldPos_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex4VertexWorldPosTextureNumber = screen3FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex4VertexWorldPosTextureNumber);
+			// uniform sampler2D texVertexWorldPos;
+			GLint FSQ_screenTex4VertexWorldPosSamplerID = glGetUniformLocation(program, "screenTex4VertexWorldPos");
+			glUniform1i(FSQ_screenTex4VertexWorldPosSamplerID, FSO_screenTex4VertexWorldPos_TextureUnit);
+
+			GLuint FSO_screenTex4VertexSpecular_TextureUnit = 57;	    // I picked 8 just because
+			glActiveTexture(FSO_screenTex4VertexSpecular_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex4VertexSpecularTextureNumber = screen3FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex4VertexSpecularTextureNumber);
+			// uniform sampler2D texVertexSpecular;
+			GLint FSQ_screenTex4VertexSpecularSamplerID = glGetUniformLocation(program, "screenTex4VertexSpecular");
+			glUniform1i(FSQ_screenTex4VertexSpecularSamplerID, FSO_screenTex4VertexSpecular_TextureUnit);
+
+			glCullFace(GL_FRONT);
+
+			DrawObject(cam4Quad,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			// ok, so now they should be bound, so when I draw the quad, I should be able to access
+			// the textures
+		}
+
+		{ // fbo for camera 3 (screen 2)- choose one of the enemies, draw everything within 20ish units and look from above the entity at it
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_1_G_BUFFER_PASS);
+			// 1st pass
+			glBindFramebuffer(GL_FRAMEBUFFER, screen2FBO->ID);
+
+
+			glViewport(0, 0, screen2FBO->width, screen2FBO->height);
+			ratio = screen2FBO->width / (float)screen2FBO->height;
+
+			glEnable(GL_DEPTH);         // Turns on the depth buffer
+			glEnable(GL_DEPTH_TEST);    // Check if the pixel is already closer
+
+
+			screen2FBO->clearBuffers(true, true);
+
+			// I need to update this eventually to be variables we can change
+			matProjection = glm::perspective(0.6f,	// FOV variable later
+				ratio,
+				0.1f,								// Near plane
+				1'000'000.0f);						// Far plane
+
+			if (cam3Timer >= cam3Tim)
+			{
+				cam3Timer = 0.0f;
+				cam3Angle = rand() % ::vec_pEnemies.size();
+				cam3Tim = rand() % 6 + 3;
+			}
+
+			matView = glm::mat4(1.0f);
+
+			//glm::vec3 normLookAt = ((cPlayerEntity*)::g_pPlayer)->lookAt;
+			//normLookAt.y = -100.0f;
+			//normLookAt = glm::normalize(normLookAt);
+			//::cameraEye = glm::vec3(((cPlayerEntity*)::g_pPlayer)->position.x,
+			//	((cPlayerEntity*)::g_pPlayer)->position.y + 15.0f,
+			//	((cPlayerEntity*)::g_pPlayer)->position.z);
+			//::cameraTarget = normLookAt;
+			//matView = glm::lookAt(::cameraEye,
+			//	::cameraEye + ::cameraTarget,
+			//	upVector);
+
+			//glm::vec3 eye;
+			//glm::vec3 normLookAt;
+
+			//if (::vec_pEnemies[cam3Angle]->type == iEntity::ENTITY_TYPE::ENEMY_LISTEN)
+			//{
+			//	cListeningEnemy* tempEnemy = ((cListeningEnemy*)::vec_pEnemies[cam3Angle]);
+			//	normLookAt = tempEnemy->lookAt;
+			//	normLookAt = glm::normalize(normLookAt);
+			//	eye = glm::vec3(tempEnemy->position.x, tempEnemy->position.y + 15.0f, tempEnemy->position.z);
+			//}
+			//else
+			//{
+			//	cWanderEnemy* tempEnemy = ((cWanderEnemy*)::vec_pEnemies[cam3Angle]);
+			//	normLookAt = tempEnemy->lookAt;
+			//	normLookAt = glm::normalize(normLookAt);
+			//	eye = glm::vec3(tempEnemy->position.x, tempEnemy->position.y + 15.0f, tempEnemy->position.z);
+			//}
+
+			glm::vec3 normLookAt = ((cPlayerEntity*)::vec_pEnemies[cam3Angle])->lookAt;	// idk if this will work, but all the enemy entities and the player have the lookAt vec3
+			normLookAt.y = -100.0f;
+			normLookAt = glm::normalize(normLookAt);
+			glm::vec3 eye = glm::vec3(((cPlayerEntity*)::vec_pEnemies[cam3Angle])->position.x,
+				((cPlayerEntity*)::vec_pEnemies[cam3Angle])->position.y + 15.0f,
+				((cPlayerEntity*)::vec_pEnemies[cam3Angle])->position.z);
+			//glm::vec3 target = normLookAt;
+
+			matView = glm::lookAt(eye,
+				eye + normLookAt,
+				upVector);
+
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matView"],
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"],
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint bIsSkyBox_LocID = glGetUniformLocation(program, "bIsSkyBox");
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_TRUE);
+
+			glDisable(GL_DEPTH_TEST);     // Disable depth test (always write to colour buffer)
+			glDepthMask(GL_FALSE);          // Disable write to depth buffer
+			// Move the "skybox object" with the camera
+			sphereSky->positionXYZ = eye;
+			DrawObject(sphereSky,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			glUniform1f(bIsSkyBox_LocID, (GLfloat)GL_FALSE);
+			//
+			glEnable(GL_DEPTH_TEST);
+			glDepthMask(GL_TRUE);
+			// *********************************************************************
+			// Draw the scene
+			glUniform4f(pShaderProc->getUniformID_From_Name("eyeLocation"),
+				eye.x, eye.y, eye.z, 1.0f);
+			DrawSceneWithDistanceLimit(program, eye);
+
+			// the scene I want to render to the quad is drawn, so I guess bind the values and textures?
+
+			// but I guess still do the 2nd and third pass for lighting and effects
+			glViewport(0, 0, screen2FBO->width, screen2FBO->height);
+			ratio = screen2FBO->width / (float)screen2FBO->height;
+
+			//glm::vec3 eyeAngle4Quad = cam4Quad->positionXYZ - glm::vec3(100.0f, 0.0f, 0.0f);
+			//glm::vec3 atAngle4Quad = cam4Quad->positionXYZ;
+			//matView = glm::lookAt(eyeAngle4Quad,
+			//	atAngle4Quad,
+			//	glm::vec3(0.0f, 1.0f, 0.0f));
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+				1, GL_FALSE, glm::value_ptr(matView));
+
+			matProjection = glm::ortho(
+				0.0f,   // Left
+				1.0f / (float)width,  // Right
+				0.0f,   // Top
+				1.0f / (float)height, // Bottom
+				0.1f, // zNear  Eye is at 450, quad is at 500, so 50 units away
+				70.0f); // zFar
+
+			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matProjection"),
+				1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint screenWidthHeight_locID = glGetUniformLocation(program, "screenWidthHeight");
+			glUniform2f(screenWidthHeight_locID, (float)screen2FBO->width, (float)screen2FBO->height);
+
+			glUniform1ui(pShaderProc->mapUniformName_to_UniformLocation["renderPassNumber"], PASS_2_LIGHT_PASS);
+
+			GLuint FSO_screenTex3VertexMaterialColour_TextureUnit = 58;	    // I picked 5 just because
+			glActiveTexture(FSO_screenTex3VertexMaterialColour_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex3VertexMaterialColourTextureNumber = screen2FBO->vertexMaterialColour_1_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex3VertexMaterialColourTextureNumber);
+			// uniform sampler2D texVertexMaterialColour;
+			GLint FSQ_screenTex3VertexMaterialColour2SamplerSamplerID = glGetUniformLocation(program, "screenTex3VertexMaterialColour");
+			glUniform1i(FSQ_screenTex3VertexMaterialColour2SamplerSamplerID, FSO_screenTex3VertexMaterialColour_TextureUnit);
+
+			GLuint FSO_screenTex3VertexNormal_TextureUnit = 59;	    // I picked 6 just because
+			glActiveTexture(FSO_screenTex3VertexNormal_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex3VertexNormalTextureNumber = screen2FBO->vertexNormal_2_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex3VertexNormalTextureNumber);
+			// uniform sampler2D texVertexNormal;
+			GLint FSQ_screenTex3VertexNormalSamplerID = glGetUniformLocation(program, "screenTex3VertexNormal");
+			glUniform1i(FSQ_screenTex3VertexNormalSamplerID, FSO_screenTex3VertexNormal_TextureUnit);
+
+			GLuint FSO_screenTex3VertexWorldPos_TextureUnit = 60;	    // I picked 7 just because
+			glActiveTexture(FSO_screenTex3VertexWorldPos_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex3VertexWorldPosTextureNumber = screen2FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex3VertexWorldPosTextureNumber);
+			// uniform sampler2D texVertexWorldPos;
+			GLint FSQ_screenTex3VertexWorldPosSamplerID = glGetUniformLocation(program, "screenTex3VertexWorldPos");
+			glUniform1i(FSQ_screenTex3VertexWorldPosSamplerID, FSO_screenTex3VertexWorldPos_TextureUnit);
+
+			GLuint FSO_screenTex3VertexSpecular_TextureUnit = 61;	    // I picked 8 just because
+			glActiveTexture(FSO_screenTex3VertexSpecular_TextureUnit + GL_TEXTURE0);
+			GLuint screenTex3VertexSpecularTextureNumber = screen2FBO->vertexWorldPos_3_ID;
+			glBindTexture(GL_TEXTURE_2D, screenTex3VertexSpecularTextureNumber);
+			// uniform sampler2D texVertexSpecular;
+			GLint FSQ_screenTex3VertexSpecularSamplerID = glGetUniformLocation(program, "screenTex3VertexSpecular");
+			glUniform1i(FSQ_screenTex3VertexSpecularSamplerID, FSO_screenTex3VertexSpecular_TextureUnit);
+
+			glCullFace(GL_FRONT);
+
+			DrawObject(cam3Quad,
+				glm::mat4(1.0f),
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+
+			// ok, so now they should be bound, so when I draw the quad, I should be able to access
+			// the textures
+		}
+
+
 		if (::g_UseBloom)
 		{
 			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["useBloom"], (float)GL_TRUE);
@@ -707,6 +1491,7 @@ int main(int argv, char** argc)
 		{
 			glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["useBloom"], (float)GL_FALSE);
 		}
+
 		// this was where I made the other FBO objects, deleted for AI
 		// alright, time to do this the way I know how
 		{
@@ -753,10 +1538,12 @@ int main(int argv, char** argc)
 				::cameraEye + ::cameraTarget,
 				upVector);
 
-			glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+			//glUniformMatrix4fv(pShaderProc->getUniformID_From_Name("matView"),
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matView"],
 				1, GL_FALSE, glm::value_ptr(matView));
 
-			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"], 1, GL_FALSE, glm::value_ptr(matProjection));
+			glUniformMatrix4fv(pShaderProc->mapUniformName_to_UniformLocation["matProjection"], 
+				1, GL_FALSE, glm::value_ptr(matProjection));
 		
 			// don't really want to blur the skybox so let's just not draw it for the FBO
 			//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bIsSkyBox"], (GLfloat)GL_TRUE);
@@ -982,6 +1769,8 @@ int main(int argv, char** argc)
 			glCullFace(GL_FRONT);
 			
 		}
+
+		
 		
 		
 		// Set pass to #0
@@ -1286,7 +2075,12 @@ int main(int argv, char** argc)
 						stencilColour = glm::vec4(0.0f, 0.3f, 0.7f, 1.0f);
 						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.1f, scale.y * 1.05f, scale.z * 1.1f);
 						break;
-					case iEntity::ENTITY_TYPE::ENEMY:
+					case iEntity::ENTITY_TYPE::ENEMY_LISTEN:
+						stencilColour = glm::vec4(1.0f, 0.2f, 0.0f, 1.0f);
+						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.05f, scale.y * 1.01f, scale.z * 1.05f);
+						break;
+					case iEntity::ENTITY_TYPE::ENEMY_WANDER:
 						stencilColour = glm::vec4(1.0f, 0.2f, 0.0f, 1.0f);
 						//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
 						::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.05f, scale.y * 1.01f, scale.z * 1.05f);
@@ -1580,6 +2374,21 @@ int main(int argv, char** argc)
 			//{
 			//	std::cout << errorString << std::endl;
 			//}
+			errorString = "";
+			if (!screen1FBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
+			errorString = "";
+			if (!screen2FBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
+			errorString = "";
+			if (!screen2FBO->reset(width, height, errorString))
+			{
+				std::cout << errorString << std::endl;
+			}
 			::g_updateFBOResolution = false;
 		}
 

@@ -25,19 +25,22 @@ void SpawnEntities(std::vector<Node*> spawnPoints)
 		if (spawnPoints[index]->type == "E")	// spawn an enemy
 		{
 			int random = rand() % 2;
+			iEntity* enemy;
 			switch (random)
 			{
 			case 0:
-				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WANDER_ENEMY,
-					spawnPoints[index]->position, spawnPoints[index]));
+				enemy = entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::WANDER_ENEMY,
+					spawnPoints[index]->position, spawnPoints[index]);
 				break;
 			case 1:
-				::vec_pAllEntities.push_back(entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::LISTEN_ENEMY,
-					spawnPoints[index]->position, spawnPoints[index]));
+				enemy = entityBuilder.MakeEntity(cEntityBuilder::TypeOfEntity::LISTEN_ENEMY,
+					spawnPoints[index]->position, spawnPoints[index]);
 				break;
 			default:
 				break;
 			}
+			::vec_pAllEntities.push_back(enemy);
+			::vec_pEnemies.push_back(enemy);
 		}
 			
 		if (spawnPoints[index]->type == "O")	// spawn some furniture
@@ -971,6 +974,357 @@ void DrawScene1(GLuint program)
 
 		}
 
+
+	}//for (unsigned int index
+}
+
+void DrawSceneWithDistanceLimit(GLuint program, glm::vec3 viewPos)
+{
+	glm::mat4 matModel;
+	// I really hope drawing the player and objects I want to use the stencil buffer on last doesn't make them all flickery
+	if (::g_bStencilsOn)
+	{
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);	// enable the stencil buffer and update it for the player and non-torch entities
+		glStencilMask(0xFF);
+	}
+	// Draw the player and non-torch entities with stencil on if it's on
+
+	//matModel = glm::mat4(1.0f);
+	//DrawObject(((cPlayerEntity*)::g_pPlayer)->m_Mesh,
+	//	matModel,
+	//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//	program,
+	//	::g_pVAOManager);
+
+	for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+	{
+		matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+		if (!::vec_pAllEntities[index]->m_Mesh->bHasDiscardTexture)
+		{
+			if (glm::distance(::vec_pAllEntities[index]->m_Mesh->positionXYZ, viewPos) < 20.0f)
+			{
+				DrawObject(::vec_pAllEntities[index]->m_Mesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+			//else
+			//{
+			//	DrawObject(::vec_pAllEntities[index]->m_LowResMesh,
+			//		matModel,
+			//		pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+			//		pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+			//		program,
+			//		::g_pVAOManager);
+			//}
+		}
+	}
+
+
+	// Before moving on to the second pass, is the stencil on?
+	if (::g_bStencilsOn)
+	{
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		// I want to draw the stencils, go through the entities and any of type player, object or enemy need to be drawn with the stencil buffer
+		// by which I mean instead of making a new shader, I just use a texture operator and pass in the colour
+		for (unsigned int index = 0; index != ::vec_pAllEntities.size(); index++)
+		{
+			//if (::vec_pAllEntities[index]->type != iEntity::ENTITY_TYPE::TORCH)	// draw a stencil around anything that isn't a torch entity
+			if (::vec_pAllEntities[index]->m_Mesh->bUseStencil && 
+				glm::distance(::vec_pAllEntities[index]->m_Mesh->positionXYZ, viewPos) < 20.0f)						// draw a stencil around anything that isn't a torch entity
+			{
+				glm::vec3 scale = ::vec_pAllEntities[index]->m_Mesh->scale;				// store the scale to reset after
+				int normalTexOp = ::vec_pAllEntities[index]->m_Mesh->textureOperator;	// store texture operator to reset after
+				::vec_pAllEntities[index]->m_Mesh->textureOperator = 20;				// set texture operator to 20 for the stencil
+				bool initalDiffuseColour = ::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour;
+				::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour = false;
+				glm::vec4 stencilColour;												// decide on colour of stencil depending on type of entity
+				switch (::vec_pAllEntities[index]->type)
+				{
+				case iEntity::ENTITY_TYPE::PLAYER:
+					stencilColour = glm::vec4(0.0f, 0.3f, 0.7f, 1.0f);
+					::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.1f, scale.y * 1.05f, scale.z * 1.1f);
+					break;
+				case iEntity::ENTITY_TYPE::ENEMY_LISTEN:
+					stencilColour = glm::vec4(1.0f, 0.2f, 0.0f, 1.0f);
+					//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+					::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.05f, scale.y * 1.01f, scale.z * 1.05f);
+					break;
+				case iEntity::ENTITY_TYPE::ENEMY_WANDER:
+					stencilColour = glm::vec4(1.0f, 0.2f, 0.0f, 1.0f);
+					//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+					::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.05f, scale.y * 1.01f, scale.z * 1.05f);
+					break;
+				case iEntity::ENTITY_TYPE::OBJECT:
+					stencilColour = glm::vec4(0.2f, 0.8f, 0.0f, 1.0f);
+					//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+					::vec_pAllEntities[index]->m_Mesh->scale *= 1.1f;
+					break;
+				case iEntity::ENTITY_TYPE::TREASURE:
+					stencilColour = glm::vec4(1.0f, 1.0f, 0.6f, 1.0f);
+					//::vec_pAllEntities[index]->m_Mesh->scale = glm::vec3(scale.x * 1.01f, scale.y * 1.01f, scale.z * 1.01f);
+					::vec_pAllEntities[index]->m_Mesh->scale *= 1.1f;
+					break;
+				default:
+					stencilColour = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
+					::vec_pAllEntities[index]->m_Mesh->setUniformScale(1.1f);
+				}
+
+				// pass the colour to the shader
+				glUniform4f(pShaderProc->mapUniformName_to_UniformLocation["stencilColour"],
+					stencilColour.x, stencilColour.y, stencilColour.z, stencilColour.a);
+
+				matModel = glm::mat4(1.0f);										// draw the stencil around the entity
+				DrawObject(::vec_pAllEntities[index]->m_Mesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+
+				// reset the texture operator and scale
+				::vec_pAllEntities[index]->m_Mesh->textureOperator = normalTexOp;
+				::vec_pAllEntities[index]->m_Mesh->scale = scale;
+				::vec_pAllEntities[index]->m_Mesh->bUseWholeObjectDiffuseColour = initalDiffuseColour;
+			}
+		}
+		// once all stencil objects are drawn, we can reset the stencil stuff
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+	}	// now if we drawing the stencil outline there should be an outline around all my entities (minus the torches)
+
+
+
+	for (unsigned int index = 0; index != vec_pFSMEntities.size(); index++)
+	{
+		matModel = glm::mat4(1.0f);
+		if (glm::distance(vec_pFSMEntities[index]->m_Mesh->positionXYZ, viewPos) < 20.0f)
+		{
+			DrawObject(vec_pFSMEntities[index]->m_Mesh,
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
+	}
+
+
+	if (::drawLightBalls)
+	{
+		for (unsigned int index = 0; index != ::g_vec_pPointLights.size(); index++)
+		{
+			matModel = glm::mat4(1.0f);
+			if (glm::distance(g_vec_pPointLights[index]->positionXYZ, viewPos) < 20.0f)
+			{
+				DrawObject(::g_vec_pPointLights[index],
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+		}
+	}
+
+	for (unsigned int index = 0; index != ::g_vec_pNodes.size(); index++)
+	{
+		matModel = glm::mat4(1.0f);
+		if (!::g_ObservationMode)
+		{
+			if (glm::distance(::g_vec_pNodes[index]->positionXYZ, ::cameraEye) < 20.0f)
+			{
+				DrawObject(::g_vec_pNodes[index],
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+		}
+		else
+		{
+			if (glm::distance(::g_vec_pNodes[index]->positionXYZ, ::cameraEye) < 20.0f)
+			{
+				DrawObject(::g_vec_pNodes[index],
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+		}
+	}
+
+	// Turn it on
+			//glUniform1f(bDiscardTransparencyWindowsON_LocID, (GLfloat)GL_TRUE);
+	//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_TRUE);
+	//for (unsigned int index = 0; index != ::g_vec_pFootprintMeshes.size(); index++)
+	//{
+	//	cMesh* pCurrentMesh = ::g_vec_pFootprintMeshes[index];
+	//	matModel = glm::mat4(1.0f);
+	//	if (::g_ObservationMode || glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 75.0f)
+	//	{
+	//		GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName(pCurrentMesh->discardTexture);
+	//		GLuint textureUnit = 32;
+	//		glActiveTexture(textureUnit + GL_TEXTURE0);
+	//		glBindTexture(GL_TEXTURE_2D, discardTextureNumber);
+	//		glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["discardTexture"], textureUnit);
+
+	//		DrawObject(pCurrentMesh,
+	//			matModel,
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//			pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//			program,
+	//			::g_pVAOManager);
+	//	}
+	//}	
+	//// Turn it off
+	//glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_FALSE);
+
+
+	// for whatever reason, with the FBO stuff, the last item drawn before the FBO full screen gets all flickery
+	// so, there's an extra model without the model itself being loaded on the list of meshes that gets drawn last
+	// viola, no more jittery black squares or missing vertices, cause it's not loaded to be drawn anyways lol
+	for (unsigned int index = 0; index != ::g_vec_pMeshes.size(); index++)
+	{
+		// So the code is a little easier...
+		cMesh* pCurrentMesh = ::g_vec_pMeshes[index];
+
+		matModel = glm::mat4(1.0f);  // "Identity" ("do nothing", like x1)
+		//mat4x4_identity(m);
+
+		if (pCurrentMesh->bHasDiscardTexture)
+		{
+			// Discard texture
+			{
+				//GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName("Lisse_mobile_shipyard-mal1.bmp");
+				GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName(pCurrentMesh->discardTexture);
+
+				// I'm picking texture unit 30 since it's not in use.
+				GLuint textureUnit = 30;
+				glActiveTexture(textureUnit + GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, discardTextureNumber);
+				//GLint discardTexture_LocID = glGetUniformLocation(program, "discardTexture");
+				//glUniform1i(discardTexture_LocID, textureUnit);
+				glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["discardTexture"], textureUnit);
+
+
+				// Turn it on
+				//glUniform1f(bDiscardTransparencyWindowsON_LocID, (GLfloat)GL_TRUE);
+				glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_TRUE);
+				/*DrawObject(pCurrentMesh,
+					matModel,
+					matModel_Location,
+					matModelInverseTranspose_Location,
+					program,
+					::g_pVAOManager);*/
+				if (glm::distance(pCurrentMesh->positionXYZ, viewPos) < 20.0f)
+				{
+					DrawObject(pCurrentMesh,
+						matModel,
+						pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+						pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+						program,
+						::g_pVAOManager);
+				}
+
+				// Turn it off
+				glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_FALSE);
+			}
+		}
+		else
+		{
+			//DrawObject(pCurrentMesh,
+			//	matModel,
+			//	matModel_Location,
+			//	matModelInverseTranspose_Location,
+			//	program,
+			//	::g_pVAOManager);
+
+			// temp
+			//if (glm::distance(pCurrentMesh->positionXYZ, ::cameraEye) < 50.0f)
+			//{
+				// this is a pretty huge speed up, by not drawing objects that are outside of the vision anyways, but it's not really LOD
+				// so I gotta find some real low poly models and make entities that can switch between the models instead of just doing the current mesh
+			// TODO: idk, honestly, maybe I don't need to do the distance thing for the LOD since the floor and wall meshes are actually very low polygon count anyways
+			// it's really the doors and entities that are the worst, and I've already implemented the low res models for the entities
+			//if (::g_DrawAllHighResModels ||
+			//	glm::distance(::vec_pAllEntities[index]->m_Mesh->positionXYZ, ::cameraEye) < 40.0f)
+			//{
+			if (glm::distance(pCurrentMesh->positionXYZ, viewPos) < 20.0f)
+			{
+				DrawObject(pCurrentMesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+			//}
+
+		}
+
+
+	}//for (unsigned int index
+
+	// don't need to sort the footprints since we'll basically never look at them through each other
+	for (unsigned int index = 0; index != ::g_vec_pFootprintMeshes.size(); index++)
+	{
+		glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_TRUE);
+		GLuint discardTextureNumber = ::g_pTextureManager->getTextureIDFromName(::g_vec_pFootprintMeshes[index]->discardTexture);
+		GLuint textureUnit = 32;
+		glActiveTexture(textureUnit + GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, discardTextureNumber);
+		glUniform1i(pShaderProc->mapUniformName_to_UniformLocation["discardTexture"], textureUnit);
+
+		matModel = glm::mat4(1.0f);
+		if (glm::distance(::g_vec_pFootprintMeshes[index]->positionXYZ, viewPos) < 20.0f)
+		{
+			DrawObject(::g_vec_pFootprintMeshes[index],
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
+
+		glUniform1f(pShaderProc->mapUniformName_to_UniformLocation["bDiscardTransparencyWindowsOn"], (GLfloat)GL_FALSE);
+	}
+
+
+	//matModel = glm::mat4(1.0f);
+	//DrawObject(dunceMesh,
+	//	matModel,
+	//	pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+	//	pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+	//	program,
+	//	::g_pVAOManager);
+
+	// Draw Debug objects
+
+	for (unsigned int index = 0; index != ::g_vec_pFloorsForAlpha.size(); index++)
+	{
+		// So the code is a little easier...
+		cMesh* pCurrentMesh = ::g_vec_pFloorsForAlpha[index];
+
+		matModel = glm::mat4(1.0f);  // "Identity" ("do nothing", like x1)
+		//mat4x4_identity(m);
+		if (glm::distance(pCurrentMesh->positionXYZ, viewPos) < 20.0f)
+		{
+			DrawObject(pCurrentMesh,
+				matModel,
+				pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+				pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+				program,
+				::g_pVAOManager);
+		}
 
 	}//for (unsigned int index
 }

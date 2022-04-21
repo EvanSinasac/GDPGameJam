@@ -39,7 +39,7 @@ cWanderEnemy::cWanderEnemy()
 	this->m_LowResMesh->wholeObjectDiffuseRGBA = this->m_Mesh->wholeObjectDiffuseRGBA;		// guarenteed at least some green colour
 
 
-	type = ENTITY_TYPE::ENEMY;
+	type = ENTITY_TYPE::ENEMY_WANDER;
 
 	this->m_FSMSystem = new sFSMSystem();
 	this->m_IdleState = new sIdleState();
@@ -130,7 +130,7 @@ cWanderEnemy::cWanderEnemy(glm::vec3 startPos, glm::vec3 startLookAt, Node* star
 		this->m_Mesh->orientationXYZ = glm::vec3(0.0f, glm::radians(45.0f), 0.0f);
 	}
 
-	type = ENTITY_TYPE::ENEMY;
+	type = ENTITY_TYPE::ENEMY_WANDER;
 
 	this->m_CurrNode->isOccupied = true;
 	this->m_CurrNode->occupiedBy = (int)this->type;

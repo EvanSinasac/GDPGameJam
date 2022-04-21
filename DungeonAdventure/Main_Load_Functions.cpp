@@ -577,6 +577,11 @@ bool loadTextures()
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Dinosaur-Footprints-clipart-2.bmp", true);
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("treads.bmp", true);
 
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("metroid.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("metroidDreadSpider.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("metroidVisor.bmp", true);
+	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("static.bmp", true);
+
 	ss << "DFK Textures\\";
 	::g_pTextureManager->SetBasePath(ss.str());
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("dfk_bed_single_01_basecolor.bmp", true);

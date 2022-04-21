@@ -63,6 +63,7 @@ extern iEntity* g_pPlayer;
 extern std::vector<iEntity*> vec_pTorches;
 
 extern std::vector<iEntity*> vec_pAllEntities;
+extern std::vector<iEntity*> vec_pEnemies;      // for the FBO stuff I want
 // ************************************************
 //     ___                         
 //    / __|__ _ _ __  ___ _ _ __ _ 
