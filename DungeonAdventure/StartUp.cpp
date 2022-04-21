@@ -15,5 +15,7 @@ bool g_StartUp(GLFWwindow* pWindow)
 
 	::g_pTextureManager = new cBasicTextureManager();
 
+	::g_pWorld = new nPhysics::cParticleWorld(1000);
+
 	return true;
 }

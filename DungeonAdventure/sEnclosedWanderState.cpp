@@ -37,7 +37,7 @@ std::string sEnclosedWanderState::Update(float dt, Node* currentNode, glm::vec3 
 			if (nextNode->type == "D" || nextNode->type == "DP" || nextNode->type == "DS")
 			{
 				stage = 0;
-				std::cout << "DOOR" << std::endl;
+				//std::cout << "DOOR" << std::endl;
 			}	
 			else
 			{
@@ -138,12 +138,14 @@ void sEnclosedWanderState::OnEnterState(Node* currentNode)
 
 	//std::cout << "Enclosed Wander State Entered" << std::endl;
 	this->mCurrentCondition = 0;
+	//printf("Enclosed Wander Enter");
 }
 void sEnclosedWanderState::OnExitState()
 {
 	stage = 0;
 	dirToRotate = 0;
 	nextNode = nullptr;
-
-	std::cout << "Enclosed Wander State Entered" << std::endl;
+	mCurrentCondition = 0;
+	//std::cout << "Enclosed Wander State Entered" << std::endl;
+	//printf("Enclosed Wander Exit");
 }

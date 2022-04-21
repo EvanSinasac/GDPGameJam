@@ -78,13 +78,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)common\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)common\lib\x64\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)common\include;$(ProjectDir)include;$(SolutionDir)common\glew\include;$(SolutionDir)common\FreeImage\include;$(SolutionDir)common\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)common\lib\x64\debug;$(SolutionDir)common\glew\lib\$(Platform);$(SolutionDir)common\FreeImage\lib\$(Platform)\$(Configuration);$(SolutionDir)common\assimp\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)common\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)common\lib\x64\release\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)common\include;$(SolutionDir)common\glew\include;$(SolutionDir)common\FreeImage\include;$(SolutionDir)common\assimp\include;$(ProjectDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)common\lib\x64\release\;$(SolutionDir)common\assimp\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,7 +124,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glfw3dll.lib;fmod_vc.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32s.lib;OpenGL32.lib;assimp-vc142-mtd.lib;FreeImaged.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,7 +141,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glfw3dll.lib;fmod_vc.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32s.lib;OpenGL32.lib;assimp-vc142-mt.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -155,6 +155,7 @@
     <ClCompile Include="cDungeonMeshBuilder.cpp" />
     <ClCompile Include="cEntityBuilder.cpp" />
     <ClCompile Include="cFBO\cFBO.cpp" />
+    <ClCompile Include="cFireParticle.cpp" />
     <ClCompile Include="cFootprints.cpp" />
     <ClCompile Include="cFSMEntity.cpp" />
     <ClCompile Include="cGLFWKeyboadModifiers.cpp" />
@@ -198,6 +199,14 @@
     <ClCompile Include="sFSMSystem.cpp" />
     <ClCompile Include="Shutdown.cpp" />
     <ClCompile Include="sIdleState.cpp" />
+    <ClCompile Include="src\physics\cParticle.cpp" />
+    <ClCompile Include="src\physics\cParticleContact.cpp" />
+    <ClCompile Include="src\physics\cParticleContactResolver.cpp" />
+    <ClCompile Include="src\physics\cParticleForceRegistry.cpp" />
+    <ClCompile Include="src\physics\cParticleWorld.cpp" />
+    <ClCompile Include="src\physics\particle_constraints.cpp" />
+    <ClCompile Include="src\physics\particle_contact_generators.cpp" />
+    <ClCompile Include="src\physics\random_helpers.cpp" />
     <ClCompile Include="StartUp.cpp" />
     <ClCompile Include="sWanderState.cpp" />
     <ClCompile Include="TextureMapping\C24BitBMPpixel.cpp" />
@@ -214,6 +223,7 @@
     <ClInclude Include="cDungeonMeshBuilder.h" />
     <ClInclude Include="cEntityBuilder.h" />
     <ClInclude Include="cFBO\cFBO.h" />
+    <ClInclude Include="cFireParticle.h" />
     <ClInclude Include="cFootprints.h" />
     <ClInclude Include="cFSMEntity.h" />
     <ClInclude Include="cLightHelper.h" />
@@ -241,6 +251,16 @@
     <ClInclude Include="iEntity.h" />
     <ClInclude Include="iMediator.h" />
     <ClInclude Include="iMessage.h" />
+    <ClInclude Include="include\physics\cParticle.h" />
+    <ClInclude Include="include\physics\cParticleContact.h" />
+    <ClInclude Include="include\physics\cParticleContactResolver.h" />
+    <ClInclude Include="include\physics\cParticleForceRegistry.h" />
+    <ClInclude Include="include\physics\cParticleWorld.h" />
+    <ClInclude Include="include\physics\iParticleContactGenerator.h" />
+    <ClInclude Include="include\physics\iParticleForceGenerator.h" />
+    <ClInclude Include="include\physics\particle_constraints.h" />
+    <ClInclude Include="include\physics\particle_contact_generators.h" />
+    <ClInclude Include="include\physics\random_helpers.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ReturnState.h" />

@@ -126,6 +126,7 @@ std::string sApproachState::Update(float dt, Node* currentNode, glm::vec3 lookDi
 					return "ReturnToWander";
 				}
 				//std::cout << "This was the problem" << std::endl;
+				return "PathReCalculated";
 			}
 
 			if (glm::distance(currentNode->position + lookDirection, pathToTarget[0]->position) <= 0.75f)
@@ -233,11 +234,13 @@ void sApproachState::OnEnterState(Node* currentNode)
 		//}
 	}
 
-	std::cout << "Approach State Entered!" << std::endl;
+	//std::cout << "Approach State Entered!" << std::endl;
 
 	dirToRotate = 0;
 	timeToNextAction = 0.0f;
 	this->mCurrentCondition = 0;
+
+	//printf("Approach Enter");
 }
 void sApproachState::OnExitState()
 {
@@ -248,6 +251,7 @@ void sApproachState::OnExitState()
 
 	dirToRotate = 0;
 	timeToNextAction = 0.0f;
-
-	std::cout << "Approach State Exited!" << std::endl;
+	mCurrentCondition = 0;
+	//std::cout << "Approach State Exited!" << std::endl;
+	//printf("Approach Exit");
 }

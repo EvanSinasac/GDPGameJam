@@ -21,10 +21,11 @@ std::string sIdleState::Update(float dt, Node* currentNode, glm::vec3 lookDirect
 void sIdleState::OnEnterState(Node* currentNode)
 {
 	mCurrentCondition = 0;
-	printf("IdleState: Entered\n");
+	//printf("IdleState: Entered\n");
 }
 
 void sIdleState::OnExitState()
 {
-	printf("IdleState: Exited\n");
+	//printf("IdleState: Exited\n");
+	mCurrentCondition = 0;
 }

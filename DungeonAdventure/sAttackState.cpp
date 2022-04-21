@@ -109,10 +109,15 @@ void sAttackState::OnEnterState(Node* currentNode)
 	dirToRotate = 0;
 	timeToNextAction = 0.0f;
 	this->mCurrentCondition = 0;
+
+	//printf("Attck Enter");
 }
 void sAttackState::OnExitState()
 {
 	playerNode = nullptr;
 	timeToNextAction = 0.0f;
 	dirToRotate = 0;
+	mCurrentCondition = 0;
+
+	//printf("Attack Exit");
 }

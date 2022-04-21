@@ -108,7 +108,8 @@ Node* BFS_LookForPlayerWithinEnclosedArea(Graph* graph, Node* rootNode)
 		{
 			//if (!neighbhour.first->visited)
 			if (neighbhour.first->visited == false &&
-				!(neighbhour.first->type == "D" || neighbhour.first->type == "DP" || neighbhour.first->type == "DS"))	// go up to door nodes
+				!(neighbhour.first->type == "D" || neighbhour.first->type == "DP" || neighbhour.first->type == "DS")
+				/*&& !(neighbhour.first->isOccupied && neighbhour.first->occupiedBy == 0)*/)	// go up to door nodes
 			{
 				neighbhour.first->visited = true;
 				neighbhour.first->parent = currNode;

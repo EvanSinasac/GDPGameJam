@@ -13,6 +13,8 @@
 #include <vector>
 #include "cFBO/cFBO.h"
 
+#include <physics/cParticleWorld.h>
+
 #include "ResourceManager.h"
 #include "Graph.h"
 #include "cFSMEntity.h"
@@ -133,6 +135,16 @@ extern cFBO* g_pFBO;        //NULL;
 //extern cFBO* g_pFBOAngle2;
 //extern cFBO* g_pFBOAngle3;
 //extern cFBO* g_pFBOAngle4;
+
+//    ____  _               _          
+//   |  _ \| |__  _   _ ___(_) ___ ___ 
+//   | |_) | '_ \| | | / __| |/ __/ __|
+//   |  __/| | | | |_| \__ \ | (__\__ \
+//   |_|   |_| |_|\__, |___/_|\___|___/
+//                |___/                
+
+extern nPhysics::cParticleWorld* g_pWorld;
+extern std::vector<nPhysics::cParticle*> g_vec_pParticles;
 
 
 // Note: This returns a COPY of the object as a stack variable (not a pointer)

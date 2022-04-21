@@ -117,8 +117,9 @@ void sWanderState::OnEnterState(Node* currentNode)
 	unsigned int index = rand() % currentNode->edges.size();
 	nextNode = currentNode->edges[index].first;
 	stage = 0;
+	this->mCurrentCondition = 0;
 }
 void sWanderState::OnExitState()
 {
-
+	this->mCurrentCondition = 0;
 }

@@ -21,6 +21,7 @@
 #include "cPlayerEntity.h"
 //#include "cListeningEnemy.h"
 //#include "cWanderEnemy.h"
+#include "cFireParticle.h"
 
 
 float lastX = 600.0f;
@@ -872,6 +873,8 @@ int main(int argv, char** argc)
 		{
 			::vec_pFSMEntities[index]->Update(deltaTime);
 		}
+
+		::g_pWorld->TimeStep((float)deltaTime);
 
 		// cam 1 and 2 texture change	// camera 1 no longer changes textures, but still flickers
 		//if (cam1Timer >= cam1Tim)
@@ -2004,6 +2007,32 @@ int main(int argv, char** argc)
 		//   |_____/|_|  \_\/_/    \_\/  \/     |_____/ \_____|______|_| \_|______|   |_||_| |_|
 		//                                                                                      
 		//    
+
+		// Physics
+		for (unsigned int index = 0; index != ::g_vec_pParticles.size(); index++)
+		{
+			if (!::g_vec_pParticles[index]->GetIsAlive())
+			{
+				// remove the particle from the world and the vector
+				::g_pWorld->RemoveParticle(::g_vec_pParticles[index]);
+				::g_vec_pParticles.erase(::g_vec_pParticles.begin() + index);
+				index--;
+			}
+			else
+			{
+				// otherwise, draw the particle
+				cMesh* pCurrentMesh = ((nPhysics::cFireParticle*)::g_vec_pParticles[index])->m_Mesh;
+				matModel = glm::mat4(1.0f);
+				DrawObject(pCurrentMesh,
+					matModel,
+					pShaderProc->mapUniformName_to_UniformLocation["matModel"],
+					pShaderProc->mapUniformName_to_UniformLocation["matModelInverseTranspose"],
+					program,
+					::g_pVAOManager);
+			}
+		}
+
+
 
 		// I really hope drawing the player and objects I want to use the stencil buffer on last doesn't make them all flickery
 		if (::g_bStencilsOn)

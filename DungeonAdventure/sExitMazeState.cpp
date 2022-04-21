@@ -162,4 +162,5 @@ void sExitMazeState::OnExitState()
 
 	dirToRotate = 0;
 	timeToNextAction = 0.0f;
+	mCurrentCondition = 0;
 }

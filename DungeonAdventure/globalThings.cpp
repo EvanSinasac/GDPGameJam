@@ -94,7 +94,15 @@ glm::vec3 g_heightMapUVOffsetRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 // This will be printed in the title bar
 std::string g_TitleText = "";
 
+//    ____  _               _          
+//   |  _ \| |__  _   _ ___(_) ___ ___ 
+//   | |_) | '_ \| | | / __| |/ __/ __|
+//   |  __/| | | | |_| \__ \ | (__\__ \
+//   |_|   |_| |_|\__, |___/_|\___|___/
+//                |___/                
 
+nPhysics::cParticleWorld* g_pWorld = NULL;
+std::vector<nPhysics::cParticle*> g_vec_pParticles;
 
 
 

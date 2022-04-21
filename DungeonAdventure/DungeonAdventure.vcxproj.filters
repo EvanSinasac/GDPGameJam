@@ -73,6 +73,12 @@
     <Filter Include="Entities %28Objects%29\Entities\Enemy FSM System\sStates">
       <UniqueIdentifier>{513dc7a6-a6a3-4a01-89ec-cb7a6404cf64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Particle Physics">
+      <UniqueIdentifier>{a31345af-d2b1-42c7-8cb9-08a36bf965bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle Physics\Fire">
+      <UniqueIdentifier>{84b9b684-2bc2-4d3e-bc0c-a2fe0decf31e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BMPImage.cpp">
@@ -249,6 +255,33 @@
     <ClCompile Include="sExitMazeState.cpp">
       <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
     </ClCompile>
+    <ClCompile Include="src\physics\cParticle.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\cParticleContact.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\cParticleContactResolver.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\cParticleForceRegistry.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\cParticleWorld.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\particle_constraints.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\particle_contact_generators.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\random_helpers.cpp">
+      <Filter>Particle Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="cFireParticle.cpp">
+      <Filter>Particle Physics\Fire</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BMPImage.h">
@@ -409,6 +442,39 @@
     </ClInclude>
     <ClInclude Include="sExitMazeState.h">
       <Filter>Entities %28Objects%29\Entities\Enemy FSM System\sStates</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\cParticle.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\cParticleContact.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\cParticleContactResolver.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\cParticleForceRegistry.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\cParticleWorld.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\iParticleContactGenerator.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\iParticleForceGenerator.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\particle_constraints.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\particle_contact_generators.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\random_helpers.h">
+      <Filter>Particle Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="cFireParticle.h">
+      <Filter>Particle Physics\Fire</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

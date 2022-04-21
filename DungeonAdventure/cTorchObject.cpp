@@ -1,5 +1,7 @@
 #include "cTorchObject.h"
 #include "globalThings.h"
+#include "cFireParticle.h"
+#include <physics/random_helpers.h>
 #include <iostream>
 
 cTorchObject::cTorchObject(cMesh* pMesh, unsigned int index)
@@ -47,7 +49,45 @@ void cTorchObject::Update(float deltaTime)
 		this->m_Mesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->scale.z = baseMeshAtten + randomAddedAttenMesh * 3.0f;
 		//this->m_Mesh->scale.z = baseMeshAtten + randomAddedAttenMesh;
 		timer = 0.0f;
+
+		if (glm::distance(this->m_Mesh->positionXYZ, ::cameraEye) < 30.0f)
+		{	// only launch particles if the camera is near enough
+			LaunchParticle();
+		}
 	}
 	
+	return;
+}
+
+void cTorchObject::LaunchParticle()
+{
+	glm::vec3 position = this->m_Mesh->positionXYZ +
+		this->m_Mesh->vec_pChildMeshes[0]->vec_pChildMeshes[0]->positionXYZ;
+
+	if (this->m_Mesh->orientationXYZ.y == glm::radians(90.0f))
+	{
+		position += glm::vec3(-0.35f, 0.0f, -0.35f);
+	}
+	else if (this->m_Mesh->orientationXYZ.y == glm::radians(180.0f))
+	{
+		position += glm::vec3(-0.7f, 0.0f, 0.0f);
+	}
+	else if (this->m_Mesh->orientationXYZ.y == glm::radians(270.0f))
+	{
+		position += glm::vec3(-0.35f, 0.0f, 0.35f);
+	}
+
+	nPhysics::cFireParticle* newFire = new nPhysics::cFireParticle(1.0f, 
+		position, 3.0f);
+	glm::vec3 initialVelocity(nPhysics::getRandom(-0.05f, 0.05f), 0.3f, nPhysics::getRandom(-0.05f, 0.05f));
+	newFire->SetVelocity(initialVelocity);
+	newFire->SetAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
+	newFire->SetDamping(0.9f);
+	newFire->SetRadius(0.05f);
+	newFire->SetUseTimer(true);
+	newFire->SetTimer(3.0f);
+	::g_pWorld->AddParticle(newFire);
+	::g_vec_pParticles.push_back(newFire);
+
 	return;
 }

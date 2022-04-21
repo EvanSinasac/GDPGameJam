@@ -221,7 +221,8 @@ void cListeningEnemy::Move(std::string directionToMove)
 			glm::vec3 pos = glm::vec3(neighbour.first->position.x, neighbour.first->position.y, neighbour.first->position.z);
 			if (glm::distance(pos, this->position + this->lookAt) <= 0.75f)
 			{
-				if (neighbour.first->type != "-" && !neighbour.first->isOccupied)
+				if (neighbour.first->type != "-" && !neighbour.first->isOccupied && 
+					!(neighbour.first->type == "D" || neighbour.first->type == "DS" || neighbour.first->type == "DP"))
 				{
 					this->position = glm::vec3(pos.x, this->position.y, pos.z);
 					this->m_CurrNode->isOccupied = false;

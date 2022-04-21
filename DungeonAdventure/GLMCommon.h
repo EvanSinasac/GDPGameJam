@@ -9,3 +9,13 @@
 #include <glm/gtc/matrix_transform.hpp> 
 // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
+
+
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/euler_angles.hpp>
+
+#include <glm/james/mat4stack.h>
+#include <glm/james/inline_helpers.h>
+#include <glm/james/aabb.h>
+#include <glm/james/rotation_from_to.h>
