@@ -80,3 +80,10 @@ https://forum.zdoom.org/viewtopic.php?f=60&t=61190
 AUDIO
 	The three sound effects I use for the player's footsteps are from Zelda: Majora's Mask, found at:
 https://noproblo.dayjo.org/ZeldaSounds/MM/index.html
+
+VIDEOS
+Short: https://youtu.be/qt6hlfwNV0c
+Long: https://youtu.be/7l1aKd3BA8A
+
+GitHub
+https://github.com/EvanSinasac/GDPGameJam.git
