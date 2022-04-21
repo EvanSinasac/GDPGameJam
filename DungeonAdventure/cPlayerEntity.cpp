@@ -69,7 +69,7 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	// orientation in lookAt
 	//this->m_Mesh->setUniformScale(0.03f);
 	this->m_Mesh->setUniformScale(0.4f);
-	this->m_Mesh->bDontLight = true;
+	this->m_Mesh->bDontLight = false;
 	this->m_Mesh->friendlyName = "Player";
 	this->m_Mesh->clearTextureRatiosToZero();
 	this->m_Mesh->textureNames[1] = "uv_hollow.bmp";

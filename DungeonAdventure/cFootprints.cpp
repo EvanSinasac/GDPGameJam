@@ -53,8 +53,8 @@ void cFootprints::Update(float dt)
 	if (active)
 	{
 		timer += dt;
-		this->m_Mesh->alphaTransparency = (5.0f - timer) / 5.0f;
-		if (timer >= 5.0f)
+		this->m_Mesh->alphaTransparency = (10.0f - timer) / 10.0f;
+		if (timer >= 10.0f)
 		{
 			active = false;
 			this->m_Mesh->bIsVisible = false;
