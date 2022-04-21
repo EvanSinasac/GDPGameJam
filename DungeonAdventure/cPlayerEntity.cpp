@@ -4,6 +4,8 @@
 #include "sIdleState.h"
 #include "sExitMazeState.h"
 
+#include "globalThings.h"
+
 cPlayerEntity::cPlayerEntity()
 {
 	this->position = glm::vec3(0.0f);
@@ -52,6 +54,8 @@ cPlayerEntity::cPlayerEntity()
 
 	cheating = false;
 
+	soundIndex = 0;
+	nextSoundIndex = 1;
 }
 cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* startNode)
 	: position(startPos)
@@ -151,6 +155,9 @@ cPlayerEntity::cPlayerEntity(glm::vec3 startPos, glm::vec3 startLookAt, Node* st
 	this->m_FSMSystem->AddState(this->m_SearchState);
 
 	cheating = false;
+
+	soundIndex = 0;
+	nextSoundIndex = 1;
 }
 cPlayerEntity::~cPlayerEntity()
 {
@@ -205,6 +212,9 @@ void cPlayerEntity::Move(std::string directionToMove)
 					this->m_CurrNode = neighbour.first;
 					this->m_CurrNode->isOccupied = true;
 					this->m_CurrNode->occupiedBy = (int)this->type;
+
+					// If we actually move then we play the footstep sound
+					PlayFootstepSound();
 				}
 				break;
 			}
@@ -225,6 +235,9 @@ void cPlayerEntity::Move(std::string directionToMove)
 					this->m_CurrNode = neighbour.first;
 					this->m_CurrNode->isOccupied = true;
 					this->m_CurrNode->occupiedBy = (int)this->type;
+
+					// If we actually move then we play the footstep sound
+					PlayFootstepSound();
 				}
 				break;
 			}
@@ -303,4 +316,44 @@ void cPlayerEntity::StartCheating()
 {
 	cheating = true;
 	this->m_FSMSystem->Start();
+}
+
+void cPlayerEntity::PlayFootstepSound()
+{
+	_result = g_pFMODSystem->playSound(g_vecSounds.at(soundIndex), 0, true, &g_vecChannels.at(soundIndex));
+	if (_result != FMOD_OK)
+	{
+		fprintf(stderr, "Unable to play sound[%d]\n", soundIndex);
+		return;
+	}
+
+	FMOD_VECTOR _position = { this->position.x, this->position.y, this->position.z };
+	FMOD_VECTOR _velocity = { 0.0f, 0.0f, 0.0f };
+	_result = g_vecChannels.at(soundIndex)->set3DAttributes(&_position, &_velocity);
+	if (_result != FMOD_OK)
+	{
+		fprintf(stderr, "Unable to set 3D settings for channel[%d]\n", soundIndex);
+		return;
+	}
+	// Unpause the sound now
+	_result = g_vecChannels.at(soundIndex)->setPaused(false);
+	if (_result != FMOD_OK)
+	{
+		fprintf(stderr, "Unable to unpause channel[%d]\n", soundIndex);
+		return;
+	}
+
+	soundIndex += nextSoundIndex;
+	if (soundIndex >= 2)
+	{
+		soundIndex = 2;
+		nextSoundIndex = -1;
+	}
+	else if (soundIndex <= 0)
+	{
+		soundIndex = 0;
+		nextSoundIndex = 1;
+	}
+
+	return;
 }

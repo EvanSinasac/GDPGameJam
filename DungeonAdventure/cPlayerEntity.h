@@ -39,4 +39,9 @@ private:
 	sFSMState* m_IdleState;
 	sFSMState* m_SearchState;
 
+	unsigned int soundIndex;
+	int nextSoundIndex;
+
+	void PlayFootstepSound();
+
 };

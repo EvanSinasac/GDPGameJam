@@ -15,6 +15,8 @@
 
 #include <physics/cParticleWorld.h>
 
+#include <FMOD/fmod.hpp>
+
 #include "ResourceManager.h"
 #include "Graph.h"
 #include "cFSMEntity.h"
@@ -45,6 +47,7 @@ bool g_StartUp(GLFWwindow* pWindow);
 
 // Deletes global things, etc. 
 bool g_ShutDown(GLFWwindow* pWindow);
+bool g_FMODShutDown();
 
 extern cShaderManager::cShaderProgram* pShaderProc;
 
@@ -146,6 +149,18 @@ extern cFBO* g_pFBO;        //NULL;
 extern nPhysics::cParticleWorld* g_pWorld;
 extern std::vector<nPhysics::cParticle*> g_vec_pParticles;
 
+
+//       _             _ _       
+//      / \  _   _  __| (_) ___  
+//     / _ \| | | |/ _` | |/ _ \ 
+//    / ___ \ |_| | (_| | | (_) |
+//   /_/   \_\__,_|\__,_|_|\___/ 
+//                               
+extern FMOD::System* g_pFMODSystem;
+extern FMOD_RESULT _result;
+extern std::vector<std::string> songNames;
+extern std::vector<FMOD::Sound*> g_vecSounds;
+extern std::vector<FMOD::Channel*> g_vecChannels;
 
 // Note: This returns a COPY of the object as a stack variable (not a pointer)
 bool g_FindObjectByUniqueID(unsigned int uniqueID_toFind, cMesh& theObjectIFound);

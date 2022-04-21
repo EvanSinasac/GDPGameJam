@@ -104,6 +104,17 @@ std::string g_TitleText = "";
 nPhysics::cParticleWorld* g_pWorld = NULL;
 std::vector<nPhysics::cParticle*> g_vec_pParticles;
 
+//       _             _ _       
+//      / \  _   _  __| (_) ___  
+//     / _ \| | | |/ _` | |/ _ \ 
+//    / ___ \ |_| | (_| | | (_) |
+//   /_/   \_\__,_|\__,_|_|\___/ 
+//                               
+FMOD::System* g_pFMODSystem = NULL;
+FMOD_RESULT _result = FMOD_OK;
+std::vector<std::string> songNames;
+std::vector<FMOD::Sound*> g_vecSounds;
+std::vector<FMOD::Channel*> g_vecChannels;
 
 
 bool g_FindObjectByUniqueID(unsigned int uniqueID_toFind, cMesh*& theObjectIFound);

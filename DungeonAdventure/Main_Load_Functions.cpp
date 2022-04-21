@@ -698,3 +698,73 @@ bool loadDefaultSkyBox()
 
 	return loadedAll;
 }
+
+
+// load sounds from audio list
+bool loadSounds()
+{
+	std::stringstream ss;
+	std::stringstream sFile;
+	ss << SOLUTION_DIR << "common\\assets\\audio\\audioList.txt";
+
+	FMOD::Sound* sound;
+	FMOD::Channel* channel;
+
+	std::ifstream theFile(ss.str());
+	ss.str("");
+
+	if (!theFile.is_open())
+	{
+		fprintf(stderr, "Could not open audioList.txt");
+		return false;
+	}
+	std::string nextToken;
+	while (theFile >> nextToken)
+	{
+		if (nextToken == "end")
+		{
+			break;
+		}
+
+		if (nextToken.find("mp3") != std::string::npos || nextToken.find("wav") != std::string::npos)
+		{
+			sFile << nextToken.c_str();
+			ss << SOLUTION_DIR << "common\\assets\\audio\\" << sFile.str().c_str();
+			songNames.push_back(sFile.str().c_str());
+			// LinearRollOff makes the sound go mute when the listener has moved away from the max distance
+			_result = g_pFMODSystem->createSound(ss.str().c_str(), FMOD_3D_LINEARROLLOFF, 0, &sound);
+			if (_result != FMOD_OK)
+			{
+				fprintf(stderr, "Unable to create a sound: %s", ss.str().c_str());
+			}
+			else
+			{
+				//Set min/max distance
+				_result = sound->set3DMinMaxDistance(0.5f, 20.0f);
+				if (FMOD_OK != _result) {
+					fprintf(stderr, "Unable to set min/max distance for sound: %s", ss.str().c_str());
+					//return false;
+				}
+				
+				//_result = sound->setMode(FMOD_LOOP_NORMAL);
+				_result = sound->setMode(FMOD_LOOP_OFF);	// not looping
+				if (FMOD_OK != _result) {
+					fprintf(stderr, "Unable to set loop normal for sound: %s", ss.str().c_str());
+				}
+
+				g_vecSounds.push_back(sound);
+				g_vecChannels.push_back(channel);
+			}
+
+			ss.str("");
+			sFile.str("");
+		}
+		else
+		{
+			//in case audio file name contains spaces
+			sFile << nextToken.c_str() << " ";
+		}
+	} //end while
+	theFile.close();
+	return true;
+} //end of loadSounds

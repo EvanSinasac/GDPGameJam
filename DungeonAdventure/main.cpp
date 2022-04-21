@@ -80,6 +80,12 @@ bool cam1Flickering = false;
 bool cam2Staticing = false;
 bool cam2Flickering = false;
 
+FMOD_VECTOR _listenerPosition = { ::cameraEye.x, ::cameraEye.y, ::cameraEye.z };
+// Tell FMOD where is fwd, up and velocity (Forward gets updated with cameraTarget for camera listener)
+FMOD_VECTOR _listenerForward = { 0.0f, 0.0f, 1.0f };
+FMOD_VECTOR _listenerUp = { 0.0f, 1.0f, 0.0f };
+FMOD_VECTOR _listenerVelocity = { 0.0f, 0.0f, 0.0f };
+
 //std::vector<cFSMEntity*> vec_pFSMEntities;
 //std::vector<glm::vec3> spawnPoints;
 std::vector<Node*> spawnPoints;
@@ -107,9 +113,12 @@ bool loadTextures();
 bool loadDefaultSkyBox();
 
 //void MakeGraphAndMeshes();
-void MakeFSMEntities(std::vector<glm::vec3> spawnPoints);
+//void MakeFSMEntities(std::vector<glm::vec3> spawnPoints);
 
 //void SpawnEntities(std::vector<Node*> spawnPoints);
+
+bool initFMOD();
+bool loadSounds();
 
 bool loadTSVGrid(std::vector<Node*> spawnPoints);			// modified version from Graphics 1 Final
 
@@ -179,6 +188,16 @@ int main(int argv, char** argc)
 	glfwMakeContextCurrent(pWindow);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	glfwSwapInterval(1);
+
+
+	// Here I think is where I need to initialize FMOD (after glfw before g_StartUp)
+	// I didn't add gl stuff to this, don't think it's needed for FMOD, just text
+	if (!initFMOD())
+	{
+		std::cout << "Error!  initFMOD didn't finish correctly!  ABORTING!" << std::endl;
+		system("pause");
+		return -1;
+	}
 
 
 	GLint max_uniform_location = 0;
@@ -2865,6 +2884,28 @@ int main(int argv, char** argc)
 
 		// Update on the VAO manager to do any pending loads
 
+		//       _             _ _         _   _           _       _       
+		//      / \  _   _  __| (_) ___   | | | |_ __   __| | __ _| |_ ___ 
+		//     / _ \| | | |/ _` | |/ _ \  | | | | '_ \ / _` |/ _` | __/ _ \
+		//    / ___ \ |_| | (_| | | (_) | | |_| | |_) | (_| | (_| | ||  __/
+		//   /_/   \_\__,_|\__,_|_|\___/   \___/| .__/ \__,_|\__,_|\__\___|
+		//                                      |_|                    
+		_listenerPosition = { ::cameraEye.x, ::cameraEye.y, ::cameraEye.z };
+		glm::vec3 camForward = glm::normalize(glm::vec3(::cameraTarget.x, 0.0f, ::cameraTarget.z));	// if the forward vector contains some y it seems to break the listener
+		_listenerForward = { camForward.x, camForward.y, camForward.z };
+		glm::vec3 camRight = glm::cross(camForward, ::upVector);
+		glm::vec3 camUp = glm::normalize(glm::cross(camForward, camRight));
+		_listenerUp = { camUp.x, camUp.y, camUp.z };
+		_listenerVelocity = { 0.0f, 0.0f, 0.0f };	// should probably* update this, but meh, good enough for rock and roll :) 
+
+		_result = g_pFMODSystem->set3DListenerAttributes(0, &_listenerPosition, &_listenerVelocity, &_listenerForward, &_listenerUp);
+		if (_result != FMOD_OK)
+			fprintf(stderr, "Unable to set 3D listener attributes!\n");
+
+		_result = g_pFMODSystem->update();
+		if (_result != FMOD_OK)
+			fprintf(stderr, "Unable to update FMOD system!\n");
+
 		// "Present" what we've drawn.
 		glfwSwapBuffers(pWindow);        // Show what we've drawn
 
@@ -2884,6 +2925,11 @@ int main(int argv, char** argc)
 	glfwDestroyWindow(pWindow);
 
 	glfwTerminate();
+
+	g_FMODShutDown();
+
+	//system("pause");
+
 	exit(EXIT_SUCCESS);
 
 } //end of main
@@ -2928,280 +2974,37 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
 } //fly ::camera
 
-// GRAPHICS 2 Midterm
-//void makeSpaceStation()
-//{
-//	cMesh* baseMesh = new cMesh();
-//	baseMesh->meshName = "Arms Small_xyz_rgba_n_uv.ply";
-//	baseMesh->positionXYZ = glm::vec3(0.0f, 0.0f, 500.0f);
-//	baseMesh->orientationXYZ = glm::vec3(0.0f);
-//	baseMesh->setUniformScale(0.01f);
-//	baseMesh->bDontLight = true;
-//	baseMesh->clearTextureRatiosToZero();
-//	baseMesh->textureNames[1] = "HullPlates1.bmp";
-//	baseMesh->textureNames[2] = "HullPlates2.bmp";
-//	baseMesh->textureNames[3] = "HullPlates3.bmp";
-//	baseMesh->textureOperator = 0;
-//	baseMesh->textureRatios[1] = 0.4f;
-//	baseMesh->textureRatios[2] = 0.3f;
-//	baseMesh->textureRatios[3] = 0.3f;
-//	//sigh
-//	baseMesh->bUseWholeObjectDiffuseColour = true;
-//	baseMesh->bUseObjectDebugColour = true;
-//	baseMesh->wholeObjectDiffuseRGBA = glm::vec4(0.88f, 0.88f, 0.88f, 1.0f);
-//	baseMesh->objectDebugColourRGBA = glm::vec4(0.88f, 0.88f, 0.88f, 1.0f);
-//	
-//	{	//2
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Arms_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.0f, 0.0f, 0.6f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.0f, 0.0f, 0.6f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//3
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Cooling Arms_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//4
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Hanger_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.25f, 0.25f, 0.25f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//5
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Parts_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//6
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Reactor_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.88f, 0.88f, 0.88f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.88f, 0.88f, 0.88f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//7
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Ring Small1_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//8
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Ring Small2_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//9
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "RingBig_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "HullPlates1.bmp";
-//		nextMesh->textureNames[2] = "HullPlates2.bmp";
-//		nextMesh->textureNames[3] = "HullPlates3.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.4f;
-//		nextMesh->textureRatios[2] = 0.3f;
-//		nextMesh->textureRatios[3] = 0.3f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.38f, 0.38f, 0.38f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//10
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Solar Panels_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "SolarGrid.bmp";
-//		nextMesh->textureNames[2] = "SolarGrid2.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.6f;
-//		nextMesh->textureRatios[2] = 0.4f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.8f, 0.0f, 0.0f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//	{	//11
-//		cMesh* nextMesh = new cMesh();
-//		nextMesh->meshName = "Triangle Parts_xyz_rgba_n_uv.ply";
-//		nextMesh->positionXYZ = glm::vec3(0.0f);
-//		nextMesh->orientationXYZ = glm::vec3(0.0f);
-//		nextMesh->setUniformScale(1.0f);
-//		nextMesh->bDontLight = true;
-//		nextMesh->clearTextureRatiosToZero();
-//		nextMesh->textureNames[1] = "SolarGrid.bmp";
-//		nextMesh->textureNames[2] = "SolarGrid2.bmp";
-//		nextMesh->textureOperator = 0;
-//		nextMesh->textureRatios[1] = 0.6f;
-//		nextMesh->textureRatios[2] = 0.4f;
-//		nextMesh->bUseWholeObjectDiffuseColour = true;
-//		nextMesh->bUseObjectDebugColour = true;
-//		nextMesh->wholeObjectDiffuseRGBA = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-//		nextMesh->objectDebugColourRGBA = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-//
-//		baseMesh->vec_pChildMeshes.push_back(nextMesh);
-//	}
-//
-//
-//	::g_vec_pMeshes.push_back(baseMesh);
-//	localGStation = baseMesh;
-//}
 
 
-// BMP colour loader from the A.I. project, not being used currently
+bool initFMOD() 
+{
+	_result = FMOD::System_Create(&g_pFMODSystem);
+	if (_result != FMOD_OK) {
+		fprintf(stderr, "Unable to create FMOD system");
+		return false;
+	}
 
-//char GetColourCharacter(unsigned char r, unsigned char g, unsigned char b)
-//{
-//	if (r == 255 && g == 0 && b == 0)		return 'r';
-//	if (r == 0 && g == 255 && b == 0)		return 'g';
-//	if (r == 0 && g == 0 && b == 255)		return 'b';
-//	if (r == 255 && g == 255 && b == 0)		return 'y';
-//	if (r == 255 && g == 255 && b == 255)	return 'w';
-//	if (r == 0 && g == 0 && b == 0)			return '_';
-//
-//	// Colours on Resource Map 3 are corrupted, some pixels are not exact colours
-//	//if (r >= 200 && g <= 50 && b <= 50)		return 'r';
-//	//if (r <= 50 && g >= 200 && b <= 50)		return 'g';
-//	//if (r <= 50 && g <= 50 && b >= 200)		return 'b';
-//	//if (r >= 200 && g >= 200 && b <= 50)	return 'y';
-//	//if (r >= 200 && g >= 200 && b >= 200)	return 'w';
-//	//if (r <= 50 && g <= 50 && b <= 50)		return '_';
-//	return 'x';
-//}
+	_result = g_pFMODSystem->init(32, FMOD_INIT_NORMAL, NULL);
+	if (_result != FMOD_OK) {
+		fprintf(stderr, "Unable to initialize FMOD system");
+		return false;
+	}
 
 
+	//std::vector<std::string> audioList = getSoundsFromFile("audioList.txt");
+	// equivalent should be my songNames
+	if (!loadSounds())
+	{
+		fprintf(stderr, "Unable to load sounds!");
+		return false;
+	}
+
+	//Added to loadSounds
+
+	if (g_vecSounds.size() <= 0) {
+		fprintf(stderr, "Unable to create sounds");
+		return false;
+	}
+
+	return true;
+} //end of initFMOD
