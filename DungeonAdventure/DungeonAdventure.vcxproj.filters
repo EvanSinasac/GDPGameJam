@@ -478,25 +478,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\common\assets\lights.txt">
+    <Text Include="assets\lights.txt">
       <Filter>Source Files</Filter>
     </Text>
-    <Text Include="..\common\assets\worldFile.txt">
+    <Text Include="assets\worldFile.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+    <Text Include="assets\audio\audioList.txt">
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\common\assets\shaders\fragShader_01.glsl">
-      <Filter>ShaderManager\Shaders</Filter>
-    </None>
-    <None Include="..\common\assets\shaders\geomShader.glsl">
-      <Filter>ShaderManager\Shaders</Filter>
-    </None>
-    <None Include="..\common\assets\shaders\vertShader_01.glsl">
-      <Filter>ShaderManager\Shaders</Filter>
-    </None>
-    <None Include="..\common\assets\The Catacombs of Horrendous Devastation 01 - Converted.tsv">
+    <None Include="assets\The Catacombs of Horrendous Devastation 01 - Converted.tsv">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\fragShader_01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\geomShader.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\vertShader_01.glsl">
+      <Filter>ShaderManager\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -234,17 +234,20 @@ int main(int argv, char** argc)
 	// THEN shader stuff
 	cShaderManager::cShader vertShader;
 	ss.str("");
-	ss << SOLUTION_DIR << "common\\assets\\shaders\\vertShader_01.glsl";
+	//ss << SOLUTION_DIR << "common\\assets\\shaders\\vertShader_01.glsl";
+	ss << "assets\\shaders\\vertShader_01.glsl";
 	vertShader.fileName = ss.str();
 
 	cShaderManager::cShader geomShader;
 	ss.str("");
-	ss << SOLUTION_DIR << "common\\assets\\shaders\\geomShader.glsl";
+	//ss << SOLUTION_DIR << "common\\assets\\shaders\\geomShader.glsl";
+	ss << "assets\\shaders\\geomShader.glsl";
 	geomShader.fileName = ss.str();;
 
 	cShaderManager::cShader fragShader;
 	ss.str("");
-	ss << SOLUTION_DIR << "common\\assets\\shaders\\fragShader_01.glsl";
+	//ss << SOLUTION_DIR << "common\\assets\\shaders\\fragShader_01.glsl";
+	ss << "assets\\shaders\\fragShader_01.glsl";
 	fragShader.fileName = ss.str();
 
 	if (::g_pShaderManager->createProgramFromFile("Shader#1", vertShader, geomShader, fragShader))
@@ -435,7 +438,7 @@ int main(int argv, char** argc)
 
 	ss.str("");
 	//ss << SOLUTION_DIR << "common\\assets\\models\\";
-	ss << SOLUTION_DIR << "common\\assets\\models\\";
+	ss << "assets\\models\\";
 
 	::g_pVAOManager->setFilePath(ss.str());
 

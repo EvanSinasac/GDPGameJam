@@ -12,7 +12,8 @@ bool loadWorldFile(unsigned int& numberOfTransparentObjects)
 	std::stringstream sFile;
 
 
-	ss << SOLUTION_DIR << "common\\assets\\worldFile.txt";
+	//ss << SOLUTION_DIR << "common\\assets\\worldFile.txt";
+	ss << "assets\\worldFile.txt";
 
 	std::ifstream theFile(ss.str());
 
@@ -186,7 +187,8 @@ bool loadLightsFile()
 
 	//std::vector<float> rotations;
 
-	ss << SOLUTION_DIR << "common\\assets\\lights.txt";
+	//ss << SOLUTION_DIR << "common\\assets\\lights.txt";
+	ss << "assets\\lights.txt";
 
 	std::ifstream theFile(ss.str());
 
@@ -505,7 +507,8 @@ bool loadTextures()
 	//// Load the textures
 
 	std::stringstream ss;
-	ss << SOLUTION_DIR << "common\\assets\\textures\\";
+	//ss << SOLUTION_DIR << "common\\assets\\textures\\";
+	ss << "assets\\textures\\";
 	::g_pTextureManager->SetBasePath(ss.str());
 
 	loadedAll &= ::g_pTextureManager->Create2DTextureFromBMPFile("Scope.bmp", true);
@@ -666,7 +669,8 @@ bool loadDefaultSkyBox()
 	// Add a skybox texture
 	std::string errorTextString;
 	std::stringstream ss;
-	ss << SOLUTION_DIR << "common\\assets\\textures\\cubemaps\\";
+	//ss << SOLUTION_DIR << "common\\assets\\textures\\cubemaps\\";
+	ss << "assets\\textures\\cubemaps\\";
 	::g_pTextureManager->SetBasePath(ss.str());		// update base path to cube texture location
 
 	loadedAll &= ::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
@@ -705,7 +709,8 @@ bool loadSounds()
 {
 	std::stringstream ss;
 	std::stringstream sFile;
-	ss << SOLUTION_DIR << "common\\assets\\audio\\audioList.txt";
+	//ss << SOLUTION_DIR << "common\\assets\\audio\\audioList.txt";
+	ss << "assets\\audio\\audioList.txt";
 
 	FMOD::Sound* sound;
 	FMOD::Channel* channel;
@@ -715,7 +720,7 @@ bool loadSounds()
 
 	if (!theFile.is_open())
 	{
-		fprintf(stderr, "Could not open audioList.txt");
+		fprintf(stderr, "Could not open audioList.txt\n");
 		return false;
 	}
 	std::string nextToken;
@@ -729,7 +734,7 @@ bool loadSounds()
 		if (nextToken.find("mp3") != std::string::npos || nextToken.find("wav") != std::string::npos)
 		{
 			sFile << nextToken.c_str();
-			ss << SOLUTION_DIR << "common\\assets\\audio\\" << sFile.str().c_str();
+			ss << "assets\\audio\\" << sFile.str().c_str();
 			songNames.push_back(sFile.str().c_str());
 			// LinearRollOff makes the sound go mute when the listener has moved away from the max distance
 			_result = g_pFMODSystem->createSound(ss.str().c_str(), FMOD_3D_LINEARROLLOFF, 0, &sound);
